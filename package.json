@@ -19,6 +19,9 @@
 		"typescript": "^5.7.3"
 	},
 	"dependencies": {
+		"@oramacloud/client": "^2.1.4",
+		"axios": "^1.7.9",
+		"dotenv": "^16.0.3",
 		"express": "^4.21.2"
 	}
 }
