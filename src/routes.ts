@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express'
-import oramaRoutes from './orama/orama.routes'
+import { oramaRoutes } from './orama'
+import { webScrapeRoutes } from './webScrape'
 
 const router = Router()
 
@@ -10,5 +11,6 @@ router.get('/', (req: Request, res: Response) => {
 
 // Mount Route modules
 router.use('/api/orama', oramaRoutes)
+router.use('/api/webscrape', webScrapeRoutes)
 
 export default router

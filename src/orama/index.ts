@@ -1,3 +1,3 @@
 export * from './orama.controller'
 export * from './orama.service'
-export * from './orama.routes'
+export { default as oramaRoutes } from './orama.routes'
