@@ -229,7 +229,7 @@ export class NovelController {
 									.map(
 										([volume, chapters]) => `
                         <div class="volume">
-                            <div class="volume-title">Volume: ${volume}</div>
+                            <div class="volume-title">${volume}</div>
                             <div class="chapters">
                                 ${chapters
 																	.map(
@@ -239,7 +239,7 @@ export class NovelController {
 																				)}/chapters/${encodeURIComponent(
 																			chapter.volume
 																		)}/${encodeURIComponent(chapter.chapter)}">
-                                            Chapter ${chapter.chapter}
+                                            Chapter ${Number(chapter.chapter)}
                                         </a>
                                     `
 																	)
@@ -257,9 +257,9 @@ export class NovelController {
 
 	private generateChapterHtml(
 		chapterData: any,
-		navigation?: ChapterNavigation,
-		chapters?: Chapter[],
-		novelId?: string
+		navigation: ChapterNavigation | undefined,
+		chapters: Chapter[] | undefined,
+		novelId: string
 	): string {
 		return `
             <!DOCTYPE html>
@@ -431,6 +431,9 @@ export class NovelController {
                         <div class="loading-text">Rewriting with AI, please wait...</div>
                     </div>
                 </div>
+                <a href="/api/novel/novels/${encodeURIComponent(
+									novelId
+								)}/chapters" class="back-button">← Back to Chapter List</a>
                 <div class="chapter-container">
                     <div class="header">
                         <div class="novel-title">Rewrite AI Novel Reader</div>
