@@ -56,15 +56,12 @@ export class NovelController {
                     }
                     .volume {
                         background: white;
-                        border-radius: 8px;
                         padding: 20px;
                         margin-bottom: 20px;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                     }
                     @media (prefers-color-scheme: dark) {
                         .volume {
                             background: #2d2d2d;
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
                         }
                     }
                     h1 {
@@ -176,7 +173,8 @@ export class NovelController {
 
 	private generateChapterHtml(
 		chapterData: any,
-		navigation?: ChapterNavigation
+		navigation?: ChapterNavigation,
+		chapters?: Chapter[]
 	): string {
 		return `
             <!DOCTYPE html>
@@ -204,13 +202,10 @@ export class NovelController {
                     .chapter-container {
                         background: white;
                         padding: 40px;
-                        border-radius: 8px;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                     }
                     @media (prefers-color-scheme: dark) {
                         .chapter-container {
                             background: #2d2d2d;
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
                         }
                     }
                     h1 {
@@ -226,7 +221,7 @@ export class NovelController {
                         }
                     }
                     .chapter-content {
-                        font-size: 1.1em;
+                        font-size: 1.2em;
                         text-align: justify;
                     }
                     .chapter-content p {
@@ -234,49 +229,45 @@ export class NovelController {
                     }
                     .navigation {
                         display: flex;
-                        justify-content: space-between;
-                        align-items: center;
+                        justify-content: center;
                         margin-top: 30px;
                         padding-top: 20px;
-                        border-top: 1px solid #eee;
-                        gap: 10px;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        .navigation {
-                            border-top-color: #404040;
-                        }
+                        gap: 0;
                     }
                     .navigation a {
                         color: #2196F3;
                         text-decoration: none;
                         padding: 10px 20px;
-                        background: #f8f9fa;
-                        border-radius: 4px;
+                        background: transparent;
                         transition: background 0.2s;
-                        white-space: nowrap;
-                        flex: 1;
-                        text-align: center;
+                        border-right: 1px solid #e0e0e0;
+                        cursor: pointer;
                     }
-                    .navigation a.prev {
-                        text-align: left;
-                    }
-                    .navigation a.next {
-                        text-align: right;
-                    }
-                    .navigation a.disabled {
-                        opacity: 0.5;
+                    .navigation a.current {
+                        color: #333;
+                        font-weight: bold;
+                        cursor: default;
                         pointer-events: none;
                     }
+                    .navigation a:last-child {
+                        border-right: none;
+                    }
                     .navigation a:hover {
-                        background: #e9ecef;
+                        background: #f8f9fa;
                     }
                     @media (prefers-color-scheme: dark) {
+                        .navigation {
+                            border-top-color: #404040;
+                        }
                         .navigation a {
                             color: #64B5F6;
-                            background: #353535;
+                            border-right-color: #404040;
+                        }
+                        .navigation a.current {
+                            color: #ffffff;
                         }
                         .navigation a:hover {
-                            background: #404040;
+                            background: #353535;
                         }
                     }
                     .header {
@@ -304,32 +295,49 @@ export class NovelController {
                         ${chapterData.body || ''}
                     </div>
                     <div class="navigation">
-                        ${
-													navigation?.prev
-														? `<a href="/api/novel/read/${encodeURIComponent(
-																navigation.prev.volume
-														  )}/${encodeURIComponent(
-																navigation.prev.chapter
-														  )}" class="prev">← Previous</a>`
-														: `<a class="prev disabled">← Previous</a>`
-												}
-                        <a href="/api/novel/chapters">Chapter List${
-													navigation ? ` (${navigation.current.chapter})` : ''
-												}</a>
-                        ${
-													navigation?.next
-														? `<a href="/api/novel/read/${encodeURIComponent(
-																navigation.next.volume
-														  )}/${encodeURIComponent(
-																navigation.next.chapter
-														  )}" class="next">Next →</a>`
-														: `<a class="next disabled">Next →</a>`
-												}
+                        ${this.navigationButtons(navigation, chapters)}
                     </div>
                 </div>
             </body>
-            </html>
+            </html> 
         `
+	}
+
+	private navigationButtons(
+		navigation?: ChapterNavigation,
+		chapters?: Chapter[]
+	): string {
+		if (!navigation || !chapters) return ''
+
+		const currentIndex = chapters.findIndex(
+			(ch) =>
+				ch.volume === navigation.current.volume &&
+				ch.chapter === navigation.current.chapter
+		)
+
+		// Calculate the range of chapters to display
+		const start = Math.max(0, currentIndex - 5)
+		const end = Math.min(chapters.length, currentIndex + 6)
+
+		const buttons = []
+		for (let i = start; i < end; i++) {
+			const ch = chapters[i]
+			const isCurrent =
+				ch.volume === navigation.current.volume &&
+				ch.chapter === navigation.current.chapter
+			buttons.push(`
+				<a ${
+					isCurrent
+						? 'class="current"'
+						: `href="/api/novel/read/${encodeURIComponent(
+								ch.volume
+						  )}/${encodeURIComponent(ch.chapter)}"`
+				}>
+					${Number(ch.chapter)}
+				</a>
+			`)
+		}
+		return buttons.join('')
 	}
 
 	async listChapters(req: Request, res: Response): Promise<void> {
@@ -369,7 +377,11 @@ export class NovelController {
 						: undefined,
 			}
 
-			const html = this.generateChapterHtml(chapterData, navigation)
+			const html = this.generateChapterHtml(
+				chapterData,
+				navigation,
+				allChapters
+			)
 			res.send(html)
 		} catch (error) {
 			res.status(500).send('Error loading chapter')

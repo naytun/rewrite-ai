@@ -29,7 +29,7 @@ export const askAI = async ({
 	question: string
 	context?: string
 }): Promise<string> => {
-	// return question || ''
+	return question || ''
 
 	try {
 		if (!oramaClient) {
