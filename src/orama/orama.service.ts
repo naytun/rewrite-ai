@@ -28,7 +28,9 @@ export const askAI = async ({
 }: {
 	question: string
 	context?: string
-}) => {
+}): Promise<string> => {
+	// return question || ''
+
 	try {
 		if (!oramaClient) {
 			throw new Error('OramaAI Client is not initialized')
@@ -38,16 +40,16 @@ export const askAI = async ({
 			throw new Error('Question is required')
 		}
 
-		const session = oramaClient.createAnswerSession({
+		const session = oramaClient?.createAnswerSession({
 			userContext: `
 				Note: Rephrase the answer sentences short and concise. Create paragraphs as needed. Use only common words for better readability.
 				${context}`,
 			inferenceType: 'documentation',
 		})
 		console.log('㏒  ~ askAI ~ session: [START]')
-		const result = await session.ask({ term: question })
+		const result = await session?.ask({ term: question })
 		session?.clearSession()
-		return result
+		return result || ''
 	} catch (error) {
 		console.error('Error asking AI:', error)
 		throw error

@@ -74,10 +74,6 @@ export class NovelService {
 				.map((paragraph) => `<p>${paragraph.trim()}</p>`)
 				.join('\n')
 
-			console.log(
-				'㏒  ~ NovelService ~ readChapter ~ formattedResult:',
-				formattedResult
-			)
 			return {
 				...chapterData,
 				body: formattedResult,
