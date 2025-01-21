@@ -1,11 +1,20 @@
 import { Router, Request, Response } from 'express'
-import { oramaRoutes } from './orama'
-import { webScrapeRoutes } from './webScrape'
+
+import * as PACKAGE from '../package.json'
 import novelRoutes from './novel/novel.routes'
 
-const router = Router()
+import { oramaRoutes } from './orama'
+import { webScrapeRoutes } from './webScrape'
 
-// Welcome route
+const router = Router()
+const status = {
+	message: 'Everything is functioning normally!',
+	version: PACKAGE.version,
+}
+
+router.get('/status', (req: Request, res: Response) => {
+	res.status(200).json(status)
+})
 router.get('/', (req: Request, res: Response) => {
 	res.status(200).json({ message: 'Welcome to the API' })
 })
