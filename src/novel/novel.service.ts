@@ -88,3 +88,14 @@ export class NovelService {
 		}
 	}
 }
+
+// const t = {
+// 	id: 180,
+// 	url: 'https://novelfull.com/historys-strongest-senior-brother/chapter-180-the-catastrophic-nine-underworlds.html',
+// 	title: 'Chapter 180: The Catastrophic Nine Underworlds',
+// 	volume: 2,
+// 	volume_title: 'Volume 2',
+// 	body: '<h1>Chapter 180: The Catastrophic Nine Underworlds</h1><p> The catastrophic Nine they plummeted downwards!</p>',
+// 	images: {},
+// 	success: true,
+// }

@@ -44,7 +44,7 @@ export const askAI = async ({
 				${context}`,
 			inferenceType: 'documentation',
 		})
-
+		console.log('㏒  ~ askAI ~ session: [START]')
 		const result = await session.ask({ term: question })
 		session?.clearSession()
 		return result
