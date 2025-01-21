@@ -1,9 +1,14 @@
 import { promises as fs } from 'fs'
 import path from 'path'
-import { askAI } from '../orama/orama.service'
+import { RewriteService } from '../rewrite/rewrite.service'
 
 export class NovelService {
 	private readonly basePath = 'Lightnovels'
+	private rewriteService: RewriteService
+
+	constructor() {
+		this.rewriteService = new RewriteService()
+	}
 
 	private async getNovelPath(novelId: string): Promise<string> {
 		const websites = await fs.readdir(path.join(process.cwd(), this.basePath))
@@ -100,8 +105,9 @@ export class NovelService {
 				.trim() // Remove leading/trailing whitespace
 
 			// Ask AI to rewrite the chapter
-			const result = await askAI({
-				question: `Rewrite following contents to be in shorter sentences and be concise. Keep dialogue as is, and just rephrase for better reading. Create paragraphs as needed. Use only common words for better readability . ---\n ${plainText}`,
+			const result = await this.rewriteService.rewriteText({
+				text: plainText,
+				style: 'concise',
 			})
 
 			// Format the result into HTML paragraphs

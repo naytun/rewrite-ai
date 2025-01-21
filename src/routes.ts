@@ -2,6 +2,7 @@ import { Router } from 'express'
 
 import * as PACKAGE from '../package.json'
 import novelRoutes from './novel/novel.routes'
+import rewriteRoutes from './rewrite/rewrite.routes'
 
 import { oramaRoutes } from './orama'
 import { webScrapeRoutes } from './webScrape'
@@ -23,5 +24,6 @@ router.get('/', (req, res) => {
 router.use('/orama', oramaRoutes)
 router.use('/webscrape', webScrapeRoutes)
 router.use('/novel', novelRoutes)
+router.use('/api', rewriteRoutes)
 
 export default router
