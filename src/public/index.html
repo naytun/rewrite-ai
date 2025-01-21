@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,10 +8,77 @@
 			href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
 			rel="stylesheet"
 		/>
+		<style>
+			/* Dark mode styles */
+			html.dark body {
+				background-color: #1a1a1a;
+				color: #ffffff;
+			}
+			html.dark .bg-white {
+				background-color: #2d2d2d;
+			}
+			html.dark .text-gray-600 {
+				color: #d1d1d1;
+			}
+			html.dark .shadow-md {
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+			}
+
+			/* Toggle switch custom styles */
+			.dark-mode-toggle {
+				width: 48px;
+				height: 24px;
+				background: #e2e8f0;
+				border-radius: 12px;
+				position: relative;
+				transition: background 0.3s;
+				cursor: pointer;
+			}
+
+			.dark-mode-toggle::after {
+				content: '';
+				position: absolute;
+				width: 20px;
+				height: 20px;
+				border-radius: 50%;
+				background: white;
+				top: 2px;
+				left: 2px;
+				transition: all 0.3s;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+			}
+
+			.dark-mode-toggle.active {
+				background: #3b82f6;
+			}
+
+			.dark-mode-toggle.active::after {
+				transform: translateX(24px);
+			}
+
+			.toggle-label {
+				font-size: 0.875rem;
+				font-weight: 500;
+				color: #4b5563;
+				margin-right: 8px;
+			}
+
+			html.dark .toggle-label {
+				color: #e5e7eb;
+			}
+		</style>
 	</head>
 	<body class="bg-gray-100">
 		<div class="container mx-auto px-4 py-8">
-			<h1 class="text-4xl font-bold text-center mb-8">Novel Library</h1>
+			<div class="flex justify-between items-center mb-8">
+				<h1 class="text-4xl font-bold text-center">Novel Library</h1>
+				<div
+					class="flex items-center bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm"
+				>
+					<span class="toggle-label">Dark Mode</span>
+					<div id="darkModeToggle" class="dark-mode-toggle"></div>
+				</div>
+			</div>
 			<div id="loading" class="text-center text-gray-600 mb-4">
 				Loading novels...
 			</div>
@@ -25,6 +92,29 @@
 		</div>
 
 		<script>
+			// Dark mode functionality
+			const darkModeToggle = document.getElementById('darkModeToggle')
+
+			// Check for saved dark mode preference
+			if (localStorage.getItem('darkMode') === 'true') {
+				document.documentElement.classList.add('dark')
+				darkModeToggle.classList.add('active')
+			}
+
+			// Toggle dark mode
+			darkModeToggle.addEventListener('click', () => {
+				darkModeToggle.classList.toggle('active')
+				const isDark = darkModeToggle.classList.contains('active')
+
+				if (isDark) {
+					document.documentElement.classList.add('dark')
+					localStorage.setItem('darkMode', 'true')
+				} else {
+					document.documentElement.classList.remove('dark')
+					localStorage.setItem('darkMode', 'false')
+				}
+			})
+
 			async function loadNovels() {
 				const loadingEl = document.getElementById('loading')
 				const errorEl = document.getElementById('error')
