@@ -313,7 +313,9 @@ export class NovelController {
 														  )}" class="prev">← Previous</a>`
 														: `<a class="prev disabled">← Previous</a>`
 												}
-                        <a href="/api/novel/chapters">Chapter List</a>
+                        <a href="/api/novel/chapters">Chapter List${
+													navigation ? ` (${navigation.current.chapter})` : ''
+												}</a>
                         ${
 													navigation?.next
 														? `<a href="/api/novel/read/${encodeURIComponent(
