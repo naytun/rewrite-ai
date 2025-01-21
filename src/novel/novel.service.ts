@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 
 export class NovelService {
-	private readonly basePath = 'LightNovels/novelfull-com/Novel-01/json'
+	private readonly basePath = 'Lightnovels/novelfull-com/Novel-01/json'
 
 	async listChapters(): Promise<any[]> {
 		try {
