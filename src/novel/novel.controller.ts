@@ -49,7 +49,7 @@ export class NovelController {
                         max-width: 800px;
                         margin: 0 auto;
                         padding: 20px;
-                        background: #f5f5f5;
+                        background: white;
                         color: #333;
                     }
                     @media (prefers-color-scheme: dark) {
@@ -275,7 +275,7 @@ export class NovelController {
                         max-width: 800px;
                         margin: 0 auto;
                         padding: 20px;
-                        background: #f5f5f5;
+                        background: white;
                         color: #333;
                     }
                     @media (prefers-color-scheme: dark) {
