@@ -230,9 +230,15 @@ export class NovelController {
                     .navigation {
                         display: flex;
                         justify-content: center;
-                        margin-top: 30px;
-                        padding-top: 20px;
+                        margin-bottom: 30px;
+                        padding-bottom: 20px;
                         gap: 0;
+                        border-bottom: 1px solid #e0e0e0;
+                    }
+                    @media (prefers-color-scheme: dark) {
+                        .navigation {
+                            border-bottom-color: #404040;
+                        }
                     }
                     .navigation a {
                         color: #2196F3;
@@ -256,9 +262,6 @@ export class NovelController {
                         background: #f8f9fa;
                     }
                     @media (prefers-color-scheme: dark) {
-                        .navigation {
-                            border-top-color: #404040;
-                        }
                         .navigation a {
                             color: #64B5F6;
                             border-right-color: #404040;
@@ -291,11 +294,11 @@ export class NovelController {
                     <div class="header">
                         <div class="novel-title">Rewrite AI Novel Reader</div>
                     </div>
-                    <div class="chapter-content">
-                        ${chapterData.body || ''}
-                    </div>
                     <div class="navigation">
                         ${this.navigationButtons(navigation, chapters)}
+                    </div>
+                    <div class="chapter-content">
+                        ${chapterData.body || ''}
                     </div>
                 </div>
             </body>
