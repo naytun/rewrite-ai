@@ -12,6 +12,9 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV="production"
 
+# Create necessary directories with correct permissions
+RUN mkdir -p /app/Lightnovels/novelfull-com/Novel-01/json && \
+    chown -R node:node /app
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
@@ -33,12 +36,17 @@ RUN npm run build
 # Remove development dependencies
 RUN npm prune --omit=dev
 
-
 # Final stage for app image
 FROM base
 
 # Copy built application
 COPY --from=build /app /app
+
+# Ensure node user owns the app directory
+RUN chown -R node:node /app
+
+# Use non-root user
+USER node
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
