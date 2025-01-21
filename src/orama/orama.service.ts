@@ -40,7 +40,7 @@ export const askAI = async ({
 
 		const session = oramaClient.createAnswerSession({
 			userContext: `
-				Note: Always return the answer in plain text. Make the sentences short and concise. Use only common words for better readability.
+				Note: Rephrase the answer sentences short and concise. Use only common words for better readability.
 				${context}`,
 			inferenceType: 'documentation',
 		})
