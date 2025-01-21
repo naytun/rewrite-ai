@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { RewriteService } from '../rewrite/rewrite.service'
+import { askAI } from '../orama/orama.service'
 
 export class NovelService {
 	private readonly basePath = 'Lightnovels'
@@ -105,19 +106,27 @@ export class NovelService {
 				.replace(/<[^>]*>/g, '')
 				.trim()
 
-			// Map the frontend model selection to the provider
-			const providerMap: { [key: string]: 'openai' | 'claude' } = {
-				openai: 'openai',
-				claude: 'claude',
-				orama: 'openai', // Default to OpenAI for Orama
-			}
+			let result: string
+			if (aiModel === 'orama') {
+				// Use Orama's askAI function
+				result = await askAI({
+					question: plainText,
+					context:
+						'Rewrite this text in a concise and clear way, maintaining the original meaning and any dialogue.',
+				})
+			} else {
+				// Map other models to the rewrite service
+				const providerMap: { [key: string]: 'openai' | 'claude' } = {
+					openai: 'openai',
+					claude: 'claude',
+				}
 
-			// Ask AI to rewrite the chapter
-			const result = await this.rewriteService.rewriteText({
-				text: plainText,
-				style: 'concise',
-				provider: providerMap[aiModel] || 'openai',
-			})
+				result = await this.rewriteService.rewriteText({
+					text: plainText,
+					style: 'concise',
+					provider: providerMap[aiModel] || 'openai',
+				})
+			}
 
 			// Format the result into HTML paragraphs
 			const formattedResult = result
