@@ -7,6 +7,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./routes"));
 const axios_1 = require("axios");
+const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
 // Load environment variables
 dotenv_1.default.config();
 // Validate required environment variables
@@ -18,9 +20,23 @@ if (missingEnvVars.length > 0) {
 }
 // Initialize express app
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// Serve static files
+app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
+app.use('/covers', express_1.default.static(path_1.default.join(process.cwd(), 'Lightnovels')));
+// Request logging middleware
+app.use((req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.url}`);
+    next();
+});
 // Mount routes
-app.use(routes_1.default);
+app.use('/api', routes_1.default);
+// Serve home page
+app.get('/', (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, 'public', 'index.html'));
+});
 // Error handling middleware
 app.use((err, req, res, next) => {
     const status = err.status || 500;

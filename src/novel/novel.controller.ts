@@ -20,7 +20,11 @@ export class NovelController {
 		this.novelService = new NovelService()
 	}
 
-	private generateChapterListHtml(chapters: Chapter[]): string {
+	private generateChapterListHtml(
+		title: string,
+		chapters: Chapter[],
+		novelId: string
+	): string {
 		const volumeGroups = chapters.reduce<Record<string, Chapter[]>>(
 			(acc, chapter) => {
 				if (!acc[chapter.volume]) {
@@ -36,7 +40,7 @@ export class NovelController {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Rewrite AI - Novel Reader</title>
+                <title>${title} - Rewrite AI</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <style>
                     body {
@@ -52,6 +56,29 @@ export class NovelController {
                         body {
                             background: #1a1a1a;
                             color: #e0e0e0;
+                        }
+                    }
+                    .back-button {
+                        display: inline-block;
+                        color: #2196F3;
+                        text-decoration: none;
+                        padding: 8px 16px;
+                        background: #f8f9fa;
+                        border-radius: 4px;
+                        transition: all 0.2s;
+                        margin-bottom: 20px;
+                    }
+                    .back-button:hover {
+                        background: #e9ecef;
+                        transform: translateX(-4px);
+                    }
+                    @media (prefers-color-scheme: dark) {
+                        .back-button {
+                            color: #64B5F6;
+                            background: #353535;
+                        }
+                        .back-button:hover {
+                            background: #404040;
                         }
                     }
                     .volume {
@@ -137,9 +164,10 @@ export class NovelController {
                 </style>
             </head>
             <body>
+                <a href="/" class="back-button">← Back to Home</a>
                 <div class="header">
                     <div class="novel-title">Rewrite AI Novel Reader</div>
-                    <h1>Chapter List</h1>
+                    <h1>${title}</h1>
                 </div>
                 ${Object.entries(volumeGroups)
 									.map(
@@ -150,11 +178,11 @@ export class NovelController {
                                 ${chapters
 																	.map(
 																		(chapter: any) => `
-                                        <a href="/api/novel/read/${encodeURIComponent(
-																					chapter.volume
-																				)}/${encodeURIComponent(
-																			chapter.chapter
-																		)}">
+                                        <a href="/api/novel/novels/${encodeURIComponent(
+																					novelId
+																				)}/chapters/${encodeURIComponent(
+																			chapter.volume
+																		)}/${encodeURIComponent(chapter.chapter)}">
                                             Chapter ${chapter.chapter}
                                         </a>
                                     `
@@ -174,7 +202,8 @@ export class NovelController {
 	private generateChapterHtml(
 		chapterData: any,
 		navigation?: ChapterNavigation,
-		chapters?: Chapter[]
+		chapters?: Chapter[],
+		novelId?: string
 	): string {
 		return `
             <!DOCTYPE html>
@@ -295,7 +324,7 @@ export class NovelController {
                         <div class="novel-title">Rewrite AI Novel Reader</div>
                     </div>
                     <div class="navigation">
-                        ${this.navigationButtons(navigation, chapters)}
+                        ${this.navigationButtons(navigation, chapters, novelId)}
                     </div>
                     <div class="chapter-content">
                         ${chapterData.body || ''}
@@ -308,9 +337,10 @@ export class NovelController {
 
 	private navigationButtons(
 		navigation?: ChapterNavigation,
-		chapters?: Chapter[]
+		chapters?: Chapter[],
+		novelId?: string
 	): string {
-		if (!navigation || !chapters) return ''
+		if (!navigation || !chapters || !novelId) return ''
 
 		const currentIndex = chapters.findIndex(
 			(ch) =>
@@ -332,9 +362,11 @@ export class NovelController {
 				<a ${
 					isCurrent
 						? 'class="current"'
-						: `href="/api/novel/read/${encodeURIComponent(
-								ch.volume
-						  )}/${encodeURIComponent(ch.chapter)}"`
+						: `href="/api/novel/novels/${encodeURIComponent(
+								novelId
+						  )}/chapters/${encodeURIComponent(ch.volume)}/${encodeURIComponent(
+								ch.chapter
+						  )}"`
 				}>
 					${Number(ch.chapter)}
 				</a>
@@ -345,8 +377,9 @@ export class NovelController {
 
 	async listChapters(req: Request, res: Response): Promise<void> {
 		try {
-			const chapters = await this.novelService.listChapters()
-			const html = this.generateChapterListHtml(chapters)
+			const { novelId } = req.params
+			const { title, chapters } = await this.novelService.listChapters(novelId)
+			const html = this.generateChapterListHtml(title, chapters, novelId)
 			res.send(html)
 		} catch (error) {
 			res.status(500).send('Error loading chapters')
@@ -355,12 +388,16 @@ export class NovelController {
 
 	async readChapter(req: Request, res: Response): Promise<void> {
 		try {
-			const { volume, chapter } = req.params
-			const chapterData = await this.novelService.readChapter(volume, chapter)
-			const chapters = await this.novelService.listChapters()
+			const { novelId, volume, chapter } = req.params
+			const chapterData = await this.novelService.readChapter(
+				novelId,
+				volume,
+				chapter
+			)
+			const { chapters } = await this.novelService.listChapters(novelId)
 
 			// Find current chapter index
-			const allChapters = chapters.sort((a, b) => {
+			const allChapters = chapters.sort((a: Chapter, b: Chapter) => {
 				if (a.volume === b.volume) {
 					return parseInt(a.chapter) - parseInt(b.chapter)
 				}
@@ -368,7 +405,7 @@ export class NovelController {
 			})
 
 			const currentIndex = allChapters.findIndex(
-				(ch) => ch.volume === volume && ch.chapter === chapter
+				(ch: Chapter) => ch.volume === volume && ch.chapter === chapter
 			)
 
 			const navigation: ChapterNavigation = {
@@ -383,11 +420,22 @@ export class NovelController {
 			const html = this.generateChapterHtml(
 				chapterData,
 				navigation,
-				allChapters
+				allChapters,
+				novelId
 			)
 			res.send(html)
 		} catch (error) {
 			res.status(500).send('Error loading chapter')
+		}
+	}
+
+	async listNovels(req: Request, res: Response) {
+		try {
+			const novels = await this.novelService.listNovels()
+			res.json(novels)
+		} catch (error) {
+			console.error('Error listing novels:', error)
+			res.status(500).json({ error: 'Failed to list novels' })
 		}
 	}
 }

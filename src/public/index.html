@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Novel Library</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+			rel="stylesheet"
+		/>
+	</head>
+	<body class="bg-gray-100">
+		<div class="container mx-auto px-4 py-8">
+			<h1 class="text-4xl font-bold text-center mb-8">Novel Library</h1>
+			<div id="loading" class="text-center text-gray-600 mb-4">
+				Loading novels...
+			</div>
+			<div id="error" class="text-center text-red-600 mb-4 hidden"></div>
+			<div
+				id="novels"
+				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+			>
+				<!-- Novels will be loaded here -->
+			</div>
+		</div>
+
+		<script>
+			async function loadNovels() {
+				const loadingEl = document.getElementById('loading')
+				const errorEl = document.getElementById('error')
+				const novelsContainer = document.getElementById('novels')
+
+				try {
+					const response = await fetch('/api/novel/novels')
+					console.log('Response status:', response.status)
+
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`)
+					}
+
+					const novels = await response.json()
+					console.log('Novels loaded:', novels)
+
+					if (!novels || novels.length === 0) {
+						errorEl.textContent = 'No novels found'
+						errorEl.classList.remove('hidden')
+						return
+					}
+
+					novels.forEach((novel) => {
+						console.log('Processing novel:', novel)
+						const card = document.createElement('div')
+						card.className =
+							'bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105'
+
+						card.innerHTML = `
+							<div class="relative pb-2/3">
+								<img src="${novel.cover_url || '/placeholder.jpg'}" 
+									alt="${novel.title}" 
+									class="absolute h-full w-full object-cover"
+									onerror="this.src='/placeholder.jpg'">
+							</div>
+							<div class="p-4">
+								<h2 class="text-xl font-semibold mb-2 line-clamp-2">${novel.title}</h2>
+								<p class="text-gray-600 text-sm mb-2">Author: ${
+									novel.authors ? novel.authors.join(', ') : 'Unknown'
+								}</p>
+								<a href="/api/novel/novels/${
+									novel.id
+								}/chapters" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+									Read Now
+								</a>
+							</div>
+						`
+
+						novelsContainer.appendChild(card)
+					})
+				} catch (error) {
+					console.error('Error loading novels:', error)
+					errorEl.textContent = 'Error loading novels: ' + error.message
+					errorEl.classList.remove('hidden')
+				} finally {
+					loadingEl.classList.add('hidden')
+				}
+			}
+
+			// Load novels when the page loads
+			window.addEventListener('load', loadNovels)
+		</script>
+	</body>
+</html>
