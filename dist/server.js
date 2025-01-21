@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./routes"));
+const axios_1 = require("axios");
 // Load environment variables
 dotenv_1.default.config();
 // Validate required environment variables
@@ -31,8 +32,8 @@ app.use((err, req, res, next) => {
 });
 // 404 handler for undefined routes
 app.use((req, res) => {
-    res.status(404).json({
-        status: 404,
+    res.status(axios_1.HttpStatusCode.NotFound).json({
+        status: axios_1.HttpStatusCode.NotFound,
         message: 'Route not found',
     });
 });
