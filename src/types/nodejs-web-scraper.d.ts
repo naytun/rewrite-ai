@@ -8,6 +8,7 @@ declare module 'nodejs-web-scraper' {
 
 	export interface OperationConfig {
 		name: string
+		filePath?: string
 	}
 
 	export class Scraper {

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import express, { Request, Response, NextFunction, Application } from 'express'
 import routes from './routes'
+import { HttpStatusCode } from 'axios'
 
 // Load environment variables
 dotenv.config()
@@ -44,8 +45,8 @@ app.use(
 
 // 404 handler for undefined routes
 app.use((req: Request, res: Response) => {
-	res.status(404).json({
-		status: 404,
+	res.status(HttpStatusCode.NotFound).json({
+		status: HttpStatusCode.NotFound,
 		message: 'Route not found',
 	})
 })
