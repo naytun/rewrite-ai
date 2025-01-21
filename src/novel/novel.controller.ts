@@ -161,9 +161,65 @@ export class NovelController {
                             color: #aaa;
                         }
                     }
+                    .loading {
+                        display: none;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.85);
+                        z-index: 1000;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .loading.active {
+                        display: flex;
+                    }
+                    .loading-content {
+                        text-align: center;
+                    }
+                    .loading-text {
+                        color: #fff;
+                        margin-top: 20px;
+                        font-size: 1.1em;
+                    }
+                    .spinner {
+                        width: 50px;
+                        height: 50px;
+                        border: 5px solid #f3f3f3;
+                        border-top: 5px solid #2196F3;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                        margin: 0 auto;
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
                 </style>
+                <script>
+                    function showLoading() {
+                        document.getElementById('loading').classList.add('active');
+                    }
+                    
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const links = document.querySelectorAll('a:not(.back-button)');
+                        links.forEach(link => {
+                            link.addEventListener('click', function(e) {
+                                showLoading();
+                            });
+                        });
+                    });
+                </script>
             </head>
             <body>
+                <div id="loading" class="loading">
+                    <div class="loading-content">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Rewriting with AI, please wait...</div>
+                    </div>
+                </div>
                 <a href="/" class="back-button">← Back to Home</a>
                 <div class="header">
                     <div class="novel-title">Rewrite AI Novel Reader</div>
@@ -227,6 +283,42 @@ export class NovelController {
                             background: #1a1a1a;
                             color: #e0e0e0;
                         }
+                    }
+                    .loading {
+                        display: none;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.85);
+                        z-index: 1000;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .loading.active {
+                        display: flex;
+                    }
+                    .loading-content {
+                        text-align: center;
+                    }
+                    .loading-text {
+                        color: #fff;
+                        margin-top: 20px;
+                        font-size: 1.1em;
+                    }
+                    .spinner {
+                        width: 50px;
+                        height: 50px;
+                        border: 5px solid #f3f3f3;
+                        border-top: 5px solid #2196F3;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                        margin: 0 auto;
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
                     }
                     .chapter-container {
                         background: white;
@@ -317,8 +409,28 @@ export class NovelController {
                         }
                     }
                 </style>
+                <script>
+                    function showLoading() {
+                        document.getElementById('loading').classList.add('active');
+                    }
+                    
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const links = document.querySelectorAll('a:not(.back-button)');
+                        links.forEach(link => {
+                            link.addEventListener('click', function(e) {
+                                showLoading();
+                            });
+                        });
+                    });
+                </script>
             </head>
             <body>
+                <div id="loading" class="loading">
+                    <div class="loading-content">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Rewriting with AI, please wait...</div>
+                    </div>
+                </div>
                 <div class="chapter-container">
                     <div class="header">
                         <div class="novel-title">Rewrite AI Novel Reader</div>
