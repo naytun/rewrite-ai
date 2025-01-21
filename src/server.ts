@@ -27,6 +27,13 @@ interface ErrorWithStatus extends Error {
 const app: Application = express()
 app.use(express.json())
 
+// Request logging middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+	const timestamp = new Date().toISOString()
+	console.log(`[${timestamp}] ${req.method} ${req.url}`)
+	next()
+})
+
 // Mount routes
 app.use(routes)
 
