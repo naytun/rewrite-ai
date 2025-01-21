@@ -9,7 +9,13 @@ import path from 'path'
 dotenv.config()
 
 // Validate required environment variables
-const requiredEnvVars = ['ORAMA_API_KEY', 'ORAMA_ENDPOINT', 'PORT']
+const requiredEnvVars = [
+	'ORAMA_API_KEY',
+	'ORAMA_ENDPOINT',
+	'PORT',
+	'OPENAI_API_KEY',
+	'ANTHROPIC_API_KEY',
+]
 const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar])
 
 if (missingEnvVars.length > 0) {

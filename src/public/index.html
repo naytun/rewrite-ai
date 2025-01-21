@@ -66,17 +66,48 @@
 			html.dark .toggle-label {
 				color: #e5e7eb;
 			}
+
+			/* AI Model selector styles */
+			.model-selector {
+				background-color: white;
+				border-radius: 0.5rem;
+				padding: 0.5rem;
+				font-size: 0.875rem;
+				border: 1px solid #e2e8f0;
+				outline: none;
+				cursor: pointer;
+			}
+
+			html.dark .model-selector {
+				background-color: #2d2d2d;
+				color: #ffffff;
+				border-color: #4a5568;
+			}
+
+			.model-selector option {
+				padding: 0.5rem;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-100">
 		<div class="container mx-auto px-4 py-8">
 			<div class="flex justify-between items-center mb-8">
 				<h1 class="text-4xl font-bold text-center">Novel Library</h1>
-				<div
-					class="flex items-center bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm"
-				>
-					<span class="toggle-label">Dark Mode</span>
-					<div id="darkModeToggle" class="dark-mode-toggle"></div>
+				<div class="flex items-center space-x-4">
+					<div class="flex items-center">
+						<label for="aiModel" class="toggle-label mr-2">AI Model:</label>
+						<select id="aiModel" class="model-selector">
+							<option value="orama">Orama</option>
+							<option value="openai">OpenAI</option>
+							<option value="claude">Claude</option>
+						</select>
+					</div>
+					<div
+						class="flex items-center bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm"
+					>
+						<span class="toggle-label">Dark Mode</span>
+						<div id="darkModeToggle" class="dark-mode-toggle"></div>
+					</div>
 				</div>
 			</div>
 			<div id="loading" class="text-center text-gray-600 mb-4">
@@ -112,6 +143,25 @@
 				} else {
 					document.documentElement.classList.remove('dark')
 					localStorage.setItem('darkMode', 'false')
+				}
+			})
+
+			// AI Model selection functionality
+			const modelSelector = document.getElementById('aiModel')
+
+			// Check for saved model preference
+			const savedModel = localStorage.getItem('aiModel') || 'orama'
+			modelSelector.value = savedModel
+
+			// Handle model selection
+			modelSelector.addEventListener('change', (event) => {
+				const selectedModel = event.target.value
+				localStorage.setItem('aiModel', selectedModel)
+				// Refresh the novels list to update the chapter links
+				const novelsContainer = document.getElementById('novels')
+				if (novelsContainer) {
+					novelsContainer.innerHTML = ''
+					loadNovels()
 				}
 			})
 
@@ -155,9 +205,10 @@
 								<p class="text-gray-600 text-sm mb-2">Author: ${
 									novel.authors ? novel.authors.join(', ') : 'Unknown'
 								}</p>
-								<a href="/api/novel/novels/${
-									novel.id
-								}/chapters" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+								<a href="/api/novel/novels/${novel.id}/chapters?model=${
+							localStorage.getItem('aiModel') || 'orama'
+						}" 
+								   class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
 									Read Now
 								</a>
 							</div>

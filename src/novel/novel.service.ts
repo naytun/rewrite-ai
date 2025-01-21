@@ -88,7 +88,8 @@ export class NovelService {
 	async readChapter(
 		novelId: string,
 		volume: string,
-		chapter: string
+		chapter: string,
+		aiModel: string = 'orama'
 	): Promise<any> {
 		try {
 			const novelPath = await this.getNovelPath(novelId)
@@ -98,16 +99,24 @@ export class NovelService {
 
 			// Convert HTML to plain text and handle paragraph tags
 			const plainText = chapterData.body
-				.replace(/<\/p>/g, '\n\n\n') // Replace <p> tags with double line breaks
-				.replace(/<p>/g, '') // Remove closing p tags
-				.replace(/<br\s*\/?>/g, '\n') // Replace <br> tags with line breaks
-				.replace(/<[^>]*>/g, '') // Remove all other HTML tags
-				.trim() // Remove leading/trailing whitespace
+				.replace(/<\/p>/g, '\n\n\n')
+				.replace(/<p>/g, '')
+				.replace(/<br\s*\/?>/g, '\n')
+				.replace(/<[^>]*>/g, '')
+				.trim()
+
+			// Map the frontend model selection to the provider
+			const providerMap: { [key: string]: 'openai' | 'claude' } = {
+				openai: 'openai',
+				claude: 'claude',
+				orama: 'openai', // Default to OpenAI for Orama
+			}
 
 			// Ask AI to rewrite the chapter
 			const result = await this.rewriteService.rewriteText({
 				text: plainText,
 				style: 'concise',
+				provider: providerMap[aiModel] || 'openai',
 			})
 
 			// Format the result into HTML paragraphs

@@ -23,7 +23,8 @@ export class NovelController {
 	private generateChapterListHtml(
 		title: string,
 		chapters: Chapter[],
-		novelId: string
+		novelId: string,
+		model: string = 'orama'
 	): string {
 		const volumeGroups = chapters.reduce<Record<string, Chapter[]>>(
 			(acc, chapter) => {
@@ -238,7 +239,9 @@ export class NovelController {
 																					novelId
 																				)}/chapters/${encodeURIComponent(
 																			chapter.volume
-																		)}/${encodeURIComponent(chapter.chapter)}">
+																		)}/${encodeURIComponent(
+																			chapter.chapter
+																		)}?model=${encodeURIComponent(model)}">
                                             Chapter ${Number(chapter.chapter)}
                                         </a>
                                     `
@@ -259,7 +262,8 @@ export class NovelController {
 		chapterData: any,
 		navigation: ChapterNavigation | undefined,
 		chapters: Chapter[] | undefined,
-		novelId: string
+		novelId: string,
+		model: string = 'orama'
 	): string {
 		return `
             <!DOCTYPE html>
@@ -438,9 +442,12 @@ export class NovelController {
                     <div class="header">
                         <div class="novel-title">Rewrite AI Novel Reader</div>
                     </div>
-                    <div class="navigation">
-                        ${this.navigationButtons(navigation, chapters, novelId)}
-                    </div>
+                    ${this.navigationButtons(
+											navigation,
+											chapters,
+											novelId,
+											model
+										)}
                     <div class="chapter-content">
                         ${chapterData.body || ''}
                     </div>
@@ -453,48 +460,58 @@ export class NovelController {
 	private navigationButtons(
 		navigation?: ChapterNavigation,
 		chapters?: Chapter[],
-		novelId?: string
+		novelId?: string,
+		model: string = 'orama'
 	): string {
-		if (!navigation || !chapters || !novelId) return ''
+		if (!navigation) return ''
 
-		const currentIndex = chapters.findIndex(
-			(ch) =>
-				ch.volume === navigation.current.volume &&
-				ch.chapter === navigation.current.chapter
-		)
+		const prevLink = navigation.prev
+			? `/api/novel/novels/${encodeURIComponent(
+					novelId!
+			  )}/chapters/${encodeURIComponent(
+					navigation.prev.volume
+			  )}/${encodeURIComponent(
+					navigation.prev.chapter
+			  )}?model=${encodeURIComponent(model)}`
+			: null
 
-		// Calculate the range of chapters to display
-		const start = Math.max(0, currentIndex - 5)
-		const end = Math.min(chapters.length, currentIndex + 6)
+		const nextLink = navigation.next
+			? `/api/novel/novels/${encodeURIComponent(
+					novelId!
+			  )}/chapters/${encodeURIComponent(
+					navigation.next.volume
+			  )}/${encodeURIComponent(
+					navigation.next.chapter
+			  )}?model=${encodeURIComponent(model)}`
+			: null
 
-		const buttons = []
-		for (let i = start; i < end; i++) {
-			const ch = chapters[i]
-			const isCurrent =
-				ch.volume === navigation.current.volume &&
-				ch.chapter === navigation.current.chapter
-			buttons.push(`
-				<a ${
-					isCurrent
-						? 'class="current"'
-						: `href="/api/novel/novels/${encodeURIComponent(
-								novelId
-						  )}/chapters/${encodeURIComponent(ch.volume)}/${encodeURIComponent(
-								ch.chapter
-						  )}"`
-				}>
-					${Number(ch.chapter)}
-				</a>
-			`)
-		}
-		return buttons.join('')
+		return `
+			<div class="navigation">
+				${
+					prevLink
+						? `<a href="${prevLink}" class="nav-button prev">← Previous Chapter</a>`
+						: '<span class="nav-button prev disabled">← Previous Chapter</span>'
+				}
+				${
+					nextLink
+						? `<a href="${nextLink}" class="nav-button next">Next Chapter →</a>`
+						: '<span class="nav-button next disabled">Next Chapter →</span>'
+				}
+			</div>
+		`
 	}
 
 	async listChapters(req: Request, res: Response): Promise<void> {
 		try {
-			const { novelId } = req.params
-			const { title, chapters } = await this.novelService.listChapters(novelId)
-			const html = this.generateChapterListHtml(title, chapters, novelId)
+			const { id } = req.params
+			const { model = 'orama' } = req.query
+			const { title, chapters } = await this.novelService.listChapters(id)
+			const html = this.generateChapterListHtml(
+				title,
+				chapters,
+				id,
+				model as string
+			)
 			res.send(html)
 		} catch (error) {
 			res.status(500).send('Error loading chapters')
@@ -503,44 +520,44 @@ export class NovelController {
 
 	async readChapter(req: Request, res: Response): Promise<void> {
 		try {
-			const { novelId, volume, chapter } = req.params
+			const { id, volume, chapter } = req.params
+			const { model = 'orama' } = req.query
 			const chapterData = await this.novelService.readChapter(
-				novelId,
+				id,
 				volume,
-				chapter
+				chapter,
+				model as string
 			)
-			const { chapters } = await this.novelService.listChapters(novelId)
+			const { chapters } = await this.novelService.listChapters(id)
 
 			// Find current chapter index
-			const allChapters = chapters.sort((a: Chapter, b: Chapter) => {
-				if (a.volume === b.volume) {
-					return parseInt(a.chapter) - parseInt(b.chapter)
-				}
-				return a.volume.localeCompare(b.volume)
-			})
-
-			const currentIndex = allChapters.findIndex(
-				(ch: Chapter) => ch.volume === volume && ch.chapter === chapter
+			const currentIndex = chapters.findIndex(
+				(ch) => ch.volume === volume && ch.chapter === chapter
 			)
 
-			const navigation: ChapterNavigation = {
-				current: allChapters[currentIndex],
-				prev: currentIndex > 0 ? allChapters[currentIndex - 1] : undefined,
-				next:
-					currentIndex < allChapters.length - 1
-						? allChapters[currentIndex + 1]
-						: undefined,
+			let navigation: ChapterNavigation | undefined
+
+			if (currentIndex !== -1) {
+				navigation = {
+					current: chapters[currentIndex],
+					prev: currentIndex > 0 ? chapters[currentIndex - 1] : undefined,
+					next:
+						currentIndex < chapters.length - 1
+							? chapters[currentIndex + 1]
+							: undefined,
+				}
 			}
 
 			const html = this.generateChapterHtml(
 				chapterData,
 				navigation,
-				allChapters,
-				novelId
+				chapters,
+				id,
+				model as string
 			)
 			res.send(html)
 		} catch (error) {
-			res.status(500).send('Error loading chapter')
+			res.status(500).send('Error reading chapter')
 		}
 	}
 

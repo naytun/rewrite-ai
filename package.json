@@ -21,6 +21,7 @@
 		"typescript": "^5.7.3"
 	},
 	"dependencies": {
+		"@anthropic-ai/sdk": "^0.35.0",
 		"@oramacloud/client": "^2.1.4",
 		"@types/cheerio": "^0.22.35",
 		"@types/cors": "^2.8.17",
