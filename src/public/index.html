@@ -205,12 +205,10 @@
 								<p class="text-gray-600 text-sm mb-2">Author: ${
 									novel.authors ? novel.authors.join(', ') : 'Unknown'
 								}</p>
-								<a href="/api/novel/novels/${novel.id}/chapters?model=${
-							localStorage.getItem('aiModel') || 'orama'
-						}" 
+								<button onclick="loadChapters('${encodeURIComponent(novel.id)}')"
 								   class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
 									Read Now
-								</a>
+								</button>
 							</div>
 						`
 
@@ -222,6 +220,126 @@
 					errorEl.classList.remove('hidden')
 				} finally {
 					loadingEl.classList.add('hidden')
+				}
+			}
+
+			async function loadChapters(novelId) {
+				try {
+					const selectedModel = localStorage.getItem('aiModel') || 'orama'
+					const response = await fetch(
+						`/api/novel/novels/${novelId}/chapters`,
+						{
+							headers: {
+								Accept: 'application/json',
+							},
+						}
+					)
+
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`)
+					}
+
+					const data = await response.json()
+
+					// Clear existing content
+					const novelsContainer = document.getElementById('novels')
+					novelsContainer.innerHTML = ''
+
+					// Add back button
+					const backButton = document.createElement('button')
+					backButton.className =
+						'mb-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors'
+					backButton.textContent = 'Back to Novels'
+					backButton.onclick = () => {
+						novelsContainer.innerHTML = ''
+						loadNovels()
+					}
+					novelsContainer.appendChild(backButton)
+
+					// Add title
+					const title = document.createElement('h2')
+					title.className = 'text-2xl font-bold mb-4'
+					title.textContent = data.title
+					novelsContainer.appendChild(title)
+
+					// Create chapters list
+					const chaptersList = document.createElement('div')
+					chaptersList.className = 'space-y-2'
+
+					data.chapters.forEach((chapter) => {
+						const chapterButton = document.createElement('button')
+						chapterButton.className =
+							'w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded'
+						chapterButton.textContent = `${chapter.volume} - Chapter ${chapter.chapter}`
+						chapterButton.onclick = () =>
+							loadChapter(novelId, chapter.volume, chapter.chapter)
+						chaptersList.appendChild(chapterButton)
+					})
+
+					novelsContainer.appendChild(chaptersList)
+				} catch (error) {
+					console.error('Error loading chapters:', error)
+					const errorEl = document.getElementById('error')
+					errorEl.textContent = 'Error loading chapters: ' + error.message
+					errorEl.classList.remove('hidden')
+				}
+			}
+
+			async function loadChapter(novelId, volume, chapter) {
+				try {
+					const selectedModel = localStorage.getItem('aiModel') || 'orama'
+					const response = await fetch(
+						`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}?model=${selectedModel}`,
+						{
+							headers: {
+								Accept: 'application/json',
+							},
+						}
+					)
+
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`)
+					}
+
+					const data = await response.json()
+
+					// Clear existing content
+					const novelsContainer = document.getElementById('novels')
+					novelsContainer.innerHTML = ''
+
+					// Add back buttons
+					const buttonsDiv = document.createElement('div')
+					buttonsDiv.className = 'flex gap-2 mb-4'
+
+					const backToNovelsButton = document.createElement('button')
+					backToNovelsButton.className =
+						'bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors'
+					backToNovelsButton.textContent = 'Back to Novels'
+					backToNovelsButton.onclick = () => {
+						novelsContainer.innerHTML = ''
+						loadNovels()
+					}
+
+					const backToChaptersButton = document.createElement('button')
+					backToChaptersButton.className =
+						'bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors'
+					backToChaptersButton.textContent = 'Back to Chapters'
+					backToChaptersButton.onclick = () => loadChapters(novelId)
+
+					buttonsDiv.appendChild(backToNovelsButton)
+					buttonsDiv.appendChild(backToChaptersButton)
+					novelsContainer.appendChild(buttonsDiv)
+
+					// Add chapter content
+					const chapterDiv = document.createElement('div')
+					chapterDiv.className = 'prose dark:prose-invert max-w-none'
+					chapterDiv.innerHTML = data.body
+					novelsContainer.appendChild(chapterDiv)
+				} catch (error) {
+					console.error('Error loading chapter:', error)
+					const errorEl = document.getElementById('error')
+					errorEl.textContent = 'Error loading chapter: ' + error.message
+					errorEl.classList.remove('hidden')
 				}
 			}
 

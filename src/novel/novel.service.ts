@@ -12,7 +12,22 @@ export class NovelService {
 	}
 
 	private async getNovelPath(novelId: string): Promise<string> {
+		if (!novelId) {
+			throw new Error('Novel ID is required')
+		}
+
 		const websites = await fs.readdir(path.join(process.cwd(), this.basePath))
+
+		// Decode the novel ID and normalize it for comparison
+		const decodedNovelId = decodeURIComponent(novelId)
+		console.log('Looking for novel:', {
+			originalId: novelId,
+			decodedId: decodedNovelId,
+		})
+
+		if (!decodedNovelId) {
+			throw new Error('Invalid novel ID after decoding')
+		}
 
 		for (const website of websites) {
 			if (website.startsWith('.')) continue
@@ -22,14 +37,39 @@ export class NovelService {
 
 			if (stat.isDirectory()) {
 				const novelFolders = await fs.readdir(websitePath)
+				console.log('Available novels in', website, ':', novelFolders)
 
-				if (novelFolders.includes(novelId)) {
-					return path.join(websitePath, novelId)
+				// Try exact match first
+				const exactMatch = novelFolders.find(
+					(folder) => folder === decodedNovelId
+				)
+				if (exactMatch) {
+					return path.join(websitePath, exactMatch)
+				}
+
+				// Try case-insensitive match
+				const caseInsensitiveMatch = novelFolders.find(
+					(folder) => folder.toLowerCase() === decodedNovelId.toLowerCase()
+				)
+				if (caseInsensitiveMatch) {
+					return path.join(websitePath, caseInsensitiveMatch)
+				}
+
+				// Try normalized match (removing spaces and special chars)
+				const normalizedId = decodedNovelId
+					.toLowerCase()
+					.replace(/[^a-z0-9]+/g, '')
+				const normalizedMatch = novelFolders.find(
+					(folder) =>
+						folder.toLowerCase().replace(/[^a-z0-9]+/g, '') === normalizedId
+				)
+				if (normalizedMatch) {
+					return path.join(websitePath, normalizedMatch)
 				}
 			}
 		}
 
-		throw new Error('Novel not found')
+		throw new Error(`Novel not found: ${decodedNovelId}`)
 	}
 
 	private async getNovelMetadata(novelId: string): Promise<any> {
@@ -73,10 +113,17 @@ export class NovelService {
 			return {
 				title: metadata.novel.title,
 				chapters: chapterList.sort((a, b) => {
-					const volA = parseInt(a.volume.replace('Volume ', ''))
-					const volB = parseInt(b.volume.replace('Volume ', ''))
+					const volA = parseInt(
+						a.volume.replace('Volume ', '').padStart(2, '0')
+					)
+					const volB = parseInt(
+						b.volume.replace('Volume ', '').padStart(2, '0')
+					)
 					if (volA !== volB) return volA - volB
-					return parseInt(a.chapter) - parseInt(b.chapter)
+					return (
+						parseInt(a.chapter.padStart(5, '0')) -
+						parseInt(b.chapter.padStart(5, '0'))
+					)
 				}),
 			}
 		} catch (error) {

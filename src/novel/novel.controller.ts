@@ -503,32 +503,45 @@ export class NovelController {
 
 	async listChapters(req: Request, res: Response): Promise<void> {
 		try {
-			const { id } = req.params
+			const { novelId } = req.params
 			const { model = 'orama' } = req.query
-			const { title, chapters } = await this.novelService.listChapters(id)
-			const html = this.generateChapterListHtml(
-				title,
-				chapters,
-				id,
-				model as string
-			)
-			res.send(html)
+			const { title, chapters } = await this.novelService.listChapters(novelId)
+
+			// Check Accept header to determine response format
+			const acceptHeader = req.get('Accept')
+			if (acceptHeader && acceptHeader.includes('application/json')) {
+				res.json({ title, chapters })
+			} else {
+				const html = this.generateChapterListHtml(
+					title,
+					chapters,
+					novelId,
+					model as string
+				)
+				res.send(html)
+			}
 		} catch (error) {
-			res.status(500).send('Error loading chapters')
+			console.error('Error listing chapters:', error)
+			const errorMessage = 'Error loading chapters'
+			if (req.get('Accept')?.includes('application/json')) {
+				res.status(500).json({ error: errorMessage })
+			} else {
+				res.status(500).send(errorMessage)
+			}
 		}
 	}
 
 	async readChapter(req: Request, res: Response): Promise<void> {
 		try {
-			const { id, volume, chapter } = req.params
+			const { novelId, volume, chapter } = req.params
 			const { model = 'orama' } = req.query
 			const chapterData = await this.novelService.readChapter(
-				id,
+				novelId,
 				volume,
 				chapter,
 				model as string
 			)
-			const { chapters } = await this.novelService.listChapters(id)
+			const { chapters } = await this.novelService.listChapters(novelId)
 
 			// Find current chapter index
 			const currentIndex = chapters.findIndex(
@@ -548,16 +561,31 @@ export class NovelController {
 				}
 			}
 
-			const html = this.generateChapterHtml(
-				chapterData,
-				navigation,
-				chapters,
-				id,
-				model as string
-			)
-			res.send(html)
+			// Check Accept header to determine response format
+			const acceptHeader = req.get('Accept')
+			if (acceptHeader && acceptHeader.includes('application/json')) {
+				res.json({
+					...chapterData,
+					navigation,
+				})
+			} else {
+				const html = this.generateChapterHtml(
+					chapterData,
+					navigation,
+					chapters,
+					novelId,
+					model as string
+				)
+				res.send(html)
+			}
 		} catch (error) {
-			res.status(500).send('Error reading chapter')
+			console.error('Error reading chapter:', error)
+			const errorMessage = 'Error reading chapter'
+			if (req.get('Accept')?.includes('application/json')) {
+				res.status(500).json({ error: errorMessage })
+			} else {
+				res.status(500).send(errorMessage)
+			}
 		}
 	}
 
