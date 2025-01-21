@@ -40,11 +40,11 @@ export const askAI = async ({
 
 		const session = oramaClient.createAnswerSession({
 			userContext: `
-				Note: Rephrase the answer sentences short and concise. Use only common words for better readability.
+				Note: Rephrase the answer sentences short and concise. Create paragraphs as needed. Use only common words for better readability.
 				${context}`,
 			inferenceType: 'documentation',
 		})
-
+		console.log('㏒  ~ askAI ~ session: [START]')
 		const result = await session.ask({ term: question })
 		session?.clearSession()
 		return result

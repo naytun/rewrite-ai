@@ -54,12 +54,33 @@ export class NovelService {
 			)
 			const content = await fs.readFile(filePath, 'utf-8')
 			const chapterData = JSON.parse(content)
+
+			// Convert HTML to plain text and handle paragraph tags
+			const plainText = chapterData.body
+				.replace(/<\/p>/g, '\n\n\n') // Replace <p> tags with double line breaks
+				.replace(/<p>/g, '') // Remove closing p tags
+				.replace(/<br\s*\/?>/g, '\n') // Replace <br> tags with line breaks
+				.replace(/<[^>]*>/g, '') // Remove all other HTML tags
+				.trim() // Remove leading/trailing whitespace
+
+			// Ask AI to rewrite the chapter
 			const result = await askAI({
-				question: `Rewrite following contents to be in shorter sentences and be concise. Use only common words for better readability . ---\n ${chapterData.body}`,
+				question: `Rewrite following contents to be in shorter sentences and be concise. Create paragraphs as needed. Use only common words for better readability . ---\n ${plainText}`,
 			})
+
+			// Format the result into HTML paragraphs
+			const formattedResult = result
+				.split('\n\n')
+				.map((paragraph) => `<p>${paragraph.trim()}</p>`)
+				.join('\n')
+
+			console.log(
+				'㏒  ~ NovelService ~ readChapter ~ formattedResult:',
+				formattedResult
+			)
 			return {
 				...chapterData,
-				body: result,
+				body: formattedResult,
 			}
 		} catch (error) {
 			console.error('Error reading chapter:', error)
@@ -67,3 +88,14 @@ export class NovelService {
 		}
 	}
 }
+
+// const t = {
+// 	id: 180,
+// 	url: 'https://novelfull.com/historys-strongest-senior-brother/chapter-180-the-catastrophic-nine-underworlds.html',
+// 	title: 'Chapter 180: The Catastrophic Nine Underworlds',
+// 	volume: 2,
+// 	volume_title: 'Volume 2',
+// 	body: '<h1>Chapter 180: The Catastrophic Nine Underworlds</h1><p> The catastrophic Nine they plummeted downwards!</p>',
+// 	images: {},
+// 	success: true,
+// }

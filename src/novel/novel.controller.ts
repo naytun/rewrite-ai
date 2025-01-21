@@ -188,6 +188,7 @@ export class NovelController {
                     body {
                         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
                         line-height: 1.8;
+                        font-size: 1.1em;
                         max-width: 800px;
                         margin: 0 auto;
                         padding: 20px;
