@@ -1,9 +1,11 @@
 import { promises as fs } from 'fs'
 import path from 'path'
+import { askAI } from '../orama/orama.service'
 
 export class NovelService {
 	private readonly basePath = 'Lightnovels/novelfull-com/Novel-01/json'
 
+	// List chapters
 	async listChapters(): Promise<any[]> {
 		try {
 			const volumes = await fs.readdir(path.join(process.cwd(), this.basePath))
@@ -41,6 +43,7 @@ export class NovelService {
 		}
 	}
 
+	// Read chapter
 	async readChapter(volume: string, chapter: string): Promise<any> {
 		try {
 			const filePath = path.join(
@@ -50,7 +53,14 @@ export class NovelService {
 				`${chapter}.json`
 			)
 			const content = await fs.readFile(filePath, 'utf-8')
-			return JSON.parse(content)
+			const chapterData = JSON.parse(content)
+			const result = await askAI({
+				question: `Rewrite following contents to be in shorter sentences and be concise. Use only common words for better readability . ---\n ${chapterData.body}`,
+			})
+			return {
+				...chapterData,
+				body: result,
+			}
 		} catch (error) {
 			console.error('Error reading chapter:', error)
 			throw error
