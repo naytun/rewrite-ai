@@ -3,21 +3,54 @@ import path from 'path'
 import { askAI } from '../orama/orama.service'
 
 export class NovelService {
-	private readonly basePath = 'Lightnovels/novelfull-com/Novel-01/json'
+	private readonly basePath = 'Lightnovels'
+
+	private async getNovelPath(novelId: string): Promise<string> {
+		const websites = await fs.readdir(path.join(process.cwd(), this.basePath))
+
+		for (const website of websites) {
+			if (website.startsWith('.')) continue
+
+			const websitePath = path.join(process.cwd(), this.basePath, website)
+			const stat = await fs.stat(websitePath)
+
+			if (stat.isDirectory()) {
+				const novelFolders = await fs.readdir(websitePath)
+
+				if (novelFolders.includes(novelId)) {
+					return path.join(websitePath, novelId)
+				}
+			}
+		}
+
+		throw new Error('Novel not found')
+	}
+
+	private async getNovelMetadata(novelId: string): Promise<any> {
+		const novelPath = await this.getNovelPath(novelId)
+		const metaPath = path.join(novelPath, 'meta.json')
+		const metaContent = await fs.readFile(metaPath, 'utf-8')
+		return JSON.parse(metaContent)
+	}
 
 	// List chapters
-	async listChapters(): Promise<any[]> {
+	async listChapters(
+		novelId: string
+	): Promise<{ title: string; chapters: any[] }> {
 		try {
-			const volumes = await fs.readdir(path.join(process.cwd(), this.basePath))
+			const novelPath = await this.getNovelPath(novelId)
+			const metadata = await this.getNovelMetadata(novelId)
+
+			// Read the novel's volumes
+			const volumes = await fs.readdir(path.join(novelPath, 'json'))
 			const chapterList = []
 
 			for (const volume of volumes) {
-				const volumePath = path.join(process.cwd(), this.basePath, volume)
+				const volumePath = path.join(novelPath, 'json', volume)
 				const stat = await fs.stat(volumePath)
 
 				if (stat.isDirectory()) {
 					const chapters = await fs.readdir(volumePath)
-					const volumeNumber = volume.replace('Volume ', '').padStart(2, '0')
 
 					for (const chapter of chapters) {
 						if (chapter.endsWith('.json')) {
@@ -31,12 +64,15 @@ export class NovelService {
 				}
 			}
 
-			return chapterList.sort((a, b) => {
-				const volA = parseInt(a.volume.replace('Volume ', ''))
-				const volB = parseInt(b.volume.replace('Volume ', ''))
-				if (volA !== volB) return volA - volB
-				return a.chapter.localeCompare(b.chapter)
-			})
+			return {
+				title: metadata.novel.title,
+				chapters: chapterList.sort((a, b) => {
+					const volA = parseInt(a.volume.replace('Volume ', ''))
+					const volB = parseInt(b.volume.replace('Volume ', ''))
+					if (volA !== volB) return volA - volB
+					return parseInt(a.chapter) - parseInt(b.chapter)
+				}),
+			}
 		} catch (error) {
 			console.error('Error listing chapters:', error)
 			throw error
@@ -44,14 +80,14 @@ export class NovelService {
 	}
 
 	// Read chapter
-	async readChapter(volume: string, chapter: string): Promise<any> {
+	async readChapter(
+		novelId: string,
+		volume: string,
+		chapter: string
+	): Promise<any> {
 		try {
-			const filePath = path.join(
-				process.cwd(),
-				this.basePath,
-				volume,
-				`${chapter}.json`
-			)
+			const novelPath = await this.getNovelPath(novelId)
+			const filePath = path.join(novelPath, 'json', volume, `${chapter}.json`)
 			const content = await fs.readFile(filePath, 'utf-8')
 			const chapterData = JSON.parse(content)
 
@@ -80,6 +116,59 @@ export class NovelService {
 			}
 		} catch (error) {
 			console.error('Error reading chapter:', error)
+			throw error
+		}
+	}
+
+	async listNovels(): Promise<any[]> {
+		try {
+			const websites = await fs.readdir(path.join(process.cwd(), this.basePath))
+			const novels = []
+
+			for (const website of websites) {
+				if (website.startsWith('.')) continue // Skip hidden files
+
+				const websitePath = path.join(process.cwd(), this.basePath, website)
+				const stat = await fs.stat(websitePath)
+
+				if (stat.isDirectory()) {
+					const novelFolders = await fs.readdir(websitePath)
+
+					for (const novelFolder of novelFolders) {
+						if (novelFolder.startsWith('.')) continue // Skip hidden files
+
+						const novelPath = path.join(websitePath, novelFolder)
+						const novelStat = await fs.stat(novelPath)
+
+						if (novelStat.isDirectory()) {
+							try {
+								const metaPath = path.join(novelPath, 'meta.json')
+								const metaContent = await fs.readFile(metaPath, 'utf-8')
+								const metadata = JSON.parse(metaContent)
+
+								// Use local cover image
+								const coverUrl = `/covers/${website}/${novelFolder}/cover.jpg`
+
+								novels.push({
+									id: novelFolder,
+									website,
+									...metadata.novel,
+									cover_url: coverUrl, // Always use local cover image
+								})
+							} catch (error) {
+								console.error(
+									`Error reading metadata for ${novelFolder}:`,
+									error
+								)
+							}
+						}
+					}
+				}
+			}
+
+			return novels
+		} catch (error) {
+			console.error('Error listing novels:', error)
 			throw error
 		}
 	}

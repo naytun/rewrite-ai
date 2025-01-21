@@ -2,6 +2,8 @@ import dotenv from 'dotenv'
 import express, { Request, Response, NextFunction, Application } from 'express'
 import routes from './routes'
 import { HttpStatusCode } from 'axios'
+import cors from 'cors'
+import path from 'path'
 
 // Load environment variables
 dotenv.config()
@@ -25,7 +27,12 @@ interface ErrorWithStatus extends Error {
 
 // Initialize express app
 const app: Application = express()
+app.use(cors())
 app.use(express.json())
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')))
+app.use('/covers', express.static(path.join(process.cwd(), 'Lightnovels')))
 
 // Request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -35,7 +42,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 })
 
 // Mount routes
-app.use(routes)
+app.use('/api', routes)
+
+// Serve home page
+app.get('/', (req, res) => {
+	res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
 
 // Error handling middleware
 app.use(

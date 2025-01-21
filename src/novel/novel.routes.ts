@@ -1,18 +1,19 @@
 import { Router, RequestHandler } from 'express'
-import { novelController } from '.'
+import { NovelController } from './novel.controller'
 
 const router = Router()
+const novelController = new NovelController()
 
-const { listChapters, readChapter } = novelController
-
-// Novel routes
+router.get('/novels', (req, res) => novelController.listNovels(req, res))
 router.get(
-	'/chapters',
-	listChapters.bind(novelController) as unknown as RequestHandler
+	'/novels/:novelId/chapters',
+	novelController.listChapters.bind(
+		novelController
+	) as unknown as RequestHandler
 )
 router.get(
-	'/read/:volume/:chapter',
-	readChapter.bind(novelController) as unknown as RequestHandler
+	'/novels/:novelId/chapters/:volume/:chapter',
+	novelController.readChapter.bind(novelController) as unknown as RequestHandler
 )
 
 export default router

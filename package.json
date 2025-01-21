@@ -5,7 +5,7 @@
 	"main": "dist/server.js",
 	"scripts": {
 		"dev": "nodemon --exec ts-node src/server.ts",
-		"build": "tsc",
+		"build": "tsc && copyfiles -u 1 src/public/**/* dist/",
 		"start": "node dist/server.js"
 	},
 	"keywords": [],
@@ -15,6 +15,7 @@
 		"@flydotio/dockerfile": "^0.7.2",
 		"@types/express": "^5.0.0",
 		"@types/node": "^22.10.7",
+		"copyfiles": "^2.4.1",
 		"nodemon": "^3.1.9",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.7.3"
@@ -22,8 +23,10 @@
 	"dependencies": {
 		"@oramacloud/client": "^2.1.4",
 		"@types/cheerio": "^0.22.35",
+		"@types/cors": "^2.8.17",
 		"axios": "^1.7.9",
 		"cheerio": "^1.0.0",
+		"cors": "^2.8.5",
 		"dotenv": "^16.0.3",
 		"express": "^4.21.2",
 		"nodejs-web-scraper": "^6.1.3"
