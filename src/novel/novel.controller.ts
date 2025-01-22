@@ -25,6 +25,7 @@ export class NovelController {
 		chapters: Chapter[],
 		novelId: string
 	): string {
+		// Group chapters by volume
 		const volumeGroups = chapters.reduce<Record<string, Chapter[]>>(
 			(acc, chapter) => {
 				if (!acc[chapter.volume]) {
@@ -38,128 +39,40 @@ export class NovelController {
 
 		const html = `
             <!DOCTYPE html>
-            <html>
+            <html lang="en">
             <head>
-                <title>${title} - Rewrite AI</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${title} - Chapters</title>
+                <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
                 <style>
-                    body {
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-                        line-height: 1.6;
-                        max-width: 800px;
-                        margin: 0 auto;
-                        padding: 20px;
-                        background: white;
-                        color: #333;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        body {
-                            background: #1a1a1a;
-                            color: #e0e0e0;
-                        }
-                    }
-                    .back-button {
-                        display: inline-block;
-                        color: #2196F3;
-                        text-decoration: none;
-                        padding: 8px 16px;
-                        background: #f8f9fa;
-                        border-radius: 4px;
-                        transition: all 0.2s;
-                        margin-bottom: 20px;
-                    }
-                    .back-button:hover {
-                        background: #e9ecef;
-                        transform: translateX(-4px);
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        .back-button {
-                            color: #64B5F6;
-                            background: #353535;
-                        }
-                        .back-button:hover {
-                            background: #404040;
-                        }
-                    }
-                    .volume {
-                        background: white;
-                        padding: 20px;
-                        margin-bottom: 20px;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        .volume {
-                            background: #2d2d2d;
-                        }
-                    }
-                    h1 {
-                        color: #333;
-                        text-align: center;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        h1 {
-                            color: #e0e0e0;
-                        }
-                    }
-                    h2 {
-                        color: #444;
-                        border-bottom: 2px solid #eee;
-                        padding-bottom: 10px;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        h2 {
-                            color: #d0d0d0;
-                            border-bottom-color: #404040;
-                        }
-                    }
-                    .chapters {
+                    .chapter-grid {
                         display: grid;
                         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                        gap: 10px;
+                        gap: 1rem;
+                        padding: 1rem;
                     }
-                    a {
-                        color: #2196F3;
-                        text-decoration: none;
-                        padding: 8px;
-                        display: block;
-                        background: #f8f9fa;
-                        border-radius: 4px;
-                        transition: background 0.2s;
+                    .chapter-item {
+                        background-color: white;
+                        padding: 1rem;
+                        border-radius: 0.5rem;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        transition: transform 0.2s;
+                        cursor: pointer;
                     }
-                    a:hover {
-                        background: #e9ecef;
+                    .chapter-item:hover {
+                        transform: translateY(-2px);
                     }
-                    @media (prefers-color-scheme: dark) {
-                        a {
-                            color: #64B5F6;
-                            background: #353535;
-                        }
-                        a:hover {
-                            background: #404040;
-                        }
-                    }
-                    .header {
-                        text-align: center;
-                        margin-bottom: 30px;
-                    }
-                    .novel-title {
-                        color: #2196F3;
-                        margin: 0 0 10px 0;
-                        font-size: 0.9em;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        .novel-title {
-                            color: #64B5F6;
-                        }
+                    .current {
+                        background-color: #3b82f6;
+                        color: white;
                     }
                     .volume-title {
-                        color: #666;
-                        margin: 0 0 15px 0;
-                        font-size: 1.2em;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        .volume-title {
-                            color: #aaa;
-                        }
+                        font-size: 1.5rem;
+                        font-weight: 600;
+                        margin: 2rem 0 1rem;
+                        padding-bottom: 0.5rem;
+                        border-bottom: 2px solid #e5e7eb;
                     }
                     .loading {
                         display: none;
@@ -168,7 +81,7 @@ export class NovelController {
                         left: 0;
                         width: 100%;
                         height: 100%;
-                        background: rgba(0, 0, 0, 0.85);
+                        background: rgba(0, 0, 0, 0.7);
                         z-index: 1000;
                         justify-content: center;
                         align-items: center;
@@ -176,79 +89,110 @@ export class NovelController {
                     .loading.active {
                         display: flex;
                     }
-                    .loading-content {
-                        text-align: center;
-                    }
-                    .loading-text {
-                        color: #fff;
-                        margin-top: 20px;
-                        font-size: 1.1em;
-                    }
                     .spinner {
                         width: 50px;
                         height: 50px;
                         border: 5px solid #f3f3f3;
-                        border-top: 5px solid #2196F3;
+                        border-top: 5px solid #3b82f6;
                         border-radius: 50%;
                         animation: spin 1s linear infinite;
-                        margin: 0 auto;
                     }
                     @keyframes spin {
                         0% { transform: rotate(0deg); }
                         100% { transform: rotate(360deg); }
                     }
+                    html.dark body { background-color: #1a1a1a; color: #ffffff; }
+                    html.dark .chapter-item { background-color: #2d2d2d; }
+                    html.dark .text-gray-600 { color: #d1d1d1; }
+                    html.dark .volume-title { border-bottom-color: #4b5563; }
                 </style>
-                <script>
-                    function showLoading() {
-                        document.getElementById('loading').classList.add('active');
-                    }
-                    
-                    document.addEventListener('DOMContentLoaded', function() {
-                        const links = document.querySelectorAll('a:not(.back-button)');
-                        links.forEach(link => {
-                            link.addEventListener('click', function(e) {
-                                showLoading();
-                            });
-                        });
-                    });
-                </script>
             </head>
-            <body>
+            <body class="bg-gray-100">
                 <div id="loading" class="loading">
-                    <div class="loading-content">
-                        <div class="spinner"></div>
-                        <div class="loading-text">Rewriting with AI, please wait...</div>
-                    </div>
+                    <div class="spinner"></div>
                 </div>
-                <a href="/" class="back-button">← Back to Home</a>
-                <div class="header">
-                    <div class="novel-title">Rewrite AI Novel Reader</div>
-                    <h1>${title}</h1>
-                </div>
-                ${Object.entries(volumeGroups)
-									.map(
-										([volume, chapters]) => `
-                        <div class="volume">
-                            <div class="volume-title">${volume}</div>
-                            <div class="chapters">
+
+                <div class="container mx-auto px-4 py-8">
+                    <h1 class="text-3xl font-bold mb-8 text-center">${title}</h1>
+                    ${Object.entries(volumeGroups)
+											.sort(([volA], [volB]) => volA.localeCompare(volB))
+											.map(
+												([volume, chapters]) => `
+                        <div>
+                            <h2 class="volume-title">Volume ${volume}</h2>
+                            <div class="chapter-grid">
                                 ${chapters
+																	.sort(
+																		(a, b) =>
+																			parseInt(a.chapter) - parseInt(b.chapter)
+																	)
 																	.map(
-																		(chapter: any) => `
-                                        <a href="/api/novel/novels/${encodeURIComponent(
-																					novelId
-																				)}/chapters/${encodeURIComponent(
+																		(chapter) => `
+                                    <div class="chapter-item" onclick="openChapter('${encodeURIComponent(
+																			novelId
+																		)}', '${encodeURIComponent(
 																			chapter.volume
-																		)}/${encodeURIComponent(chapter.chapter)}">
-                                            Chapter ${Number(chapter.chapter)}
-                                        </a>
-                                    `
+																		)}', '${encodeURIComponent(
+																			chapter.chapter
+																		)}')">
+                                        <h3 class="font-semibold">Chapter ${
+																					chapter.chapter
+																				}</h3>
+                                        <p class="text-gray-600 text-sm">Volume ${
+																					chapter.volume
+																				}</p>
+                                    </div>
+                                `
 																	)
 																	.join('')}
                             </div>
                         </div>
                     `
-									)
-									.join('')}
+											)
+											.join('')}
+                </div>
+
+                <script>
+                    // Check for dark mode preference
+                    if (localStorage.getItem('darkMode') === 'true') {
+                        document.documentElement.classList.add('dark');
+                    }
+
+                    function showLoading() {
+                        document.getElementById('loading').classList.add('active');
+                    }
+
+                    function openChapter(novelId, volume, chapter) {
+                        showLoading();
+                        // Save the last opened chapter
+                        localStorage.setItem(\`lastChapter_\${novelId}\`, chapter);
+                        localStorage.setItem(\`lastVolume_\${novelId}\`, volume);
+                        
+                        // Navigate to the chapter
+                        window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\`;
+                    }
+
+                    // Highlight the last opened chapter if any
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const novelId = '${novelId}';
+                        const lastChapter = localStorage.getItem(\`lastChapter_\${novelId}\`);
+                        const lastVolume = localStorage.getItem(\`lastVolume_\${novelId}\`);
+                        
+                        if (lastChapter && lastVolume) {
+                            const chapterItems = document.querySelectorAll('.chapter-item');
+                            chapterItems.forEach(item => {
+                                const chapterText = item.querySelector('h3').textContent;
+                                const volumeText = item.querySelector('p').textContent;
+                                
+                                if (chapterText === \`Chapter \${lastChapter}\` && 
+                                    volumeText === \`Volume \${lastVolume}\`) {
+                                    item.classList.add('bg-blue-100');
+                                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                            });
+                        }
+                    });
+                </script>
             </body>
             </html>
         `
@@ -257,32 +201,54 @@ export class NovelController {
 
 	private generateChapterHtml(
 		chapterData: any,
-		navigation: ChapterNavigation | undefined,
-		chapters: Chapter[] | undefined,
+		navigation: ChapterNavigation,
+		chapters: Chapter[],
 		novelId: string
 	): string {
-		return `
+		const html = `
             <!DOCTYPE html>
-            <html>
+            <html lang="en">
             <head>
-                <title>${chapterData.title || 'Chapter'} - Rewrite AI</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${chapterData.title}</title>
+                <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
                 <style>
-                    body {
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-                        line-height: 1.8;
-                        font-size: 1.1em;
+                    .chapter-content {
                         max-width: 800px;
                         margin: 0 auto;
-                        padding: 20px;
-                        background: white;
-                        color: #333;
+                        padding: 2rem;
+                        line-height: 1.8;
                     }
-                    @media (prefers-color-scheme: dark) {
-                        body {
-                            background: #1a1a1a;
-                            color: #e0e0e0;
-                        }
+                    .chapter-content p {
+                        margin-bottom: 1.5rem;
+                    }
+                    .navigation {
+                        position: fixed;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        background: white;
+                        padding: 1rem;
+                        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                        display: flex;
+                        justify-content: center;
+                        gap: 1rem;
+                    }
+                    .nav-button {
+                        padding: 0.5rem 1rem;
+                        border-radius: 0.5rem;
+                        background: #3b82f6;
+                        color: white;
+                        cursor: pointer;
+                        transition: background 0.2s;
+                    }
+                    .nav-button:hover {
+                        background: #2563eb;
+                    }
+                    .nav-button.disabled {
+                        background: #9ca3af;
+                        cursor: not-allowed;
                     }
                     .loading {
                         display: none;
@@ -291,7 +257,7 @@ export class NovelController {
                         left: 0;
                         width: 100%;
                         height: 100%;
-                        background: rgba(0, 0, 0, 0.85);
+                        background: rgba(0, 0, 0, 0.7);
                         z-index: 1000;
                         justify-content: center;
                         align-items: center;
@@ -299,155 +265,126 @@ export class NovelController {
                     .loading.active {
                         display: flex;
                     }
-                    .loading-content {
-                        text-align: center;
-                    }
-                    .loading-text {
-                        color: #fff;
-                        margin-top: 20px;
-                        font-size: 1.1em;
-                    }
                     .spinner {
                         width: 50px;
                         height: 50px;
                         border: 5px solid #f3f3f3;
-                        border-top: 5px solid #2196F3;
+                        border-top: 5px solid #3b82f6;
                         border-radius: 50%;
                         animation: spin 1s linear infinite;
-                        margin: 0 auto;
                     }
                     @keyframes spin {
                         0% { transform: rotate(0deg); }
                         100% { transform: rotate(360deg); }
                     }
-                    .chapter-container {
-                        background: white;
-                        padding: 40px;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        .chapter-container {
-                            background: #2d2d2d;
-                        }
-                    }
-                    h1 {
-                        text-align: center;
-                        color: #333;
-                        margin-bottom: 30px;
-                        font-size: 1.3em;
-                        font-weight: bold;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        h1 {
-                            color: #e0e0e0;
-                        }
-                    }
-                    .chapter-content {
-                        font-size: 1.2em;
-                        text-align: justify;
-                    }
-                    .chapter-content p {
-                        margin-bottom: 1.5em;
-                    }
-                    .navigation {
-                        display: flex;
-                        justify-content: center;
-                        margin-bottom: 30px;
-                        padding-bottom: 20px;
-                        gap: 0;
-                        border-bottom: 1px solid #e0e0e0;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        .navigation {
-                            border-bottom-color: #404040;
-                        }
-                    }
-                    .navigation a {
-                        color: #2196F3;
-                        text-decoration: none;
-                        padding: 10px 20px;
-                        background: transparent;
-                        transition: background 0.2s;
-                        border-right: 1px solid #e0e0e0;
-                        cursor: pointer;
-                    }
-                    .navigation a.current {
-                        color: #333;
-                        font-weight: bold;
-                        cursor: default;
-                        pointer-events: none;
-                    }
-                    .navigation a:last-child {
-                        border-right: none;
-                    }
-                    .navigation a:hover {
-                        background: #f8f9fa;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        .navigation a {
-                            color: #64B5F6;
-                            border-right-color: #404040;
-                        }
-                        .navigation a.current {
-                            color: #ffffff;
-                        }
-                        .navigation a:hover {
-                            background: #353535;
-                        }
-                    }
-                    .header {
-                        text-align: center;
-                        margin-bottom: 30px;
-                    }
-                    .novel-title {
-                        color: #2196F3;
-                        margin: 0 0 10px 0;
-                        font-size: 0.9em;
-                    }
-                    @media (prefers-color-scheme: dark) {
-                        .novel-title {
-                            color: #64B5F6;
-                        }
-                    }
+                    html.dark body { background-color: #1a1a1a; color: #ffffff; }
+                    html.dark .navigation { background-color: #2d2d2d; }
+                    html.dark .chapter-content { color: #e5e7eb; }
                 </style>
+            </head>
+            <body class="bg-gray-100">
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                </div>
+
+                <div class="chapter-content">
+                    <h1 class="text-3xl font-bold mb-2">${
+											chapterData.title
+										}</h1>
+                    <h2 class="text-xl text-gray-600 mb-8">Volume ${
+											navigation.current.volume
+										}</h2>
+                    ${chapterData.body}
+                </div>
+                
+                <div class="navigation">
+                    ${
+											navigation.prev
+												? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
+														novelId
+												  )}/chapters/${encodeURIComponent(
+														navigation.prev.volume
+												  )}/${encodeURIComponent(
+														navigation.prev.chapter
+												  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+														navigation.prev.volume
+												  )}', '${encodeURIComponent(
+														navigation.prev.chapter
+												  )}')">← Previous</a>`
+												: '<span class="nav-button disabled">← Previous</span>'
+										}
+                    <a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
+											novelId
+										)}/chapters" onclick="showLoading()">Chapter List</a>
+                    ${
+											navigation.next
+												? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
+														novelId
+												  )}/chapters/${encodeURIComponent(
+														navigation.next.volume
+												  )}/${encodeURIComponent(
+														navigation.next.chapter
+												  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+														navigation.next.volume
+												  )}', '${encodeURIComponent(
+														navigation.next.chapter
+												  )}')">Next →</a>`
+												: '<span class="nav-button disabled">Next →</span>'
+										}
+                </div>
+
                 <script>
+                    // Check for dark mode preference
+                    if (localStorage.getItem('darkMode') === 'true') {
+                        document.documentElement.classList.add('dark');
+                    }
+
                     function showLoading() {
                         document.getElementById('loading').classList.add('active');
                     }
+
+                    // Save current chapter as last read
+                    const novelId = '${novelId}';
+                    const currentVolume = '${navigation.current.volume}';
+                    const currentChapter = '${navigation.current.chapter}';
                     
-                    document.addEventListener('DOMContentLoaded', function() {
-                        const links = document.querySelectorAll('a:not(.back-button)');
-                        links.forEach(link => {
-                            link.addEventListener('click', function(e) {
-                                showLoading();
-                            });
-                        });
+                    localStorage.setItem(\`lastChapter_\${novelId}\`, currentChapter);
+                    localStorage.setItem(\`lastVolume_\${novelId}\`, currentVolume);
+
+                    function saveLastChapter(volume, chapter) {
+                        localStorage.setItem(\`lastChapter_\${novelId}\`, chapter);
+                        localStorage.setItem(\`lastVolume_\${novelId}\`, volume);
+                    }
+
+                    // Keyboard navigation
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'ArrowLeft' && ${!!navigation.prev}) {
+                            showLoading();
+                            saveLastChapter('${
+															navigation.prev?.volume || ''
+														}', '${navigation.prev?.chapter || ''}');
+                            window.location.href = '/api/novel/novels/${encodeURIComponent(
+															novelId
+														)}/chapters/${encodeURIComponent(
+			navigation.prev?.volume || ''
+		)}/${encodeURIComponent(navigation.prev?.chapter || '')}';
+                        } else if (e.key === 'ArrowRight' && ${!!navigation.next}) {
+                            showLoading();
+                            saveLastChapter('${
+															navigation.next?.volume || ''
+														}', '${navigation.next?.chapter || ''}');
+                            window.location.href = '/api/novel/novels/${encodeURIComponent(
+															novelId
+														)}/chapters/${encodeURIComponent(
+			navigation.next?.volume || ''
+		)}/${encodeURIComponent(navigation.next?.chapter || '')}';
+                        }
                     });
                 </script>
-            </head>
-            <body>
-                <div id="loading" class="loading">
-                    <div class="loading-content">
-                        <div class="spinner"></div>
-                        <div class="loading-text">Rewriting with AI, please wait...</div>
-                    </div>
-                </div>
-                <a href="/api/novel/novels/${encodeURIComponent(
-									novelId
-								)}/chapters" class="back-button">← Back to Chapter List</a>
-                <div class="chapter-container">
-                    <div class="header">
-                        <div class="novel-title">Rewrite AI Novel Reader</div>
-                    </div>
-                    <div class="navigation">
-                        ${this.navigationButtons(navigation, chapters, novelId)}
-                    </div>
-                    <div class="chapter-content">
-                        ${chapterData.body || ''}
-                    </div>
-                </div>
             </body>
-            </html> 
+            </html>
         `
+		return html
 	}
 
 	private navigationButtons(
