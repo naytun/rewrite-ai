@@ -150,14 +150,14 @@
 									class="absolute h-full w-full object-cover"
 									onerror="this.src='/placeholder.jpg'">
 							</div>
-							<div class="p-4">
+							<div class="p-4 flex flex-col h-full">
 								<h2 class="text-xl font-semibold mb-2 line-clamp-2">${novel.title}</h2>
-								<p class="text-gray-600 text-sm mb-2">Author: ${
+								<p class="text-gray-600 text-sm mb-auto">Author: ${
 									novel.authors ? novel.authors.join(', ') : 'Unknown'
 								}</p>
 								<a href="/api/novel/novels/${
 									novel.id
-								}/chapters" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+								}/chapters" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors mt-4 text-center">
 									Read Now
 								</a>
 							</div>
