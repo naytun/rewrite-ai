@@ -141,10 +141,32 @@
 						console.log('Processing novel:', novel)
 						const card = document.createElement('div')
 						card.className =
-							'bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105'
+							'bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer'
+
+						card.onclick = (e) => {
+							e.preventDefault()
+							const url = `/api/novel/novels/${novel.id}/chapters`
+
+							// Get the chapter number from the URL or localStorage
+							fetch(url)
+								.then((response) => response.json())
+								.then((chapters) => {
+									const lastChapter = localStorage.getItem(
+										`lastChapter_${novel.id}`
+									)
+									const targetChapter =
+										lastChapter || (chapters.length > 0 ? '1' : 'Not available')
+									saveLastOpenedChapter(novel.id, targetChapter)
+									window.location.href = `${url}/${targetChapter}`
+								})
+								.catch((error) => {
+									console.error('Error fetching chapters:', error)
+									window.location.href = url
+								})
+						}
 
 						card.innerHTML = `
-							<div class="relative pb-2/3">
+							<div class="relative" style="padding-bottom: 150%">
 								<img src="${novel.cover_url || '/placeholder.jpg'}" 
 									alt="${novel.title}" 
 									class="absolute h-full w-full object-cover"
@@ -152,14 +174,18 @@
 							</div>
 							<div class="p-4">
 								<h2 class="text-xl font-semibold mb-2 line-clamp-2">${novel.title}</h2>
-								<p class="text-gray-600 text-sm mb-2">Author: ${
+								<p class="text-gray-600 text-sm">Author: ${
 									novel.authors ? novel.authors.join(', ') : 'Unknown'
 								}</p>
-								<a href="/api/novel/novels/${
-									novel.id
-								}/chapters" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
-									Read Now
-								</a>
+								<p class="text-gray-600 text-sm mt-1">
+									<svg class="w-4 h-4 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+										<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+									</svg>
+									Chapter ${
+										Number(localStorage.getItem(`lastChapter_${novel.id}`)) ||
+										'Not started'
+									}
+								</p>
 							</div>
 						`
 
@@ -172,6 +198,11 @@
 				} finally {
 					loadingEl.classList.add('hidden')
 				}
+			}
+
+			// Function to save last opened chapter
+			function saveLastOpenedChapter(novelId, chapterNumber) {
+				localStorage.setItem(`lastChapter_${novelId}`, chapterNumber)
 			}
 
 			// Load novels when the page loads
