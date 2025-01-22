@@ -141,25 +141,24 @@
 						console.log('Processing novel:', novel)
 						const card = document.createElement('div')
 						card.className =
-							'bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105'
+							'bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer'
+
+						card.onclick = () => {
+							window.location.href = `/api/novel/novels/${novel.id}/chapters`
+						}
 
 						card.innerHTML = `
-							<div class="relative pb-2/3">
+							<div class="relative" style="padding-bottom: 150%">
 								<img src="${novel.cover_url || '/placeholder.jpg'}" 
 									alt="${novel.title}" 
 									class="absolute h-full w-full object-cover"
 									onerror="this.src='/placeholder.jpg'">
 							</div>
-							<div class="p-4 flex flex-col h-full">
+							<div class="p-4">
 								<h2 class="text-xl font-semibold mb-2 line-clamp-2">${novel.title}</h2>
-								<p class="text-gray-600 text-sm mb-auto">Author: ${
+								<p class="text-gray-600 text-sm">Author: ${
 									novel.authors ? novel.authors.join(', ') : 'Unknown'
 								}</p>
-								<a href="/api/novel/novels/${
-									novel.id
-								}/chapters" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors mt-4 text-center">
-									Read Now
-								</a>
 							</div>
 						`
 
