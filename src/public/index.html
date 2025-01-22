@@ -114,10 +114,7 @@
 				Loading novels...
 			</div>
 			<div id="error" class="text-center text-red-600 mb-4 hidden"></div>
-			<div
-				id="novels"
-				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-			>
+			<div id="novels" class="grid gap-6 w-full">
 				<!-- Novels will be loaded here -->
 			</div>
 		</div>
@@ -245,38 +242,76 @@
 					const novelsContainer = document.getElementById('novels')
 					novelsContainer.innerHTML = ''
 
+					// Create a container for the chapter list page
+					const chapterListContainer = document.createElement('div')
+					chapterListContainer.className = 'w-full max-w-7xl mx-auto px-4'
+
 					// Add back button
 					const backButton = document.createElement('button')
 					backButton.className =
-						'mb-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors'
-					backButton.textContent = 'Back to Novels'
+						'mb-6 text-blue-500 hover:text-blue-600 flex items-center gap-2 text-sm'
+					backButton.innerHTML = `
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+						</svg>
+						Back to Novels
+					`
 					backButton.onclick = () => {
 						novelsContainer.innerHTML = ''
 						loadNovels()
 					}
-					novelsContainer.appendChild(backButton)
+					chapterListContainer.appendChild(backButton)
 
 					// Add title
 					const title = document.createElement('h2')
-					title.className = 'text-2xl font-bold mb-4'
+					title.className = 'text-3xl font-bold mb-6 text-center'
 					title.textContent = data.title
-					novelsContainer.appendChild(title)
+					chapterListContainer.appendChild(title)
 
-					// Create chapters list
-					const chaptersList = document.createElement('div')
-					chaptersList.className = 'space-y-2'
+					// Group chapters by volume
+					const volumeGroups = data.chapters.reduce((acc, chapter) => {
+						if (!acc[chapter.volume]) {
+							acc[chapter.volume] = []
+						}
+						acc[chapter.volume].push(chapter)
+						return acc
+					}, {})
 
-					data.chapters.forEach((chapter) => {
-						const chapterButton = document.createElement('button')
-						chapterButton.className =
-							'w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded'
-						chapterButton.textContent = `${chapter.volume} - Chapter ${chapter.chapter}`
-						chapterButton.onclick = () =>
-							loadChapter(novelId, chapter.volume, chapter.chapter)
-						chaptersList.appendChild(chapterButton)
+					// Create chapters list with volume grouping
+					const chaptersListContainer = document.createElement('div')
+					chaptersListContainer.className = 'space-y-6'
+
+					Object.entries(volumeGroups).forEach(([volume, chapters]) => {
+						const volumeDiv = document.createElement('div')
+						volumeDiv.className =
+							'bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm'
+
+						const volumeTitle = document.createElement('h3')
+						volumeTitle.className =
+							'text-xl font-semibold mb-6 text-gray-800 dark:text-gray-200 border-b pb-3'
+						volumeTitle.textContent = volume
+
+						const chaptersList = document.createElement('div')
+						chaptersList.className =
+							'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3'
+
+						chapters.forEach((chapter) => {
+							const chapterButton = document.createElement('button')
+							chapterButton.className =
+								'w-full text-center py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors duration-200 text-gray-700 dark:text-gray-300 text-sm font-medium'
+							chapterButton.textContent = `Chapter ${chapter.chapter}`
+							chapterButton.onclick = () =>
+								loadChapter(novelId, chapter.volume, chapter.chapter)
+							chaptersList.appendChild(chapterButton)
+						})
+
+						volumeDiv.appendChild(volumeTitle)
+						volumeDiv.appendChild(chaptersList)
+						chaptersListContainer.appendChild(volumeDiv)
 					})
 
-					novelsContainer.appendChild(chaptersList)
+					chapterListContainer.appendChild(chaptersListContainer)
+					novelsContainer.appendChild(chapterListContainer)
 				} catch (error) {
 					console.error('Error loading chapters:', error)
 					const errorEl = document.getElementById('error')
