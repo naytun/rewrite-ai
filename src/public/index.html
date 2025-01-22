@@ -23,6 +23,9 @@
 			html.dark .shadow-md {
 				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
 			}
+			html.dark footer {
+				background-color: rgba(17, 17, 17, 0.7);
+			}
 
 			/* Toggle switch custom styles */
 			.dark-mode-toggle {
@@ -66,29 +69,78 @@
 			html.dark .toggle-label {
 				color: #e5e7eb;
 			}
+
+			/* Ensure minimum height for content */
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-100">
-		<div class="container mx-auto px-4 py-8">
-			<div class="flex justify-between items-center mb-8">
-				<h1 class="text-4xl font-bold text-center">Novel Library</h1>
-				<div
-					class="flex items-center bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm"
-				>
-					<span class="toggle-label">Dark Mode</span>
-					<div id="darkModeToggle" class="dark-mode-toggle"></div>
+		<div class="min-h-screen flex flex-col">
+			<main class="flex-grow">
+				<div class="container mx-auto px-4 py-8">
+					<div class="flex justify-between items-center mb-8">
+						<h1 class="text-4xl font-bold text-center">Novel Library</h1>
+						<div
+							class="flex items-center bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm"
+						>
+							<span class="toggle-label">Dark Mode</span>
+							<div id="darkModeToggle" class="dark-mode-toggle"></div>
+						</div>
+					</div>
+					<div id="loading" class="text-center text-gray-600 mb-4">
+						Loading novels...
+					</div>
+					<div id="error" class="text-center text-red-600 mb-4 hidden"></div>
+					<div
+						id="novels"
+						class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-[75%] mx-auto"
+					>
+						<!-- Novels will be loaded here -->
+					</div>
 				</div>
-			</div>
-			<div id="loading" class="text-center text-gray-600 mb-4">
-				Loading novels...
-			</div>
-			<div id="error" class="text-center text-red-600 mb-4 hidden"></div>
-			<div
-				id="novels"
-				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-[75%] mx-auto"
-			>
-				<!-- Novels will be loaded here -->
-			</div>
+			</main>
+
+			<!-- Footer -->
+			<footer class="bg-gray-50 dark:bg-gray-900/30 mt-auto">
+				<div class="container mx-auto px-4 py-4">
+					<div class="text-center">
+						<p class="text-gray-600 dark:text-gray-400 mb-2">
+							Powered by
+							<a
+								href="https://orama.com"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+								>OramaAI</a
+							>
+						</p>
+						<div class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+							<p>
+								© 2024 Nay Thein •
+								<a
+									href="mailto:naytunthein70@gmail.com"
+									class="hover:text-gray-700 dark:hover:text-gray-300"
+									>naytunthein70@gmail.com</a
+								>
+							</p>
+							<p>
+								Novel contents are sourced from
+								<a
+									href="https://novelfull.com"
+									target="_blank"
+									rel="noopener noreferrer"
+									class="hover:text-gray-700 dark:hover:text-gray-300"
+									>novelfull.com</a
+								>
+							</p>
+						</div>
+					</div>
+				</div>
+			</footer>
 		</div>
 
 		<script>
@@ -178,7 +230,7 @@
 									novel.authors ? novel.authors.join(', ') : 'Unknown'
 								}</p>
 								<p class="text-gray-600 text-xs mt-1">
-									<svg class="w-3 h-3 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+									<svg class="w-4 h-4 inline-block mr-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 										<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
 									</svg>
 									Chapter ${
