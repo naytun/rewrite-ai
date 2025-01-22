@@ -40,7 +40,7 @@ export const askAI = async ({
 
 		const session = oramaClient?.createAnswerSession({
 			userContext: `
-				Note: Rephrase the answer sentences short and concise. Keep dialogue as is, and just rephrase for better reading. Create paragraphs as needed. Use only common words for better readability.
+				Note: Rewrite following contents to be in shorter sentences but don't over simplify and over summarize. Keep dialogue as is, and just rephrase for better reading. Create paragraphs as needed. Use only common words for better readability.
 				${context}`,
 			inferenceType: 'documentation',
 		})

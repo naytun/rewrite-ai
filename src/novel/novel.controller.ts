@@ -231,9 +231,21 @@ export class NovelController {
                         margin: 0 auto;
                         padding: 2rem;
                         line-height: 1.8;
+                        font-size: 1.125rem;
                     }
                     .chapter-content p {
                         margin-bottom: 1.5rem;
+                        font-size: 1.125rem;
+                        line-height: 1.6;
+                    }
+                    @media (min-width: 640px) {
+                        .chapter-content {
+                            font-size: 1.25rem;
+                        }
+                        .chapter-content p {
+                            font-size: 1.25rem;
+                            line-height: 1.6;
+                        }
                     }
                     .navigation {
                         position: fixed;
@@ -245,7 +257,17 @@ export class NovelController {
                         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
                         display: flex;
                         justify-content: center;
-                        gap: 1rem;
+                        gap: 0.5rem;
+                    }
+                    @media (min-width: 640px) {
+                        .navigation {
+                            gap: 2rem;
+                        }
+                    }
+                    @media (min-width: 1024px) {
+                        .navigation {
+                            gap: 4rem;
+                        }
                     }
                     .nav-button {
                         padding: 0.5rem 1rem;
