@@ -101,7 +101,7 @@ export class NovelService {
 
 			// Ask AI to rewrite the chapter
 			const result = await askAI({
-				question: `Rewrite following contents to be in shorter sentences and be concise. Keep dialogue as is, and just rephrase for better reading. Create paragraphs as needed. Use only common words for better readability . ---\n ${plainText}`,
+				question: `Rewrite following contents to be in shorter sentences but don't over simplify and over summarize. Keep dialogue as is, and just rephrase for better reading. Create paragraphs as needed. Use only common words for better readability . ---\n ${plainText}`,
 			})
 
 			// Format the result into HTML paragraphs
