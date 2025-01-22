@@ -97,7 +97,7 @@
 					<div id="error" class="text-center text-red-600 mb-4 hidden"></div>
 					<div
 						id="novels"
-						class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-[75%] mx-auto"
+						class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-y-12 w-[75%] mx-auto"
 					>
 						<!-- Novels will be loaded here -->
 					</div>
@@ -193,7 +193,7 @@
 						console.log('Processing novel:', novel)
 						const card = document.createElement('div')
 						card.className =
-							'bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer w-[75%] mx-auto'
+							'bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer w-[75%] mx-auto flex flex-col h-[400px]'
 
 						card.onclick = (e) => {
 							e.preventDefault()
@@ -218,26 +218,33 @@
 						}
 
 						card.innerHTML = `
-							<div class="relative" style="padding-bottom: 112.5%">
+							<div class="h-[280px] w-full overflow-hidden flex-shrink-0">
 								<img src="${novel.cover_url || '/placeholder.jpg'}" 
-									alt="${novel.title}" 
-									class="absolute h-full w-full object-cover"
+									class="w-full h-[280px] object-cover object-center"
 									onerror="this.src='/placeholder.jpg'">
 							</div>
-							<div class="p-3">
-								<h2 class="text-lg font-semibold mb-2 line-clamp-2">${novel.title}</h2>
-								<p class="text-gray-600 text-xs">Author: ${
-									novel.authors ? novel.authors.join(', ') : 'Unknown'
-								}</p>
-								<p class="text-gray-400 dark:text-gray-500 text-xs mt-1">
-									Chapter ${
-										Number(localStorage.getItem(`lastChapter_${novel.id}`)) ||
-										'Not started'
-									}
-									<svg class="w-4 h-4 inline-block ml-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-										<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
-									</svg>
-								</p>
+							<div class="p-3 h-[120px] flex flex-col flex-shrink-0">
+								<h2 class="text-lg font-semibold mb-2 line-clamp-2 flex-grow">
+									<a href="${
+										novel.url
+									}" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 dark:hover:text-blue-400" onclick="event.stopPropagation()">
+										${novel.title}
+									</a>
+								</h2>
+								<div class="flex flex-col justify-end">
+									<p class="text-gray-600 text-xs">Author: ${
+										novel.authors ? novel.authors.join(', ') : 'Unknown'
+									}</p>
+									<p class="text-gray-400 dark:text-gray-500 text-xs mt-1">
+										Chapter ${
+											Number(localStorage.getItem(`lastChapter_${novel.id}`)) ||
+											'Not started'
+										}
+										<svg class="w-4 h-4 inline-block ml-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+											<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+										</svg>
+									</p>
+								</div>
 							</div>
 						`
 
