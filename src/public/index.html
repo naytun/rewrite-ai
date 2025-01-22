@@ -12,7 +12,7 @@
 			/* Dark mode styles */
 			html.dark body {
 				background-color: #1a1a1a;
-				color: #ffffff;
+				color: #e5e7eb;
 			}
 			html.dark .bg-white {
 				background-color: #2d2d2d;
@@ -22,6 +22,23 @@
 			}
 			html.dark .shadow-md {
 				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+			}
+
+			/* Add prose dark mode styles */
+			html.dark .prose {
+				color: #e5e7eb;
+			}
+			html.dark .prose p {
+				color: #e5e7eb;
+			}
+			html.dark .prose strong {
+				color: #f3f4f6;
+			}
+			html.dark .prose h1,
+			html.dark .prose h2,
+			html.dark .prose h3,
+			html.dark .prose h4 {
+				color: #f3f4f6;
 			}
 
 			/* Toggle switch custom styles */
@@ -298,7 +315,7 @@
 						chapters.forEach((chapter) => {
 							const chapterButton = document.createElement('button')
 							chapterButton.className =
-								'w-full text-center py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors duration-200 text-gray-700 dark:text-gray-300 text-sm font-medium'
+								'w-full text-center py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors duration-200 text-gray-700 dark:text-gray-200 text-sm font-medium'
 							chapterButton.textContent = `Chapter ${chapter.chapter}`
 							chapterButton.onclick = () =>
 								loadChapter(novelId, chapter.volume, chapter.chapter)
