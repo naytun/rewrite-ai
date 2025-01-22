@@ -101,10 +101,24 @@ export class NovelController {
                         0% { transform: rotate(0deg); }
                         100% { transform: rotate(360deg); }
                     }
+                    .back-button {
+                        display: inline-block;
+                        color: #3b82f6;
+                        text-decoration: none;
+                        padding: 0.5rem 1rem;
+                        margin-bottom: 1rem;
+                        border-radius: 0.5rem;
+                        transition: all 0.2s;
+                    }
+                    .back-button:hover {
+                        background: #e5e7eb;
+                    }
                     html.dark body { background-color: #1a1a1a; color: #ffffff; }
                     html.dark .chapter-item { background-color: #2d2d2d; }
                     html.dark .text-gray-600 { color: #d1d1d1; }
                     html.dark .volume-title { border-bottom-color: #4b5563; }
+                    html.dark .back-button { color: #60a5fa; }
+                    html.dark .back-button:hover { background: #374151; }
                 </style>
             </head>
             <body class="bg-gray-100">
@@ -113,13 +127,14 @@ export class NovelController {
                 </div>
 
                 <div class="container mx-auto px-4 py-8">
+                    <a href="/" class="back-button" onclick="showLoading()">← Back to Library</a>
                     <h1 class="text-3xl font-bold mb-8 text-center">${title}</h1>
                     ${Object.entries(volumeGroups)
 											.sort(([volA], [volB]) => volA.localeCompare(volB))
 											.map(
 												([volume, chapters]) => `
                         <div>
-                            <h2 class="volume-title">Volume ${volume}</h2>
+                            <h2 class="volume-title">${volume}</h2>
                             <div class="chapter-grid">
                                 ${chapters
 																	.sort(
@@ -138,9 +153,6 @@ export class NovelController {
                                         <h3 class="font-semibold">Chapter ${
 																					chapter.chapter
 																				}</h3>
-                                        <p class="text-gray-600 text-sm">Volume ${
-																					chapter.volume
-																				}</p>
                                     </div>
                                 `
 																	)
@@ -277,9 +289,23 @@ export class NovelController {
                         0% { transform: rotate(0deg); }
                         100% { transform: rotate(360deg); }
                     }
+                    .back-button {
+                        display: inline-block;
+                        color: #3b82f6;
+                        text-decoration: none;
+                        padding: 0.5rem 1rem;
+                        margin-bottom: 1rem;
+                        border-radius: 0.5rem;
+                        transition: all 0.2s;
+                    }
+                    .back-button:hover {
+                        background: #e5e7eb;
+                    }
                     html.dark body { background-color: #1a1a1a; color: #ffffff; }
                     html.dark .navigation { background-color: #2d2d2d; }
                     html.dark .chapter-content { color: #e5e7eb; }
+                    html.dark .back-button { color: #60a5fa; }
+                    html.dark .back-button:hover { background: #374151; }
                 </style>
             </head>
             <body class="bg-gray-100">
@@ -288,10 +314,13 @@ export class NovelController {
                 </div>
 
                 <div class="chapter-content">
+                    <a href="/api/novel/novels/${encodeURIComponent(
+											novelId
+										)}/chapters" class="back-button" onclick="showLoading()">← Back to Chapter List</a>
                     <h1 class="text-3xl font-bold mb-2">${
 											chapterData.title
 										}</h1>
-                    <h2 class="text-xl text-gray-600 mb-8">Volume ${
+                    <h2 class="text-xl text-gray-600 mb-8">${
 											navigation.current.volume
 										}</h2>
                     ${chapterData.body}
