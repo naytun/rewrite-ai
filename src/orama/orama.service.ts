@@ -29,6 +29,7 @@ export const askAI = async ({
 	question: string
 	context?: string
 }): Promise<string> => {
+	return question
 	try {
 		if (!oramaClient) {
 			throw new Error('OramaAI Client is not initialized')
