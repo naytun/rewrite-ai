@@ -63,9 +63,11 @@ export class NovelController {
                     .chapter-item:hover {
                         transform: translateY(-2px);
                     }
-                    .current {
-                        background-color: #3b82f6;
-                        color: white;
+                    .chapter-item.last-read {
+                        background-color: #93c5fd;
+                    }
+                    html.dark .chapter-item.last-read {
+                        background-color: #1e40af;
                     }
                     .volume-title {
                         font-size: 1.5rem;
@@ -143,7 +145,11 @@ export class NovelController {
 																	)
 																	.map(
 																		(chapter) => `
-                                    <div class="chapter-item" onclick="openChapter('${encodeURIComponent(
+                                    <div class="chapter-item" data-volume="${
+																			chapter.volume
+																		}" data-chapter="${
+																			chapter.chapter
+																		}" onclick="openChapter('${encodeURIComponent(
 																			novelId
 																		)}', '${encodeURIComponent(
 																			chapter.volume
@@ -193,12 +199,9 @@ export class NovelController {
                         if (lastChapter && lastVolume) {
                             const chapterItems = document.querySelectorAll('.chapter-item');
                             chapterItems.forEach(item => {
-                                const chapterText = item.querySelector('h3').textContent;
-                                const volumeText = item.querySelector('p').textContent;
-                                
-                                if (chapterText === \`Chapter \${lastChapter}\` && 
-                                    volumeText === \`Volume \${lastVolume}\`) {
-                                    item.classList.add('bg-blue-100');
+                                if (item.dataset.chapter === lastChapter && 
+                                    item.dataset.volume === lastVolume) {
+                                    item.classList.add('last-read');
                                     item.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 }
                             });
@@ -215,7 +218,7 @@ export class NovelController {
 		chapterData: any,
 		navigation: ChapterNavigation,
 		chapters: Chapter[],
-		novelId: string
+		currentNovelId: string
 	): string {
 		const html = `
             <!DOCTYPE html>
@@ -337,7 +340,7 @@ export class NovelController {
 
                 <div class="chapter-content">
                     <a href="/api/novel/novels/${encodeURIComponent(
-											novelId
+											currentNovelId
 										)}/chapters" class="back-button" onclick="showLoading()">← Back to Chapter List</a>
                     <h1 class="text-3xl font-bold mb-2">${
 											chapterData.title
@@ -352,7 +355,7 @@ export class NovelController {
                     ${
 											navigation.prev
 												? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
-														novelId
+														currentNovelId
 												  )}/chapters/${encodeURIComponent(
 														navigation.prev.volume
 												  )}/${encodeURIComponent(
@@ -365,12 +368,12 @@ export class NovelController {
 												: '<span class="nav-button disabled">← Previous</span>'
 										}
                     <a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
-											novelId
+											currentNovelId
 										)}/chapters" onclick="showLoading()">Chapter List</a>
                     ${
 											navigation.next
 												? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
-														novelId
+														currentNovelId
 												  )}/chapters/${encodeURIComponent(
 														navigation.next.volume
 												  )}/${encodeURIComponent(
@@ -395,16 +398,16 @@ export class NovelController {
                     }
 
                     // Save current chapter as last read
-                    const novelId = '${novelId}';
+                    const novelId = '${currentNovelId}';
                     const currentVolume = '${navigation.current.volume}';
                     const currentChapter = '${navigation.current.chapter}';
                     
-                    localStorage.setItem(\`lastChapter_\${novelId}\`, currentChapter);
-                    localStorage.setItem(\`lastVolume_\${novelId}\`, currentVolume);
+                    localStorage.setItem('lastChapter_' + novelId, currentChapter);
+                    localStorage.setItem('lastVolume_' + novelId, currentVolume);
 
                     function saveLastChapter(volume, chapter) {
-                        localStorage.setItem(\`lastChapter_\${novelId}\`, chapter);
-                        localStorage.setItem(\`lastVolume_\${novelId}\`, volume);
+                        localStorage.setItem('lastChapter_' + novelId, chapter);
+                        localStorage.setItem('lastVolume_' + novelId, volume);
                     }
 
                     // Keyboard navigation
@@ -415,7 +418,7 @@ export class NovelController {
 															navigation.prev?.volume || ''
 														}', '${navigation.prev?.chapter || ''}');
                             window.location.href = '/api/novel/novels/${encodeURIComponent(
-															novelId
+															currentNovelId
 														)}/chapters/${encodeURIComponent(
 			navigation.prev?.volume || ''
 		)}/${encodeURIComponent(navigation.prev?.chapter || '')}';
@@ -425,7 +428,7 @@ export class NovelController {
 															navigation.next?.volume || ''
 														}', '${navigation.next?.chapter || ''}');
                             window.location.href = '/api/novel/novels/${encodeURIComponent(
-															novelId
+															currentNovelId
 														)}/chapters/${encodeURIComponent(
 			navigation.next?.volume || ''
 		)}/${encodeURIComponent(navigation.next?.chapter || '')}';
