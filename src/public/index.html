@@ -28,44 +28,50 @@
 			}
 
 			/* Toggle switch custom styles */
-			.dark-mode-toggle {
+			.toggle-switch {
+				position: relative;
+				display: inline-block;
 				width: 48px;
 				height: 24px;
-				background: #e2e8f0;
-				border-radius: 12px;
-				position: relative;
-				transition: background 0.3s;
-				cursor: pointer;
 			}
-
-			.dark-mode-toggle::after {
-				content: '';
+			.toggle-switch input {
+				opacity: 0;
+				width: 0;
+				height: 0;
+			}
+			.toggle-slider {
 				position: absolute;
-				width: 20px;
-				height: 20px;
+				cursor: pointer;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: #ccc;
+				transition: 0.4s;
+				border-radius: 24px;
+			}
+			.toggle-slider:before {
+				position: absolute;
+				content: '';
+				height: 18px;
+				width: 18px;
+				left: 3px;
+				bottom: 3px;
+				background-color: white;
+				transition: 0.4s;
 				border-radius: 50%;
-				background: white;
-				top: 2px;
-				left: 2px;
-				transition: all 0.3s;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 			}
-
-			.dark-mode-toggle.active {
-				background: #3b82f6;
+			input:checked + .toggle-slider {
+				background-color: #3b82f6;
 			}
-
-			.dark-mode-toggle.active::after {
+			input:checked + .toggle-slider:before {
 				transform: translateX(24px);
 			}
-
 			.toggle-label {
-				font-size: 0.875rem;
-				font-weight: 500;
+				font-size: 1rem;
 				color: #4b5563;
 				margin-right: 8px;
 			}
-
 			html.dark .toggle-label {
 				color: #e5e7eb;
 			}
@@ -84,11 +90,21 @@
 				<div class="container mx-auto px-4 py-8">
 					<div class="flex justify-between items-center mb-8">
 						<h1 class="text-4xl font-bold text-center">Novel Library</h1>
-						<div
-							class="flex items-center bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm"
-						>
-							<span class="toggle-label">Dark Mode</span>
-							<div id="darkModeToggle" class="dark-mode-toggle"></div>
+						<div class="flex items-center gap-4">
+							<div class="flex items-center px-4 py-2 rounded-full">
+								<span class="toggle-label">Dark Mode</span>
+								<label class="toggle-switch">
+									<input type="checkbox" id="darkModeToggle" />
+									<span class="toggle-slider"></span>
+								</label>
+							</div>
+							<div class="flex items-center px-4 py-2 rounded-full">
+								<span class="toggle-label">AI Rewrite</span>
+								<label class="toggle-switch">
+									<input type="checkbox" id="aiToggle" />
+									<span class="toggle-slider"></span>
+								</label>
+							</div>
 						</div>
 					</div>
 					<div id="loading" class="text-center text-gray-600 mb-4">
@@ -154,20 +170,23 @@
 		</div>
 
 		<script>
-			// Dark mode functionality
+			// Dark mode and AI mode functionality
 			const darkModeToggle = document.getElementById('darkModeToggle')
+			const aiToggle = document.getElementById('aiToggle')
 
-			// Check for saved dark mode preference
+			// Check for saved preferences
 			if (localStorage.getItem('darkMode') === 'true') {
 				document.documentElement.classList.add('dark')
-				darkModeToggle.classList.add('active')
+				darkModeToggle.checked = true
+			}
+
+			if (localStorage.getItem('aiRewrite') === 'true') {
+				aiToggle.checked = true
 			}
 
 			// Toggle dark mode
-			darkModeToggle.addEventListener('click', () => {
-				darkModeToggle.classList.toggle('active')
-				const isDark = darkModeToggle.classList.contains('active')
-
+			darkModeToggle.addEventListener('change', () => {
+				const isDark = darkModeToggle.checked
 				if (isDark) {
 					document.documentElement.classList.add('dark')
 					localStorage.setItem('darkMode', 'true')
@@ -177,6 +196,11 @@
 				}
 			})
 
+			// Toggle AI mode
+			aiToggle.addEventListener('change', () => {
+				localStorage.setItem('aiRewrite', aiToggle.checked.toString())
+			})
+
 			async function loadNovels() {
 				const loadingEl = document.getElementById('loading')
 				const errorEl = document.getElementById('error')
@@ -184,14 +208,12 @@
 
 				try {
 					const response = await fetch('/api/novel/novels')
-					console.log('Response status:', response.status)
 
 					if (!response.ok) {
 						throw new Error(`HTTP error! status: ${response.status}`)
 					}
 
 					const novels = await response.json()
-					console.log('Novels loaded:', novels)
 
 					if (!novels || novels.length === 0) {
 						errorEl.textContent = 'No novels found'
@@ -200,7 +222,6 @@
 					}
 
 					novels.forEach((novel) => {
-						console.log('Processing novel:', novel)
 						const card = document.createElement('div')
 						card.className =
 							'bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer w-[75%] mx-auto flex flex-col h-[400px]'

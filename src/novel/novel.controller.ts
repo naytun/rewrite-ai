@@ -262,6 +262,58 @@ export class NovelController {
                         justify-content: center;
                         gap: 0.5rem;
                     }
+                    .toggle-container {
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                        margin-bottom: 1rem;
+                    }
+                    .toggle-switch {
+                        position: relative;
+                        display: inline-block;
+                        width: 60px;
+                        height: 34px;
+                    }
+                    .toggle-switch input {
+                        opacity: 0;
+                        width: 0;
+                        height: 0;
+                    }
+                    .toggle-slider {
+                        position: absolute;
+                        cursor: pointer;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-color: #ccc;
+                        transition: .4s;
+                        border-radius: 34px;
+                    }
+                    .toggle-slider:before {
+                        position: absolute;
+                        content: "";
+                        height: 26px;
+                        width: 26px;
+                        left: 4px;
+                        bottom: 4px;
+                        background-color: white;
+                        transition: .4s;
+                        border-radius: 50%;
+                    }
+                    input:checked + .toggle-slider {
+                        background-color: #3b82f6;
+                    }
+                    input:checked + .toggle-slider:before {
+                        transform: translateX(26px);
+                    }
+                    .toggle-label {
+                        font-size: 1rem;
+                        color: #4b5563;
+                    }
+                    html.dark .toggle-label {
+                        color: #e5e7eb;
+                    }
                     @media (min-width: 640px) {
                         .navigation {
                             gap: 2rem;
@@ -342,6 +394,15 @@ export class NovelController {
                     <a href="/api/novel/novels/${encodeURIComponent(
 											currentNovelId
 										)}/chapters" class="back-button" onclick="showLoading()">← Back to Chapter List</a>
+                    
+                    <div class="toggle-container">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="aiToggle" onchange="toggleAI()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">AI Rewrite</span>
+                    </div>
+
                     <h1 class="text-3xl font-bold mb-2">${
 											chapterData.title
 										}</h1>
@@ -409,6 +470,54 @@ export class NovelController {
                         localStorage.setItem('lastChapter_' + novelId, chapter);
                         localStorage.setItem('lastVolume_' + novelId, volume);
                     }
+
+                    // AI Toggle functionality
+                    async function toggleAI() {
+                        const aiToggle = document.getElementById('aiToggle');
+                        showLoading();
+                        
+                        // Save AI preference
+                        localStorage.setItem('aiRewrite', aiToggle.checked.toString());
+                        
+                        try {
+                            const response = await fetch(window.location.href + '?ai=' + aiToggle.checked);
+                            const data = await response.json();
+                            
+                            // Update the content
+                            document.querySelector('.chapter-content').innerHTML = \`
+                                <a href="/api/novel/novels/${encodeURIComponent(
+																	currentNovelId
+																)}/chapters" class="back-button" onclick="showLoading()">← Back to Chapter List</a>
+                                
+                                <div class="toggle-container">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="aiToggle" onchange="toggleAI()" \${aiToggle.checked ? 'checked' : ''}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-label">AI Rewrite</span>
+                                </div>
+
+                                <h1 class="text-3xl font-bold mb-2">\${data.title}</h1>
+                                <h2 class="text-xl text-gray-600 mb-8">\${navigation.current.volume}</h2>
+                                \${data.body}
+                            \`;
+                        } catch (error) {
+                            console.error('Error toggling AI:', error);
+                        } finally {
+                            document.getElementById('loading').classList.remove('active');
+                        }
+                    }
+
+                    // Initialize AI toggle state from localStorage
+                    document.addEventListener('DOMContentLoaded', async () => {
+                        const aiToggle = document.getElementById('aiToggle');
+                        const savedAIState = localStorage.getItem('aiRewrite') === 'true';
+                        
+                        if (savedAIState) {
+                            aiToggle.checked = true;
+                            await toggleAI(); // Load AI version if it was previously enabled
+                        }
+                    });
 
                     // Keyboard navigation
                     document.addEventListener('keydown', (e) => {
@@ -495,10 +604,12 @@ export class NovelController {
 	async readChapter(req: Request, res: Response): Promise<void> {
 		try {
 			const { novelId, volume, chapter } = req.params
+			const useAI = req.query.ai === 'true'
 			const chapterData = await this.novelService.readChapter(
 				novelId,
 				volume,
-				chapter
+				chapter,
+				useAI
 			)
 			const { chapters } = await this.novelService.listChapters(novelId)
 
@@ -523,15 +634,29 @@ export class NovelController {
 						: undefined,
 			}
 
-			const html = this.generateChapterHtml(
-				chapterData,
-				navigation,
-				allChapters,
-				novelId
-			)
-			res.send(html)
+			if (useAI) {
+				// Return JSON data for AI-processed content
+				res.json({
+					...chapterData,
+					navigation,
+					allChapters,
+				})
+			} else {
+				// Generate and return HTML for normal reading
+				const html = this.generateChapterHtml(
+					chapterData,
+					navigation,
+					allChapters,
+					novelId
+				)
+				res.send(html)
+			}
 		} catch (error) {
-			res.status(500).send('Error loading chapter')
+			if (req.query.ai === 'true') {
+				res.status(500).json({ error: 'Error loading chapter' })
+			} else {
+				res.status(500).send('Error loading chapter')
+			}
 		}
 	}
 
