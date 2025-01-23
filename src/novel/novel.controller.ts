@@ -295,11 +295,11 @@ const generateChapterHtml = (
                     left: 0;
                     right: 0;
                     background: white;
-                    padding: 1rem;
+                    padding: 1.25rem;
                     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
                     display: flex;
                     justify-content: center;
-                    gap: 0.5rem;
+                    gap: 1rem;
                 }
                 .toggle-container {
                     display: flex;
@@ -310,8 +310,8 @@ const generateChapterHtml = (
                 .toggle-switch {
                     position: relative;
                     display: inline-block;
-                    width: 60px;
-                    height: 34px;
+                    width: 36px;
+                    height: 20px;
                 }
                 .toggle-switch input {
                     opacity: 0;
@@ -327,15 +327,15 @@ const generateChapterHtml = (
                     bottom: 0;
                     background-color: #ccc;
                     transition: .4s;
-                    border-radius: 34px;
+                    border-radius: 20px;
                 }
                 .toggle-slider:before {
                     position: absolute;
                     content: "";
-                    height: 26px;
-                    width: 26px;
-                    left: 4px;
-                    bottom: 4px;
+                    height: 14px;
+                    width: 14px;
+                    left: 3px;
+                    bottom: 3px;
                     background-color: white;
                     transition: .4s;
                     border-radius: 50%;
@@ -344,39 +344,58 @@ const generateChapterHtml = (
                     background-color: #3b82f6;
                 }
                 input:checked + .toggle-slider:before {
-                    transform: translateX(26px);
+                    transform: translateX(16px);
                 }
                 .toggle-label {
-                    font-size: 1rem;
+                    font-size: 0.75rem;
                     color: #4b5563;
+                    margin-right: 0.5rem;
                 }
                 html.dark .toggle-label {
                     color: #e5e7eb;
                 }
-                @media (min-width: 640px) {
-                    .navigation {
-                        gap: 2rem;
-                    }
-                }
-                @media (min-width: 1024px) {
-                    .navigation {
-                        gap: 4rem;
-                    }
-                }
-                .nav-button {
+                .back-button {
+                    display: inline-flex;
+                    align-items: center;
+                    color: #3b82f6;
+                    text-decoration: none;
                     padding: 0.5rem 1rem;
                     border-radius: 0.5rem;
+                    transition: all 0.2s;
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                }
+                .back-button:hover {
+                    background: #e5e7eb;
+                }
+                html.dark body {
+                    background-color: #1a1a1a;
+                    color: #e5e7eb;
+                }
+                html.dark .chapter-content {
+                    color: #e5e7eb;
+                }
+                html.dark .navigation {
+                    background-color: #2d2d2d;
+                    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+                }
+                html.dark .nav-button {
                     background: #3b82f6;
-                    color: white;
-                    cursor: pointer;
-                    transition: background 0.2s;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
                 }
-                .nav-button:hover {
+                html.dark .nav-button:hover {
                     background: #2563eb;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
                 }
-                .nav-button.disabled {
-                    background: #9ca3af;
-                    cursor: not-allowed;
+                html.dark .nav-button.disabled {
+                    background: #4b5563;
+                    box-shadow: none;
+                }
+                html.dark .back-button {
+                    color: #60a5fa;
+                }
+                html.dark .back-button:hover {
+                    background: #374151;
                 }
                 .loading {
                     display: none;
@@ -405,23 +424,35 @@ const generateChapterHtml = (
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }
                 }
-                .back-button {
-                    display: inline-block;
-                    color: #3b82f6;
-                    text-decoration: none;
-                    padding: 0.5rem 1rem;
-                    margin-bottom: 1rem;
-                    border-radius: 0.5rem;
+                .nav-button {
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 9999px;
+                    background: #3b82f6;
+                    color: white;
+                    cursor: pointer;
                     transition: all 0.2s;
+                    font-size: 1rem;
+                    font-weight: 500;
+                    min-width: 120px;
+                    text-align: center;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
-                .back-button:hover {
-                    background: #e5e7eb;
+                .nav-button:hover {
+                    background: #2563eb;
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 }
-                html.dark body { background-color: #1a1a1a; color: #ffffff; }
-                html.dark .navigation { background-color: #2d2d2d; }
-                html.dark .chapter-content { color: #e5e7eb; }
-                html.dark .back-button { color: #60a5fa; }
-                html.dark .back-button:hover { background: #374151; }
+                .nav-button.disabled {
+                    background: #9ca3af;
+                    cursor: not-allowed;
+                    transform: none;
+                    box-shadow: none;
+                }
+                @media (min-width: 640px) {
+                    .navigation {
+                        gap: 2rem;
+                    }
+                }
             </style>
         </head>
         <body class="bg-gray-100">
@@ -430,16 +461,27 @@ const generateChapterHtml = (
             </div>
 
             <div class="chapter-content">
-                <a href="/api/novel/novels/${encodeURIComponent(
-									currentNovelId
-								)}/chapters" class="back-button" onclick="showLoading()">← Back to Chapter List</a>
-                
-                <div class="toggle-container">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="aiToggle" onchange="toggleAI()">
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span class="toggle-label">AI Rewrite</span>
+                <div class="flex justify-between items-center mb-8">
+                    <a href="/api/novel/novels/${encodeURIComponent(
+											currentNovelId
+										)}/chapters" class="back-button" onclick="showLoading()">← Back to Chapter List</a>
+                    
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center">
+                            <span class="toggle-label">AI Rewrite</span>
+                            <label class="toggle-switch ml-2">
+                                <input type="checkbox" id="aiToggle" onchange="toggleAI()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="toggle-label">Dark Mode</span>
+                            <label class="toggle-switch ml-2">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <h1 class="text-3xl font-bold mb-2">${chapterData.title}</h1>
@@ -489,11 +531,24 @@ const generateChapterHtml = (
                 // Check for dark mode preference
                 if (localStorage.getItem('darkMode') === 'true') {
                     document.documentElement.classList.add('dark');
+                    darkModeToggle.checked = true;
                 }
 
                 function showLoading() {
                     document.getElementById('loading').classList.add('active');
                 }
+
+                // Dark mode toggle functionality
+                darkModeToggle.addEventListener('change', () => {
+                    const isDark = darkModeToggle.checked;
+                    if (isDark) {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('darkMode', 'true');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('darkMode', 'false');
+                    }
+                });
 
                 // Save current chapter as last read
                 const novelId = '${currentNovelId}';
