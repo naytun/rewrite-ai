@@ -20,8 +20,11 @@
 			html.dark .text-gray-600 {
 				color: #d1d1d1;
 			}
-			html.dark .shadow-md {
-				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+			.custom-shadow {
+				box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+			}
+			html.dark .custom-shadow {
+				box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
 			}
 			html.dark footer {
 				background-color: rgba(17, 17, 17, 0.7);
@@ -224,7 +227,7 @@
 					novels.forEach((novel) => {
 						const card = document.createElement('div')
 						card.className =
-							'bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer w-[75%] mx-auto flex flex-col h-[400px]'
+							'overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer w-[75%] mx-auto flex flex-col h-[400px]'
 
 						card.onclick = (e) => {
 							e.preventDefault()
@@ -251,10 +254,10 @@
 						card.innerHTML = `
 							<div class="h-[280px] w-full overflow-hidden flex-shrink-0">
 								<img src="${novel.cover_url || '/placeholder.jpg'}" 
-									class="w-full h-[280px] object-cover object-center"
+									class="w-full h-[280px] object-cover object-center rounded-xl custom-shadow"
 									onerror="this.src='/placeholder.jpg'">
 							</div>
-							<div class="p-3 h-[120px] flex flex-col flex-shrink-0">
+							<div class="p-3 h-[120px] flex flex-col flex-shrink-0 bg-transparent">
 								<h2 class="text-lg font-semibold mb-2 line-clamp-2 flex-grow">
 									<a href="${
 										novel.url
