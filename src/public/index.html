@@ -215,8 +215,36 @@
 			})
 
 			// Toggle AI mode
-			aiToggle.addEventListener('change', () => {
-				localStorage.setItem('aiRewrite', aiToggle.checked.toString())
+			aiToggle.addEventListener('change', async () => {
+				const isEnabled = aiToggle.checked
+				localStorage.setItem('aiRewrite', isEnabled.toString())
+
+				try {
+					const response = await fetch('/api/novel/settings/ai-rewrite', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							Accept: 'application/json',
+						},
+						body: JSON.stringify({ enabled: isEnabled }),
+					})
+
+					if (!response.ok) {
+						throw new Error('Failed to update AI settings')
+					}
+
+					const result = await response.json()
+					console.log('AI toggle response:', result)
+
+					if (result.enabled !== isEnabled) {
+						aiToggle.checked = result.enabled
+					}
+				} catch (error) {
+					console.error('Failed to save AI preference:', error)
+					// Revert the toggle if the API call fails
+					aiToggle.checked = !isEnabled
+					localStorage.setItem('aiRewrite', (!isEnabled).toString())
+				}
 			})
 
 			async function loadNovels() {

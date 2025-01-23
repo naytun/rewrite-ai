@@ -38,15 +38,17 @@ export const askAI = async ({
 			throw new Error('Question is required')
 		}
 
-		const session = oramaClient?.createAnswerSession({
+		const session = await oramaClient.createAnswerSession({
 			userContext: `
 				Note: Rewrite following contents to be in shorter sentences but don't over simplify and over summarize. Keep dialogue as is, and just rephrase for better reading. Create paragraphs as needed. Use only common words for better readability.
 				${context}`,
 			inferenceType: 'documentation',
 		})
+
 		console.log('㏒  ~ askAI ~ session: [START]')
-		const result = await session?.ask({ term: question })
-		session?.clearSession()
+		const result = await session.ask({ term: question })
+		console.log('㏒  ~ askAI ~ session: [END]')
+		session.clearSession()
 		return result || ''
 	} catch (error) {
 		console.error('Error asking AI:', error)

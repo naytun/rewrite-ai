@@ -1,19 +1,18 @@
-import { Router, RequestHandler } from 'express'
-import { NovelController } from './novel.controller'
+import { Router } from 'express'
+import {
+	listChapters,
+	readChapter,
+	listNovels,
+	getAIRewriteSettings,
+	setAIRewriteSettings,
+} from './novel.controller'
 
 const router = Router()
-const novelController = new NovelController()
 
-router.get('/novels', (req, res) => novelController.listNovels(req, res))
-router.get(
-	'/novels/:novelId/chapters',
-	novelController.listChapters.bind(
-		novelController
-	) as unknown as RequestHandler
-)
-router.get(
-	'/novels/:novelId/chapters/:volume/:chapter',
-	novelController.readChapter.bind(novelController) as unknown as RequestHandler
-)
+router.get('/novels', listNovels)
+router.get('/novels/:novelId/chapters', listChapters)
+router.get('/novels/:novelId/chapters/:volume/:chapter', readChapter)
+router.get('/settings/ai-rewrite', getAIRewriteSettings)
+router.post('/settings/ai-rewrite', setAIRewriteSettings)
 
 export default router
