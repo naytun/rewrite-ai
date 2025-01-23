@@ -83,7 +83,8 @@ export class NovelService {
 	async readChapter(
 		novelId: string,
 		volume: string,
-		chapter: string
+		chapter: string,
+		useAI: boolean = false
 	): Promise<any> {
 		try {
 			const novelPath = await this.getNovelPath(novelId)
@@ -91,10 +92,14 @@ export class NovelService {
 			const content = await fs.readFile(filePath, 'utf-8')
 			const chapterData = JSON.parse(content)
 
+			if (!useAI) {
+				return chapterData
+			}
+
 			// Convert HTML to plain text and handle paragraph tags
 			const plainText = chapterData.body
-				.replace(/<\/p>/g, '\n\n\n') // Replace <p> tags with double line breaks
-				.replace(/<p>/g, '') // Remove closing p tags
+				.replace(/<\/p>/g, '\n\n\n') // Replace </p> tags with double line breaks
+				.replace(/<p>/g, '') // Remove opening p tags
 				.replace(/<br\s*\/?>/g, '\n') // Replace <br> tags with line breaks
 				.replace(/<[^>]*>/g, '') // Remove all other HTML tags
 				.trim() // Remove leading/trailing whitespace
@@ -107,7 +112,7 @@ export class NovelService {
 			// Format the result into HTML paragraphs
 			const formattedResult = result
 				.split('\n\n')
-				.map((paragraph) => `<p>${paragraph.trim()}</p>`)
+				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
 				.join('\n')
 
 			return {
