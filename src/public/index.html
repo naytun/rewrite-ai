@@ -31,8 +31,8 @@
 			.toggle-switch {
 				position: relative;
 				display: inline-block;
-				width: 60px;
-				height: 34px;
+				width: 48px;
+				height: 24px;
 			}
 			.toggle-switch input {
 				opacity: 0;
@@ -48,15 +48,15 @@
 				bottom: 0;
 				background-color: #ccc;
 				transition: 0.4s;
-				border-radius: 34px;
+				border-radius: 24px;
 			}
 			.toggle-slider:before {
 				position: absolute;
 				content: '';
-				height: 26px;
-				width: 26px;
-				left: 4px;
-				bottom: 4px;
+				height: 18px;
+				width: 18px;
+				left: 3px;
+				bottom: 3px;
 				background-color: white;
 				transition: 0.4s;
 				border-radius: 50%;
@@ -65,7 +65,7 @@
 				background-color: #3b82f6;
 			}
 			input:checked + .toggle-slider:before {
-				transform: translateX(26px);
+				transform: translateX(24px);
 			}
 			.toggle-label {
 				font-size: 1rem;
@@ -91,18 +91,14 @@
 					<div class="flex justify-between items-center mb-8">
 						<h1 class="text-4xl font-bold text-center">Novel Library</h1>
 						<div class="flex items-center gap-4">
-							<div
-								class="flex items-center bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm"
-							>
+							<div class="flex items-center px-4 py-2 rounded-full">
 								<span class="toggle-label">Dark Mode</span>
 								<label class="toggle-switch">
 									<input type="checkbox" id="darkModeToggle" />
 									<span class="toggle-slider"></span>
 								</label>
 							</div>
-							<div
-								class="flex items-center bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm"
-							>
+							<div class="flex items-center px-4 py-2 rounded-full">
 								<span class="toggle-label">AI Rewrite</span>
 								<label class="toggle-switch">
 									<input type="checkbox" id="aiToggle" />
