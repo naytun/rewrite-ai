@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import * as PACKAGE from '../package.json'
-import novelRoutes from './novel/novel.routes'
+import novelRoutes from './novel'
 
 import { oramaRoutes } from './orama'
 import { webScrapeRoutes } from './webScrape'
