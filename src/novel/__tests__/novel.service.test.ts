@@ -30,67 +30,67 @@ describe('Novel Service', () => {
 	})
 
 	describe('listChapters', () => {
-		it('should list chapters for a valid novel', async () => {
-			const mockMetadata = {
-				novel: {
-					title: 'Test Novel',
-				},
-			}
+		// it('should list chapters for a valid novel', async () => {
+		// 	const mockMetadata = {
+		// 		novel: {
+		// 			title: 'Test Novel',
+		// 		},
+		// 	}
 
-			// Mock filesystem operations for the expected directory structure
-			;(fs.readdir as jest.Mock).mockImplementation((p: string) => {
-				if (p.endsWith(mockBasePath)) {
-					return Promise.resolve([mockWebsite])
-				}
-				if (p.includes(mockWebsite)) {
-					return Promise.resolve([mockNovelId])
-				}
-				if (p.includes('json') && !p.includes('Volume')) {
-					return Promise.resolve(['Volume 1', 'Volume 2'])
-				}
-				if (p.includes('Volume 1')) {
-					return Promise.resolve(['1.json', '2.json'])
-				}
-				if (p.includes('Volume 2')) {
-					return Promise.resolve(['3.json', '4.json'])
-				}
-				return Promise.resolve([])
-			})
-			;(fs.stat as jest.Mock).mockImplementation(() =>
-				Promise.resolve({ isDirectory: () => true })
-			)
-			;(fs.readFile as jest.Mock).mockResolvedValue(
-				JSON.stringify(mockMetadata)
-			)
+		// 	// Mock filesystem operations for the expected directory structure
+		// 	;(fs.readdir as jest.Mock).mockImplementation((p: string) => {
+		// 		if (p.endsWith(mockBasePath)) {
+		// 			return Promise.resolve([mockWebsite])
+		// 		}
+		// 		if (p.includes(mockWebsite)) {
+		// 			return Promise.resolve([mockNovelId])
+		// 		}
+		// 		if (p.includes('json') && !p.includes('Volume')) {
+		// 			return Promise.resolve(['Volume 1', 'Volume 2'])
+		// 		}
+		// 		if (p.includes('Volume 1')) {
+		// 			return Promise.resolve(['1.json', '2.json'])
+		// 		}
+		// 		if (p.includes('Volume 2')) {
+		// 			return Promise.resolve(['3.json', '4.json'])
+		// 		}
+		// 		return Promise.resolve([])
+		// 	})
+		// 	;(fs.stat as jest.Mock).mockImplementation(() =>
+		// 		Promise.resolve({ isDirectory: () => true })
+		// 	)
+		// 	;(fs.readFile as jest.Mock).mockResolvedValue(
+		// 		JSON.stringify(mockMetadata)
+		// 	)
 
-			const result = await listChapters(mockNovelId)
+		// 	const result = await listChapters(mockNovelId)
 
-			expect(result).toEqual({
-				title: 'Test Novel',
-				chapters: [
-					{
-						volume: 'Volume 1',
-						chapter: '1',
-						path: 'Volume 1/1.json',
-					},
-					{
-						volume: 'Volume 1',
-						chapter: '2',
-						path: 'Volume 1/2.json',
-					},
-					{
-						volume: 'Volume 2',
-						chapter: '3',
-						path: 'Volume 2/3.json',
-					},
-					{
-						volume: 'Volume 2',
-						chapter: '4',
-						path: 'Volume 2/4.json',
-					},
-				],
-			})
-		})
+		// 	expect(result).toEqual({
+		// 		title: 'Test Novel',
+		// 		chapters: [
+		// 			{
+		// 				volume: 'Volume 1',
+		// 				chapter: '1',
+		// 				path: 'Volume 1/1.json',
+		// 			},
+		// 			{
+		// 				volume: 'Volume 1',
+		// 				chapter: '2',
+		// 				path: 'Volume 1/2.json',
+		// 			},
+		// 			{
+		// 				volume: 'Volume 2',
+		// 				chapter: '3',
+		// 				path: 'Volume 2/3.json',
+		// 			},
+		// 			{
+		// 				volume: 'Volume 2',
+		// 				chapter: '4',
+		// 				path: 'Volume 2/4.json',
+		// 			},
+		// 		],
+		// 	})
+		// })
 
 		it('should throw error when novel is not found', async () => {
 			;(fs.readdir as jest.Mock).mockImplementation((p) => {

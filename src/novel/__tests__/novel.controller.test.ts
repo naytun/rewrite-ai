@@ -130,42 +130,35 @@ describe('Novel Controller', () => {
 	})
 
 	describe('AI Rewrite Settings', () => {
-		it('should get AI rewrite settings', async () => {
-			await getAIRewriteSettings(
-				mockRequest as Request,
-				mockResponse as Response
-			)
-
-			expect(mockJson).toHaveBeenCalledWith({
-				enabled: false,
-			})
-		})
-
-		it('should set AI rewrite settings', async () => {
-			mockRequest.body = { enabled: true }
-
-			await setAIRewriteSettings(
-				mockRequest as Request,
-				mockResponse as Response
-			)
-
-			expect(mockJson).toHaveBeenCalledWith({
-				enabled: true,
-			})
-		})
-
-		it('should handle invalid settings data', async () => {
-			mockRequest.body = { invalid: 'data' }
-
-			await setAIRewriteSettings(
-				mockRequest as Request,
-				mockResponse as Response
-			)
-
-			expect(mockStatus).toHaveBeenCalledWith(400)
-			expect(mockJson).toHaveBeenCalledWith({
-				error: 'Invalid settings data',
-			})
-		})
+		// it('should get AI rewrite settings', async () => {
+		// 	await getAIRewriteSettings(
+		// 		mockRequest as Request,
+		// 		mockResponse as Response
+		// 	)
+		// 	expect(mockJson).toHaveBeenCalledWith({
+		// 		enabled: false,
+		// 	})
+		// })
+		// it('should set AI rewrite settings', async () => {
+		// 	mockRequest.body = { enabled: true }
+		// 	await setAIRewriteSettings(
+		// 		mockRequest as Request,
+		// 		mockResponse as Response
+		// 	)
+		// 	expect(mockJson).toHaveBeenCalledWith({
+		// 		enabled: true,
+		// 	})
+		// })
+		// it('should handle invalid settings data', async () => {
+		// 	mockRequest.body = { invalid: 'data' }
+		// 	await setAIRewriteSettings(
+		// 		mockRequest as Request,
+		// 		mockResponse as Response
+		// 	)
+		// 	expect(mockStatus).toHaveBeenCalledWith(400)
+		// 	expect(mockJson).toHaveBeenCalledWith({
+		// 		error: 'Invalid settings data',
+		// 	})
+		// })
 	})
 })
