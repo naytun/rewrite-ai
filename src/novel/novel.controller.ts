@@ -791,7 +791,10 @@ export const getAIRewriteSettings = async (req: Request, res: Response) => {
 export const setAIRewriteSettings = async (req: Request, res: Response) => {
 	try {
 		const { enabled } = req.body
-		globalState.aiRewrite = enabled === true
+		if (typeof enabled !== 'boolean') {
+			return res.status(400).json({ error: 'Invalid settings data' })
+		}
+		globalState.aiRewrite = enabled
 		res.json({ enabled: globalState.aiRewrite })
 	} catch (error) {
 		console.error('Error setting AI settings:', error)
