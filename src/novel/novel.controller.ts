@@ -282,10 +282,10 @@ const generateChapterHtml = (
                 }
                 @media (min-width: 640px) {
                     .chapter-content {
-                        font-size: 1.3rem;
+                        font-size: 1.4rem;
                     }
                     .chapter-content p {
-                        font-size: 1.3rem;
+                        font-size: 1.4rem;
                         line-height: 1.6;
                     }
                 }
