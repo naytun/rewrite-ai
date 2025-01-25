@@ -1,5 +1,7 @@
-import { OramaClient } from '@oramacloud/client'
 import dotenv from 'dotenv'
+import { OramaClient } from '@oramacloud/client'
+
+import { AI_INSTRUCTIONS } from '../novel/constants'
 
 dotenv.config()
 
@@ -39,9 +41,7 @@ export const askAI = async ({
 		}
 
 		const session = await oramaClient.createAnswerSession({
-			userContext: `
-				Note: Rewrite following contents to be in shorter sentences but don't over simplify and over summarize. Keep dialogue as is, and just rephrase for better reading. Create paragraphs as needed. Use only common words for better readability.
-				${context}`,
+			userContext: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} --- ${context}`,
 			inferenceType: 'documentation',
 		})
 

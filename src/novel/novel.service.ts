@@ -1,6 +1,8 @@
-import { promises as fs } from 'fs'
 import path from 'path'
+import { promises as fs } from 'fs'
+
 import { askAI } from '../orama/orama.service'
+import { AI_INSTRUCTIONS } from './constants'
 
 const basePath = 'Lightnovels'
 
@@ -102,7 +104,7 @@ export const readChapter = async (
 
 		let result = plainText
 		result = await askAI({
-			question: `Rewrite following contents to be in shorter sentences but don't over simplify and over summarize. Keep dialogue as is, and just rephrase for better reading. Create paragraphs as needed. Use only common words for better readability . ---\n ${plainText}`,
+			question: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} ---\n ${plainText}`,
 		})
 		const formattedResult = result
 			.split('\n\n')
