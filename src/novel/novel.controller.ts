@@ -276,6 +276,20 @@ const generateChapterHtml = (
                     line-height: 1.7;
                     font-size: 1.2rem;
                 }
+                .original-text {
+                    display: none !important;
+                    color: #808080;
+                    font-style: italic;
+                    margin-top: 1rem;
+                    padding-top: 1rem;
+                    border-top: 1px solid #e5e7eb;
+                }
+                .compare-mode .original-text {
+                    display: block !important;
+                }
+                html.dark .original-text {
+                    border-top-color: #4b5563;
+                }
                 .chapter-content p {
                     margin-bottom: 1.5rem;
                     font-size: 1.4rem;
@@ -774,16 +788,17 @@ const generateChapterHtml = (
                         compareButton.classList.add('active');
                     }
                     
-                    // Update URL and reload the page
+                    // Update URL without reloading
                     const currentUrl = new URL(window.location.href);
                     if (isCompareMode) {
                         currentUrl.searchParams.delete('compare');
                     } else {
                         currentUrl.searchParams.set('compare', 'true');
                     }
-                    
-                    showLoading();
-                    window.location.href = currentUrl.toString();
+                    window.history.pushState({}, '', currentUrl.toString());
+
+                    // Toggle visibility of original text
+                    document.querySelector('.chapter-content').classList.toggle('compare-mode');
                 }
 
                 // Keyboard navigation
