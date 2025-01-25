@@ -478,7 +478,7 @@ const generateChapterHtml = (
                     border-radius: 50%;
                     background-color: #9ca3af;
                     color: white;
-                    display: none;  /* Hidden by default */
+                    display: none;
                     align-items: center;
                     justify-content: center;
                     cursor: pointer;
@@ -487,7 +487,7 @@ const generateChapterHtml = (
                     z-index: 100;
                 }
                 .compare-button.show {
-                    display: flex;  /* Show when AI is enabled */
+                    display: flex;
                 }
                 .compare-button.active {
                     background-color: #3b82f6;
@@ -500,6 +500,29 @@ const generateChapterHtml = (
                 }
                 html.dark .compare-button.active {
                     background-color: #3b82f6;
+                }
+                .compare-button:before {
+                    content: attr(data-tooltip);
+                    position: absolute;
+                    bottom: 120%;
+                    right: 50%;
+                    transform: translateX(50%);
+                    padding: 0.5rem 1rem;
+                    background-color: #1f2937;
+                    color: white;
+                    border-radius: 0.375rem;
+                    font-size: 0.875rem;
+                    white-space: nowrap;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: all 0.2s ease;
+                }
+                .compare-button:hover:before {
+                    opacity: 1;
+                    visibility: visible;
+                }
+                html.dark .compare-button:before {
+                    background-color: #374151;
                 }
             </style>
         </head>
@@ -573,8 +596,8 @@ const generateChapterHtml = (
 								}
             </div>
 
-            <div class="compare-button" id="compareButton" onclick="toggleCompare()">
-                <i class="fas fa-columns"></i>
+            <div class="compare-button" id="compareButton" onclick="toggleCompare()" data-tooltip="Compare original and AI rewritten text">
+                <i class="fas fa-columns fa-lg"></i>
             </div>
 
             <script>
@@ -650,7 +673,9 @@ const generateChapterHtml = (
                         
                         // Show compare button only if AI is enabled
                         if (enabled) {
-                            compareButton.classList.add('show');
+                            setTimeout(() => {
+                                compareButton.classList.add('show');
+                            }, 100);
                         }
                     } catch (error) {
                         console.error('Failed to get AI preference:', error);
@@ -658,7 +683,9 @@ const generateChapterHtml = (
                         const savedAIState = localStorage.getItem('aiRewrite') === 'true';
                         aiToggle.checked = savedAIState;
                         if (savedAIState) {
-                            compareButton.classList.add('show');
+                            setTimeout(() => {
+                                compareButton.classList.add('show');
+                            }, 100);
                         }
                     }
                 });
