@@ -83,7 +83,8 @@ export const readChapter = async (
 	novelId: string,
 	volume: string,
 	chapter: string,
-	useAI: boolean = false
+	useAI: boolean = false,
+	compare: boolean = false
 ): Promise<any> => {
 	try {
 		const novelPath = await getNovelPath(novelId)
@@ -92,24 +93,100 @@ export const readChapter = async (
 		const chapterData = JSON.parse(content)
 
 		const plainText = chapterData.body
-			.replace(/<\/p>/g, '\n\n\n')
+			.replace(/<\/p>/g, '\n\n')
 			.replace(/<p>/g, '')
 			.replace(/<br\s*\/?>/g, '\n')
 			.replace(/<[^>]*>/g, '')
 			.trim()
 
+		// Split into paragraphs and clean up empty lines
+		const splitIntoParagraphs = (text: string): string[] => {
+			return text
+				.split(/\n\s*\n/) // Split on one or more blank lines
+				.map((p: string) => p.replace(/\s+/g, ' ').trim()) // Normalize whitespace
+				.filter((p: string) => p.length > 0)
+				.filter(
+					(p: string) =>
+						!p.startsWith('Translator:') && !p.startsWith('Editor:')
+				)
+		}
+
+		const originalParagraphs = splitIntoParagraphs(plainText)
+
+		// Try to extract existing AI content first
+		const existingBody = chapterData.body
+		const aiContent =
+			existingBody
+				.match(/<p class="ai-text">(.*?)<\/p>/g)
+				?.map((p: string) =>
+					p.replace(/<p class="ai-text">/, '').replace(/<\/p>/, '')
+				)
+				?.filter((p: string) => p !== '(No AI rewrite available)') || []
+
+		// If AI is not enabled, return original content
 		if (!useAI) {
 			return chapterData
 		}
 
-		let result = plainText
-		result = await askAI({
-			question: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} ---\n ${plainText}`,
-		})
-		const formattedResult = result
-			.split('\n\n')
-			.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
-			.join('\n')
+		// If we have existing AI content, use it
+		let aiParagraphs: string[]
+		if (aiContent.length > 0) {
+			aiParagraphs = aiContent
+		} else {
+			// Only make AI call if AI is enabled and we don't have existing content
+			const result = await askAI({
+				question: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} ---\n ${plainText}`,
+			})
+			aiParagraphs = splitIntoParagraphs(result)
+		}
+
+		let formattedResult
+		if (useAI) {
+			// Always include both AI and original content when AI is enabled
+			const pairs: string[] = []
+			const maxLength = Math.max(originalParagraphs.length, aiParagraphs.length)
+
+			for (let i = 0; i < maxLength; i++) {
+				const originalPara = originalParagraphs[i]
+				const aiPara = aiParagraphs[i]
+
+				if (originalPara && aiPara) {
+					pairs.push(
+						`<div class="paragraph-pair">
+							<p class="ai-text">${aiPara}</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+								compare ? 'block' : 'none'
+							}">${originalPara}</p>
+						</div>`
+					)
+				} else if (originalPara) {
+					pairs.push(
+						`<div class="paragraph-pair">
+							<p class="ai-text">(No AI rewrite available)</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+								compare ? 'block' : 'none'
+							}">${originalPara}</p>
+						</div>`
+					)
+				} else if (aiPara) {
+					pairs.push(
+						`<div class="paragraph-pair">
+							<p class="ai-text">${aiPara}</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+								compare ? 'block' : 'none'
+							}">(No original text available)</p>
+						</div>`
+					)
+				}
+			}
+
+			formattedResult = pairs.join('\n')
+		} else {
+			// If AI is not enabled, just show original paragraphs
+			formattedResult = originalParagraphs
+				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+				.join('\n')
+		}
 
 		return {
 			...chapterData,
