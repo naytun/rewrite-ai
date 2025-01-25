@@ -267,6 +267,7 @@ const generateChapterHtml = (
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${chapterData.title}</title>
             <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
             <style>
                 .chapter-content {
                     max-width: 800px;
@@ -314,7 +315,8 @@ const generateChapterHtml = (
                 .toggle-label {
                     display: flex;
                     font-size: 1rem;
-                    align-items: center;
+                    align-items: right;
+                    margin-left: 1rem;
                     gap: 0.5rem;
                     cursor: pointer;
                 }
@@ -467,6 +469,38 @@ const generateChapterHtml = (
                         gap: 2rem;
                     }
                 }
+                .compare-button {
+                    position: fixed;
+                    bottom: 80px;
+                    right: 20px;
+                    width: 56px;
+                    height: 56px;
+                    border-radius: 50%;
+                    background-color: #9ca3af;
+                    color: white;
+                    display: none;  /* Hidden by default */
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    transition: all 0.3s ease;
+                    z-index: 100;
+                }
+                .compare-button.show {
+                    display: flex;  /* Show when AI is enabled */
+                }
+                .compare-button.active {
+                    background-color: #3b82f6;
+                }
+                .compare-button:hover {
+                    transform: scale(1.1);
+                }
+                html.dark .compare-button {
+                    background-color: #4b5563;
+                }
+                html.dark .compare-button.active {
+                    background-color: #3b82f6;
+                }
             </style>
         </head>
         <body class="bg-gray-200">
@@ -483,13 +517,6 @@ const generateChapterHtml = (
                             <span>AI Rewrite</span>
                             <div class="toggle-switch">
                                 <input type="checkbox" id="aiToggle" onchange="toggleAI()">
-                                <span class="toggle-slider"></span>
-                            </div>
-                        </label>
-                        <label class="toggle-label">
-                            <span>Compare</span>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="compareToggle" onchange="toggleCompare()">
                                 <span class="toggle-slider"></span>
                             </div>
                         </label>
@@ -546,6 +573,10 @@ const generateChapterHtml = (
 								}
             </div>
 
+            <div class="compare-button" id="compareButton" onclick="toggleCompare()">
+                <i class="fas fa-columns"></i>
+            </div>
+
             <script>
                 // Check for dark mode preference
                 if (localStorage.getItem('darkMode') === 'true') {
@@ -581,11 +612,11 @@ const generateChapterHtml = (
                     document.getElementById('loading').classList.add('active');
                 }
 
-                // Initialize AI toggle state from backend
+                // Initialize AI toggle state and compare button visibility
                 document.addEventListener('DOMContentLoaded', async () => {
                     const aiToggle = document.getElementById('aiToggle');
-                    const compareToggle = document.getElementById('compareToggle');
                     const darkModeToggle = document.getElementById('darkModeToggle');
+                    const compareButton = document.getElementById('compareButton');
                     
                     // Initialize dark mode
                     const isDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -594,9 +625,11 @@ const generateChapterHtml = (
                         darkModeToggle.checked = true;
                     }
 
-                    // Initialize compare mode
+                    // Initialize compare mode from URL
                     const urlParams = new URLSearchParams(window.location.search);
-                    compareToggle.checked = urlParams.get('compare') === 'true';
+                    if (urlParams.get('compare') === 'true') {
+                        compareButton.classList.add('active');
+                    }
                     
                     try {
                         // Get AI preference from backend
@@ -613,29 +646,28 @@ const generateChapterHtml = (
                         const { enabled } = await response.json();
                         console.log('Initial AI state:', enabled);
                         aiToggle.checked = enabled;
+                        localStorage.setItem('aiRewrite', enabled.toString());
+                        
+                        // Show compare button only if AI is enabled
+                        if (enabled) {
+                            compareButton.classList.add('show');
+                        }
                     } catch (error) {
                         console.error('Failed to get AI preference:', error);
-                        aiToggle.checked = false;
-                    }
-                });
-
-                // Dark mode toggle functionality
-                document.getElementById('darkModeToggle').addEventListener('change', (e) => {
-                    const isDark = e.target.checked;
-                    if (isDark) {
-                        document.documentElement.classList.add('dark');
-                        localStorage.setItem('darkMode', 'true');
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                        localStorage.setItem('darkMode', 'false');
+                        // Use localStorage as fallback
+                        const savedAIState = localStorage.getItem('aiRewrite') === 'true';
+                        aiToggle.checked = savedAIState;
+                        if (savedAIState) {
+                            compareButton.classList.add('show');
+                        }
                     }
                 });
 
                 // AI Toggle functionality
                 async function toggleAI() {
                     const aiToggle = document.getElementById('aiToggle');
-                    const compareToggle = document.getElementById('compareToggle');
-                    showLoading();
+                    const compareButton = document.getElementById('compareButton');
+                    const isEnabled = aiToggle.checked;
                     
                     try {
                         // Send toggle state to backend
@@ -645,7 +677,7 @@ const generateChapterHtml = (
                                 'Content-Type': 'application/json',
                                 'Accept': 'application/json'
                             },
-                            body: JSON.stringify({ enabled: aiToggle.checked })
+                            body: JSON.stringify({ enabled: isEnabled })
                         });
                         
                         if (!response.ok) {
@@ -655,53 +687,63 @@ const generateChapterHtml = (
                         const result = await response.json();
                         console.log('AI toggle response:', result);
                         
-                        if (result.enabled !== aiToggle.checked) {
-                            aiToggle.checked = result.enabled;
-                        }
+                        // Store the AI state in localStorage
+                        localStorage.setItem('aiRewrite', isEnabled.toString());
 
-                        // If AI is disabled, also disable compare mode
-                        if (!aiToggle.checked && compareToggle.checked) {
-                            compareToggle.checked = false;
+                        // Show/hide compare button based on AI state
+                        if (isEnabled) {
+                            compareButton.classList.add('show');
+                        } else {
+                            compareButton.classList.remove('show', 'active');
+                            // Remove compare parameter if AI is disabled
                             const currentUrl = new URL(window.location.href);
                             currentUrl.searchParams.delete('compare');
                             window.location.href = currentUrl.toString();
                             return;
                         }
                         
-                        // Reload page to get new content
+                        // Show loading and reload page to get new content
+                        showLoading();
                         window.location.reload();
                     } catch (error) {
                         console.error('Failed to save AI preference:', error);
+                        // Revert the toggle if the API call fails
+                        aiToggle.checked = !isEnabled;
+                        localStorage.setItem('aiRewrite', (!isEnabled).toString());
+                        compareButton.classList.toggle('show', !isEnabled);
                         document.getElementById('loading').classList.remove('active');
                     }
                 }
 
                 // Compare Toggle functionality
-                async function toggleCompare() {
-                    const compareToggle = document.getElementById('compareToggle');
+                function toggleCompare() {
+                    const compareButton = document.getElementById('compareButton');
                     const aiToggle = document.getElementById('aiToggle');
                     
-                    try {
-                        // Only allow compare when AI is enabled
-                        if (compareToggle.checked && !aiToggle.checked) {
-                            compareToggle.checked = false;
-                            alert('AI Rewrite must be enabled to use Compare mode');
-                            return;
-                        }
-                        
-                        // Toggle visibility of original text paragraphs
-                        const originalTexts = document.querySelectorAll('.original-text');
-                        originalTexts.forEach(text => {
-                            text.style.display = compareToggle.checked ? 'block' : 'none';
-                        });
-                        
-                        // Update URL without reloading
-                        const currentUrl = new URL(window.location.href);
-                        currentUrl.searchParams.set('compare', compareToggle.checked);
-                        window.history.pushState({}, '', currentUrl.toString());
-                    } catch (error) {
-                        console.error('Failed to toggle compare mode:', error);
+                    // Only allow compare when AI is enabled
+                    if (!aiToggle.checked) {
+                        alert('AI Rewrite must be enabled to use Compare mode');
+                        return;
                     }
+
+                    // Toggle the active state of the button
+                    const isCompareMode = compareButton.classList.contains('active');
+                    if (isCompareMode) {
+                        compareButton.classList.remove('active');
+                    } else {
+                        compareButton.classList.add('active');
+                    }
+                    
+                    // Update URL and reload the page
+                    const currentUrl = new URL(window.location.href);
+                    if (isCompareMode) {
+                        currentUrl.searchParams.delete('compare');
+                    } else {
+                        currentUrl.searchParams.set('compare', 'true');
+                    }
+                    
+                    showLoading();
+                    window.location.href = currentUrl.toString();
                 }
 
                 // Keyboard navigation
