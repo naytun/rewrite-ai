@@ -107,7 +107,10 @@ export const readChapter = async (
 				.filter((p: string) => p.length > 0)
 				.filter(
 					(p: string) =>
-						!p.startsWith('Translator:') && !p.startsWith('Editor:')
+						!p.startsWith('Translator:') &&
+						!p.startsWith('Editor:') &&
+						!p.startsWith('Chapter') && // Remove chapter headers
+						p.length > 5 // Remove very short fragments
 				)
 		}
 
@@ -119,9 +122,17 @@ export const readChapter = async (
 			existingBody
 				.match(/<p class="ai-text">(.*?)<\/p>/g)
 				?.map((p: string) =>
-					p.replace(/<p class="ai-text">/, '').replace(/<\/p>/, '')
+					p
+						.replace(/<p class="ai-text">/, '')
+						.replace(/<\/p>/, '')
+						.trim()
 				)
-				?.filter((p: string) => p !== '(No AI rewrite available)') || []
+				?.filter(
+					(p: string) =>
+						p !== '(No AI rewrite available)' &&
+						p.length > 5 &&
+						!p.startsWith('Chapter')
+				) || []
 
 		// If AI is not enabled, return original content
 		if (!useAI) {
@@ -144,7 +155,7 @@ export const readChapter = async (
 		if (useAI) {
 			// Always include both AI and original content when AI is enabled
 			const pairs: string[] = []
-			const maxLength = Math.max(originalParagraphs.length, aiParagraphs.length)
+			const maxLength = Math.min(originalParagraphs.length, aiParagraphs.length)
 
 			for (let i = 0; i < maxLength; i++) {
 				const originalPara = originalParagraphs[i]
