@@ -300,6 +300,10 @@ const generateChapterHtml = (
                     display: flex;
                     justify-content: center;
                     gap: 1rem;
+                    transition: transform 0.3s ease;
+                }
+                .navigation.hidden {
+                    transform: translateY(100%);
                 }
                 .toggle-container {
                     display: flex;
@@ -538,6 +542,31 @@ const generateChapterHtml = (
                     document.documentElement.classList.add('dark');
                     darkModeToggle.checked = true;
                 }
+
+                // Handle navigation bar visibility on scroll
+                let lastScrollY = window.scrollY;
+                let scrollThreshold = window.innerHeight * 0.2; // 20% of window height
+                const nav = document.querySelector('.navigation');
+
+                window.addEventListener('scroll', () => {
+                    const currentScrollY = window.scrollY;
+                    
+                    // Show nav when scrolling up or at top
+                    if (currentScrollY < lastScrollY || currentScrollY < scrollThreshold) {
+                        nav.classList.remove('hidden');
+                    } 
+                    // Hide nav when scrolling down and past threshold
+                    else if (currentScrollY > scrollThreshold) {
+                        nav.classList.add('hidden');
+                    }
+                    
+                    lastScrollY = currentScrollY;
+                });
+
+                // Recalculate threshold on window resize
+                window.addEventListener('resize', () => {
+                    scrollThreshold = window.innerHeight * 0.2;
+                });
 
                 function showLoading() {
                     document.getElementById('loading').classList.add('active');
