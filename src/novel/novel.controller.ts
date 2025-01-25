@@ -313,6 +313,7 @@ const generateChapterHtml = (
                 }
                 .toggle-label {
                     display: flex;
+                    font-size: 1rem;
                     align-items: center;
                     gap: 0.5rem;
                     cursor: pointer;
@@ -475,9 +476,7 @@ const generateChapterHtml = (
 
             <div class="chapter-content">
                 <div class="flex justify-between items-center mb-8">
-                    <a href="/api/novel/novels/${encodeURIComponent(
-											currentNovelId
-										)}/chapters" class="back-button" onclick="showLoading()">← Back to Chapter List</a>
+                    <a href="/" class="back-button" onclick="showLoading()">← Back to Home</a>
                     
                     <div class="toggle-container">
                         <label class="toggle-label">
@@ -681,24 +680,27 @@ const generateChapterHtml = (
                 async function toggleCompare() {
                     const compareToggle = document.getElementById('compareToggle');
                     const aiToggle = document.getElementById('aiToggle');
-                    showLoading();
                     
                     try {
                         // Only allow compare when AI is enabled
                         if (compareToggle.checked && !aiToggle.checked) {
                             compareToggle.checked = false;
                             alert('AI Rewrite must be enabled to use Compare mode');
-                            document.getElementById('loading').classList.remove('active');
                             return;
                         }
                         
-                        // Reload page to get new content
+                        // Toggle visibility of original text paragraphs
+                        const originalTexts = document.querySelectorAll('.original-text');
+                        originalTexts.forEach(text => {
+                            text.style.display = compareToggle.checked ? 'block' : 'none';
+                        });
+                        
+                        // Update URL without reloading
                         const currentUrl = new URL(window.location.href);
                         currentUrl.searchParams.set('compare', compareToggle.checked);
-                        window.location.href = currentUrl.toString();
+                        window.history.pushState({}, '', currentUrl.toString());
                     } catch (error) {
                         console.error('Failed to toggle compare mode:', error);
-                        document.getElementById('loading').classList.remove('active');
                     }
                 }
 

@@ -99,15 +99,6 @@ export const readChapter = async (
 			.replace(/<[^>]*>/g, '')
 			.trim()
 
-		if (!useAI) {
-			return chapterData
-		}
-
-		let result = plainText
-		result = await askAI({
-			question: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} ---\n ${plainText}`,
-		})
-
 		// Split into paragraphs and clean up empty lines
 		const splitIntoParagraphs = (text: string): string[] => {
 			return text
@@ -121,11 +112,37 @@ export const readChapter = async (
 		}
 
 		const originalParagraphs = splitIntoParagraphs(plainText)
-		const aiParagraphs = splitIntoParagraphs(result)
+
+		// Try to extract existing AI content first
+		const existingBody = chapterData.body
+		const aiContent =
+			existingBody
+				.match(/<p class="ai-text">(.*?)<\/p>/g)
+				?.map((p: string) =>
+					p.replace(/<p class="ai-text">/, '').replace(/<\/p>/, '')
+				)
+				?.filter((p: string) => p !== '(No AI rewrite available)') || []
+
+		// If AI is not enabled, return original content
+		if (!useAI) {
+			return chapterData
+		}
+
+		// If we have existing AI content, use it
+		let aiParagraphs: string[]
+		if (aiContent.length > 0) {
+			aiParagraphs = aiContent
+		} else {
+			// Only make AI call if AI is enabled and we don't have existing content
+			const result = await askAI({
+				question: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} ---\n ${plainText}`,
+			})
+			aiParagraphs = splitIntoParagraphs(result)
+		}
 
 		let formattedResult
-		if (compare && useAI) {
-			// Process paragraphs in pairs
+		if (useAI) {
+			// Always include both AI and original content when AI is enabled
 			const pairs: string[] = []
 			const maxLength = Math.max(originalParagraphs.length, aiParagraphs.length)
 
@@ -137,21 +154,27 @@ export const readChapter = async (
 					pairs.push(
 						`<div class="paragraph-pair">
 							<p class="ai-text">${aiPara}</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em;">${originalPara}</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+								compare ? 'block' : 'none'
+							}">${originalPara}</p>
 						</div>`
 					)
 				} else if (originalPara) {
 					pairs.push(
 						`<div class="paragraph-pair">
 							<p class="ai-text">(No AI rewrite available)</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em;">${originalPara}</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+								compare ? 'block' : 'none'
+							}">${originalPara}</p>
 						</div>`
 					)
 				} else if (aiPara) {
 					pairs.push(
 						`<div class="paragraph-pair">
 							<p class="ai-text">${aiPara}</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em;">(No original text available)</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+								compare ? 'block' : 'none'
+							}">(No original text available)</p>
 						</div>`
 					)
 				}
@@ -159,7 +182,8 @@ export const readChapter = async (
 
 			formattedResult = pairs.join('\n')
 		} else {
-			formattedResult = aiParagraphs
+			// If AI is not enabled, just show original paragraphs
+			formattedResult = originalParagraphs
 				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
 				.join('\n')
 		}
