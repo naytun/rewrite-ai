@@ -93,7 +93,7 @@ export const readChapter = async (
 		const chapterData = JSON.parse(content)
 
 		const plainText = chapterData.body
-			.replace(/<\/p>/g, '\n\n\n')
+			.replace(/<\/p>/g, '\n\n')
 			.replace(/<p>/g, '')
 			.replace(/<br\s*\/?>/g, '\n')
 			.replace(/<[^>]*>/g, '')
@@ -108,17 +108,56 @@ export const readChapter = async (
 			question: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} ---\n ${plainText}`,
 		})
 
-		const originalParagraphs = plainText.split('\n\n')
-		const aiParagraphs = result.split('\n\n')
+		// Split into paragraphs and clean up empty lines
+		const splitIntoParagraphs = (text: string): string[] => {
+			return text
+				.split(/\n\s*\n/) // Split on one or more blank lines
+				.map((p: string) => p.replace(/\s+/g, ' ').trim()) // Normalize whitespace
+				.filter((p: string) => p.length > 0)
+				.filter(
+					(p: string) =>
+						!p.startsWith('Translator:') && !p.startsWith('Editor:')
+				)
+		}
+
+		const originalParagraphs = splitIntoParagraphs(plainText)
+		const aiParagraphs = splitIntoParagraphs(result)
 
 		let formattedResult
 		if (compare && useAI) {
-			formattedResult = aiParagraphs
-				.map((paragraph: string, index: number) => {
-					const originalPara = originalParagraphs[index] || ''
-					return `<p>${paragraph.trim()}</p>\n<p style="color: #808080; font-style: italic;">${originalPara.trim()}</p>`
-				})
-				.join('\n')
+			// Process paragraphs in pairs
+			const pairs: string[] = []
+			const maxLength = Math.max(originalParagraphs.length, aiParagraphs.length)
+
+			for (let i = 0; i < maxLength; i++) {
+				const originalPara = originalParagraphs[i]
+				const aiPara = aiParagraphs[i]
+
+				if (originalPara && aiPara) {
+					pairs.push(
+						`<div class="paragraph-pair">
+							<p class="ai-text">${aiPara}</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em;">${originalPara}</p>
+						</div>`
+					)
+				} else if (originalPara) {
+					pairs.push(
+						`<div class="paragraph-pair">
+							<p class="ai-text">(No AI rewrite available)</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em;">${originalPara}</p>
+						</div>`
+					)
+				} else if (aiPara) {
+					pairs.push(
+						`<div class="paragraph-pair">
+							<p class="ai-text">${aiPara}</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em;">(No original text available)</p>
+						</div>`
+					)
+				}
+			}
+
+			formattedResult = pairs.join('\n')
 		} else {
 			formattedResult = aiParagraphs
 				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)

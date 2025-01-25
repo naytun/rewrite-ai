@@ -815,10 +815,6 @@ export const readChapter = async (
 			console.error('No chapter data returned')
 			throw new Error('Failed to get chapter content')
 		}
-		console.log(
-			'> Chapter content fetched successfully',
-			chapterData?.body?.substring(100, 400)
-		)
 
 		const { chapters } = await getChapters(novelId)
 
