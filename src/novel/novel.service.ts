@@ -83,7 +83,8 @@ export const readChapter = async (
 	novelId: string,
 	volume: string,
 	chapter: string,
-	useAI: boolean = false
+	useAI: boolean = false,
+	compare: boolean = false
 ): Promise<any> => {
 	try {
 		const novelPath = await getNovelPath(novelId)
@@ -106,10 +107,23 @@ export const readChapter = async (
 		result = await askAI({
 			question: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} ---\n ${plainText}`,
 		})
-		const formattedResult = result
-			.split('\n\n')
-			.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
-			.join('\n')
+
+		const originalParagraphs = plainText.split('\n\n')
+		const aiParagraphs = result.split('\n\n')
+
+		let formattedResult
+		if (compare && useAI) {
+			formattedResult = aiParagraphs
+				.map((paragraph: string, index: number) => {
+					const originalPara = originalParagraphs[index] || ''
+					return `<p>${paragraph.trim()}</p>\n<p style="color: #808080; font-style: italic;">${originalPara.trim()}</p>`
+				})
+				.join('\n')
+		} else {
+			formattedResult = aiParagraphs
+				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+				.join('\n')
+		}
 
 		return {
 			...chapterData,

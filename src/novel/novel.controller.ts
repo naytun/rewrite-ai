@@ -311,11 +311,17 @@ const generateChapterHtml = (
                     gap: 1rem;
                     margin-bottom: 1rem;
                 }
+                .toggle-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    cursor: pointer;
+                }
                 .toggle-switch {
                     position: relative;
                     display: inline-block;
-                    width: 36px;
-                    height: 20px;
+                    width: 48px;
+                    height: 24px;
                 }
                 .toggle-switch input {
                     opacity: 0;
@@ -331,15 +337,15 @@ const generateChapterHtml = (
                     bottom: 0;
                     background-color: #ccc;
                     transition: .4s;
-                    border-radius: 20px;
+                    border-radius: 24px;
                 }
                 .toggle-slider:before {
                     position: absolute;
                     content: "";
-                    height: 14px;
-                    width: 14px;
-                    left: 3px;
-                    bottom: 3px;
+                    height: 16px;
+                    width: 16px;
+                    left: 4px;
+                    bottom: 4px;
                     background-color: white;
                     transition: .4s;
                     border-radius: 50%;
@@ -348,15 +354,13 @@ const generateChapterHtml = (
                     background-color: #3b82f6;
                 }
                 input:checked + .toggle-slider:before {
-                    transform: translateX(16px);
+                    transform: translateX(24px);
                 }
-                .toggle-label {
-                    font-size: 0.9rem;
-                    color: #4b5563;
-                    margin-left: 1rem;
+                html.dark .toggle-slider {
+                    background-color: #4b5563;
                 }
-                html.dark .toggle-label {
-                    color: #e5e7eb;
+                html.dark input:checked + .toggle-slider {
+                    background-color: #60a5fa;
                 }
                 .back-button {
                     display: inline-flex;
@@ -475,21 +479,28 @@ const generateChapterHtml = (
 											currentNovelId
 										)}/chapters" class="back-button" onclick="showLoading()">← Back to Chapter List</a>
                     
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center">
-                            <span class="toggle-label">AI Rewrite</span>
-                            <label class="toggle-switch ml-2">
+                    <div class="toggle-container">
+                        <label class="toggle-label">
+                            <span>AI Rewrite</span>
+                            <div class="toggle-switch">
                                 <input type="checkbox" id="aiToggle" onchange="toggleAI()">
                                 <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="toggle-label">Dark Mode</span>
-                            <label class="toggle-switch ml-2">
+                            </div>
+                        </label>
+                        <label class="toggle-label">
+                            <span>Compare</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="compareToggle" onchange="toggleCompare()">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                        <label class="toggle-label">
+                            <span>Dark Mode</span>
+                            <div class="toggle-switch">
                                 <input type="checkbox" id="darkModeToggle">
                                 <span class="toggle-slider"></span>
-                            </label>
-                        </div>
+                            </div>
+                        </label>
                     </div>
                 </div>
 
@@ -540,7 +551,6 @@ const generateChapterHtml = (
                 // Check for dark mode preference
                 if (localStorage.getItem('darkMode') === 'true') {
                     document.documentElement.classList.add('dark');
-                    darkModeToggle.checked = true;
                 }
 
                 // Handle navigation bar visibility on scroll
@@ -572,9 +582,47 @@ const generateChapterHtml = (
                     document.getElementById('loading').classList.add('active');
                 }
 
+                // Initialize AI toggle state from backend
+                document.addEventListener('DOMContentLoaded', async () => {
+                    const aiToggle = document.getElementById('aiToggle');
+                    const compareToggle = document.getElementById('compareToggle');
+                    const darkModeToggle = document.getElementById('darkModeToggle');
+                    
+                    // Initialize dark mode
+                    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+                    if (isDarkMode) {
+                        document.documentElement.classList.add('dark');
+                        darkModeToggle.checked = true;
+                    }
+
+                    // Initialize compare mode
+                    const urlParams = new URLSearchParams(window.location.search);
+                    compareToggle.checked = urlParams.get('compare') === 'true';
+                    
+                    try {
+                        // Get AI preference from backend
+                        const response = await fetch('/api/novel/settings/ai-rewrite', {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to get AI settings');
+                        }
+                        
+                        const { enabled } = await response.json();
+                        console.log('Initial AI state:', enabled);
+                        aiToggle.checked = enabled;
+                    } catch (error) {
+                        console.error('Failed to get AI preference:', error);
+                        aiToggle.checked = false;
+                    }
+                });
+
                 // Dark mode toggle functionality
-                darkModeToggle.addEventListener('change', () => {
-                    const isDark = darkModeToggle.checked;
+                document.getElementById('darkModeToggle').addEventListener('change', (e) => {
+                    const isDark = e.target.checked;
                     if (isDark) {
                         document.documentElement.classList.add('dark');
                         localStorage.setItem('darkMode', 'true');
@@ -584,22 +632,10 @@ const generateChapterHtml = (
                     }
                 });
 
-                // Save current chapter as last read
-                const novelId = '${currentNovelId}';
-                const currentVolume = '${navigation.current.volume}';
-                const currentChapter = '${navigation.current.chapter}';
-                
-                localStorage.setItem('lastChapter_' + novelId, currentChapter);
-                localStorage.setItem('lastVolume_' + novelId, currentVolume);
-
-                function saveLastChapter(volume, chapter) {
-                    localStorage.setItem('lastChapter_' + novelId, chapter);
-                    localStorage.setItem('lastVolume_' + novelId, volume);
-                }
-
                 // AI Toggle functionality
                 async function toggleAI() {
                     const aiToggle = document.getElementById('aiToggle');
+                    const compareToggle = document.getElementById('compareToggle');
                     showLoading();
                     
                     try {
@@ -623,6 +659,15 @@ const generateChapterHtml = (
                         if (result.enabled !== aiToggle.checked) {
                             aiToggle.checked = result.enabled;
                         }
+
+                        // If AI is disabled, also disable compare mode
+                        if (!aiToggle.checked && compareToggle.checked) {
+                            compareToggle.checked = false;
+                            const currentUrl = new URL(window.location.href);
+                            currentUrl.searchParams.delete('compare');
+                            window.location.href = currentUrl.toString();
+                            return;
+                        }
                         
                         // Reload page to get new content
                         window.location.reload();
@@ -632,29 +677,30 @@ const generateChapterHtml = (
                     }
                 }
 
-                // Initialize AI toggle state from backend
-                document.addEventListener('DOMContentLoaded', async () => {
+                // Compare Toggle functionality
+                async function toggleCompare() {
+                    const compareToggle = document.getElementById('compareToggle');
                     const aiToggle = document.getElementById('aiToggle');
+                    showLoading();
+                    
                     try {
-                        // Get AI preference from backend
-                        const response = await fetch('/api/novel/settings/ai-rewrite', {
-                            headers: {
-                                'Accept': 'application/json'
-                            }
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error('Failed to get AI settings');
+                        // Only allow compare when AI is enabled
+                        if (compareToggle.checked && !aiToggle.checked) {
+                            compareToggle.checked = false;
+                            alert('AI Rewrite must be enabled to use Compare mode');
+                            document.getElementById('loading').classList.remove('active');
+                            return;
                         }
                         
-                        const { enabled } = await response.json();
-                        console.log('Initial AI state:', enabled);
-                        aiToggle.checked = enabled;
+                        // Reload page to get new content
+                        const currentUrl = new URL(window.location.href);
+                        currentUrl.searchParams.set('compare', compareToggle.checked);
+                        window.location.href = currentUrl.toString();
                     } catch (error) {
-                        console.error('Failed to get AI preference:', error);
-                        aiToggle.checked = false;
+                        console.error('Failed to toggle compare mode:', error);
+                        document.getElementById('loading').classList.remove('active');
                     }
-                });
+                }
 
                 // Keyboard navigation
                 document.addEventListener('keydown', (e) => {
@@ -747,16 +793,24 @@ export const readChapter = async (
 ): Promise<void> => {
 	try {
 		const { novelId, volume, chapter } = req.params
+		const compare = req.query.compare === 'true'
 
 		// Use global state for AI preference
 		const useAI = globalState.aiRewrite
 		console.log('AI Rewrite Settings:', {
 			enabled: useAI,
+			compare,
 			globalState: globalState,
 			requestBody: req.body,
 		})
 
-		const chapterData = await getChapterContent(novelId, volume, chapter, useAI)
+		const chapterData = await getChapterContent(
+			novelId,
+			volume,
+			chapter,
+			useAI,
+			compare
+		)
 		if (!chapterData) {
 			console.error('No chapter data returned')
 			throw new Error('Failed to get chapter content')
