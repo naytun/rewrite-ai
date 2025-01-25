@@ -317,6 +317,7 @@ const generateChapterHtml = (
                     font-size: 1rem;
                     align-items: right;
                     margin-left: 1rem;
+                    margin-right: 0.2rem;
                     gap: 0.5rem;
                     cursor: pointer;
                 }
@@ -647,6 +648,18 @@ const generateChapterHtml = (
                         document.documentElement.classList.add('dark');
                         darkModeToggle.checked = true;
                     }
+
+                    // Add dark mode toggle event listener
+                    darkModeToggle.addEventListener('change', () => {
+                        const isDark = darkModeToggle.checked;
+                        if (isDark) {
+                            document.documentElement.classList.add('dark');
+                            localStorage.setItem('darkMode', 'true');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.setItem('darkMode', 'false');
+                        }
+                    });
 
                     // Initialize compare mode from URL
                     const urlParams = new URLSearchParams(window.location.search);
