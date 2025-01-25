@@ -271,21 +271,21 @@ const generateChapterHtml = (
                 .chapter-content {
                     max-width: 800px;
                     margin: 0 auto;
-                    padding: 2rem;
-                    line-height: 1.8;
-                    font-size: 1.125rem;
+                    padding: 4rem;
+                    line-height: 1.7;
+                    font-size: 1.2rem;
                 }
                 .chapter-content p {
                     margin-bottom: 1.5rem;
-                    font-size: 1.125rem;
+                    font-size: 1.35rem;
                     line-height: 1.6;
                 }
                 @media (min-width: 640px) {
                     .chapter-content {
-                        font-size: 1.25rem;
+                        font-size: 1.3rem;
                     }
                     .chapter-content p {
-                        font-size: 1.25rem;
+                        font-size: 1.3rem;
                         line-height: 1.6;
                     }
                 }
@@ -347,9 +347,9 @@ const generateChapterHtml = (
                     transform: translateX(16px);
                 }
                 .toggle-label {
-                    font-size: 0.75rem;
+                    font-size: 0.9rem;
                     color: #4b5563;
-                    margin-right: 0.5rem;
+                    margin-left: 1rem;
                 }
                 html.dark .toggle-label {
                     color: #e5e7eb;
@@ -360,16 +360,17 @@ const generateChapterHtml = (
                     color: #3b82f6;
                     text-decoration: none;
                     padding: 0.5rem 1rem;
+                    padding-left: 0;
                     border-radius: 0.5rem;
                     transition: all 0.2s;
-                    font-size: 0.875rem;
+                    font-size: 0.9rem;
                     font-weight: 500;
                 }
                 .back-button:hover {
                     background: #e5e7eb;
                 }
                 html.dark body {
-                    background-color: #1a1a1a;
+                    background-color: #222;
                     color: #e5e7eb;
                 }
                 html.dark .chapter-content {
@@ -382,6 +383,8 @@ const generateChapterHtml = (
                 html.dark .nav-button {
                     background: #3b82f6;
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                    margin-left: 1rem;
+                    margin-right: 1rem;
                 }
                 html.dark .nav-button:hover {
                     background: #2563eb;
@@ -436,6 +439,8 @@ const generateChapterHtml = (
                     min-width: 120px;
                     text-align: center;
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    margin-left: 1rem;
+                    margin-right: 1rem;
                 }
                 .nav-button:hover {
                     background: #2563eb;
@@ -455,7 +460,7 @@ const generateChapterHtml = (
                 }
             </style>
         </head>
-        <body class="bg-gray-100">
+        <body class="bg-gray-200">
             <div id="loading" class="loading">
                 <div class="spinner"></div>
             </div>
