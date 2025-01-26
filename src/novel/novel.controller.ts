@@ -274,7 +274,7 @@ const generateChapterHtml = (
                     margin: 0 auto;
                     padding: 4rem;
                     line-height: 1.6;
-                    font-size: 1.5rem;
+                    font-size: 1.6rem;
                 }
                 .original-text {
                     display: none !important;
@@ -331,8 +331,8 @@ const generateChapterHtml = (
                     font-size: 1rem;
                     align-items: right;
                     margin-left: 1rem;
-                    margin-right: 0.2rem;
-                    gap: 0.5rem;
+                    margin-right: 1rem;
+                    gap: 1rem;
                     cursor: pointer;
                 }
                 .toggle-switch {
