@@ -588,7 +588,7 @@ const generateChapterHtml = (
 												navigation.prev.volume
 										  )}', '${encodeURIComponent(
 												navigation.prev.chapter
-										  )}')">← Previous</a>`
+										  )}')" >← Previous</a>`
 										: '<span class="nav-button disabled">← Previous</span>'
 								}
                 <a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
@@ -606,7 +606,7 @@ const generateChapterHtml = (
 												navigation.next.volume
 										  )}', '${encodeURIComponent(
 												navigation.next.chapter
-										  )}')">Next →</a>`
+										  )}')" >Next →</a>`
 										: '<span class="nav-button disabled">Next →</span>'
 								}
             </div>
@@ -801,28 +801,40 @@ const generateChapterHtml = (
                     document.querySelector('.chapter-content').classList.toggle('compare-mode');
                 }
 
+                function saveLastChapter(volume, chapter) {
+                    localStorage.setItem('lastChapter_' + '${currentNovelId}', chapter);
+                    localStorage.setItem('lastVolume_' + '${currentNovelId}', volume);
+                }
+
+                // Save current chapter when page loads
+                document.addEventListener('DOMContentLoaded', () => {
+                    const currentVolume = '${navigation.current.volume}';
+                    const currentChapter = '${navigation.current.chapter}';
+                    saveLastChapter(currentVolume, currentChapter);
+                });
+
                 // Keyboard navigation
                 document.addEventListener('keydown', (e) => {
+                    const prevVolume = '${navigation.prev?.volume || ''}';
+                    const prevChapter = '${navigation.prev?.chapter || ''}';
+                    const nextVolume = '${navigation.next?.volume || ''}';
+                    const nextChapter = '${navigation.next?.chapter || ''}';
+                    const novelId = '${currentNovelId}';
+
                     if (e.key === 'ArrowLeft' && ${!!navigation.prev}) {
                         showLoading();
-                        saveLastChapter('${navigation.prev?.volume || ''}', '${
-		navigation.prev?.chapter || ''
-	}');
-                        window.location.href = '/api/novel/novels/${encodeURIComponent(
-													currentNovelId
-												)}/chapters/${encodeURIComponent(
-		navigation.prev?.volume || ''
-	)}/${encodeURIComponent(navigation.prev?.chapter || '')}';
+                        saveLastChapter(prevVolume, prevChapter);
+                        window.location.href = '/api/novel/novels/' + 
+                            encodeURIComponent(novelId) + '/chapters/' + 
+                            encodeURIComponent(prevVolume) + '/' + 
+                            encodeURIComponent(prevChapter);
                     } else if (e.key === 'ArrowRight' && ${!!navigation.next}) {
                         showLoading();
-                        saveLastChapter('${navigation.next?.volume || ''}', '${
-		navigation.next?.chapter || ''
-	}');
-                        window.location.href = '/api/novel/novels/${encodeURIComponent(
-													currentNovelId
-												)}/chapters/${encodeURIComponent(
-		navigation.next?.volume || ''
-	)}/${encodeURIComponent(navigation.next?.chapter || '')}';
+                        saveLastChapter(nextVolume, nextChapter);
+                        window.location.href = '/api/novel/novels/' + 
+                            encodeURIComponent(novelId) + '/chapters/' + 
+                            encodeURIComponent(nextVolume) + '/' + 
+                            encodeURIComponent(nextChapter);
                     }
                 });
             </script>
