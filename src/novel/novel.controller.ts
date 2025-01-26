@@ -274,7 +274,7 @@ const generateChapterHtml = (
                     margin: 0 auto;
                     padding: 4rem;
                     line-height: 1.6;
-                    font-size: 1.4rem;
+                    font-size: 1.5rem;
                 }
                 .original-text {
                     display: none !important;
@@ -548,7 +548,7 @@ const generateChapterHtml = (
 
             <div class="chapter-content">
                 <div class="flex justify-between items-center mb-8">
-                    <a href="/" class="back-button" onclick="showLoading()">← Back to Home</a>
+                    <a href="/" class="back-button" onclick="showLoading()">← Back to Library</a>
                     
                     <div class="toggle-container">
                         <label class="toggle-label">
