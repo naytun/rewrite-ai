@@ -152,6 +152,7 @@ const generateChapterListHtml = (
                     margin-bottom: 1rem;
                     border-radius: 0.5rem;
                     transition: all 0.2s;
+                    font-size: 1.5rem;
                 }
                 .back-button:hover {
                     background: #e5e7eb;
@@ -329,9 +330,8 @@ const generateChapterHtml = (
                 .toggle-label {
                     display: flex;
                     font-size: 1rem;
-                    align-items: right;
-                    margin-left: 1rem;
-                    margin-right: 1rem;
+                    align-items: center;
+                    margin-left: 1.5rem;
                     gap: 1rem;
                     cursor: pointer;
                 }
@@ -389,7 +389,7 @@ const generateChapterHtml = (
                     padding-left: 0;
                     border-radius: 0.5rem;
                     transition: all 0.2s;
-                    font-size: 0.9rem;
+                    font-size: 1rem;
                     font-weight: 500;
                 }
                 .back-button:hover {
