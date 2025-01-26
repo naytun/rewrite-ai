@@ -274,8 +274,9 @@ const generateChapterHtml = (
                     max-width: 800px;
                     margin: 0 auto;
                     padding: 4rem;
+                    padding-top: 1rem;
                     line-height: 1.6;
-                    font-size: 1.6rem;
+                    font-size: 1.5rem;
                 }
                 .original-text {
                     display: none !important;
@@ -293,15 +294,15 @@ const generateChapterHtml = (
                 }
                 .chapter-content p {
                     margin-bottom: 1.5rem;
-                    font-size: 1.4rem;
+                    font-size: 1.5rem;
                     line-height: 1.6;
                 }
                 @media (min-width: 640px) {
                     .chapter-content {
-                        font-size: 1.4rem;
+                        font-size: 1.5rem;
                     }
                     .chapter-content p {
-                        font-size: 1.4rem;
+                        font-size: 1.5rem;
                         line-height: 1.6;
                     }
                 }
@@ -325,7 +326,6 @@ const generateChapterHtml = (
                     display: flex;
                     align-items: center;
                     gap: 1rem;
-                    margin-bottom: 1rem;
                 }
                 .toggle-label {
                     display: flex;
@@ -460,13 +460,14 @@ const generateChapterHtml = (
                     color: white;
                     cursor: pointer;
                     transition: all 0.2s;
-                    font-size: 1rem;
+                    font-size: 1.4rem;
                     font-weight: 500;
                     min-width: 120px;
                     text-align: center;
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                     margin-left: 1rem;
                     margin-right: 1rem;
+                    opacity: 0.8;
                 }
                 .nav-button:hover {
                     background: #2563eb;
@@ -552,14 +553,14 @@ const generateChapterHtml = (
                     
                     <div class="toggle-container">
                         <label class="toggle-label">
-                            <span>AI Rewrite</span>
+                            <span>AI Rewrite </span>
                             <div class="toggle-switch">
                                 <input type="checkbox" id="aiToggle" onchange="toggleAI()">
                                 <span class="toggle-slider"></span>
                             </div>
                         </label>
                         <label class="toggle-label">
-                            <span>Dark Mode</span>
+                            <span>Dark Mode </span>
                             <div class="toggle-switch">
                                 <input type="checkbox" id="darkModeToggle">
                                 <span class="toggle-slider"></span>
