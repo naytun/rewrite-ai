@@ -274,7 +274,7 @@ const generateChapterHtml = (
                     margin: 0 auto;
                     padding: 4rem;
                     line-height: 1.7;
-                    font-size: 1.2rem;
+                    font-size: 1.35rem;
                 }
                 .original-text {
                     display: none !important;
