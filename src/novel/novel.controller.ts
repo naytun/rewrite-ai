@@ -294,15 +294,15 @@ const generateChapterHtml = (
                 }
                 .chapter-content p {
                     margin-bottom: 1.5rem;
-                    font-size: 1.5rem;
+                    font-size: 1.4rem;
                     line-height: 1.6;
                 }
                 @media (min-width: 640px) {
                     .chapter-content {
-                        font-size: 1.5rem;
+                        font-size: 1.4rem;
                     }
                     .chapter-content p {
-                        font-size: 1.5rem;
+                        font-size: 1.4rem;
                         line-height: 1.6;
                     }
                 }
@@ -454,13 +454,13 @@ const generateChapterHtml = (
                     100% { transform: rotate(360deg); }
                 }
                 .nav-button {
-                    padding: 0.75rem 1.5rem;
+                    padding: 0.55rem 1.2rem;
                     border-radius: 9999px;
                     background: #3b82f6;
                     color: white;
                     cursor: pointer;
                     transition: all 0.2s;
-                    font-size: 1.4rem;
+                    font-size: 1.2rem;
                     font-weight: 500;
                     min-width: 120px;
                     text-align: center;
