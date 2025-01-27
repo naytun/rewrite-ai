@@ -53,7 +53,8 @@ export const listChapters = async (
 				const chapters = await fs.readdir(volumePath)
 
 				for (const chapter of chapters) {
-					if (chapter.endsWith('.json')) {
+					// Skip AI-generated files and only include original chapter files
+					if (chapter.endsWith('.json') && !chapter.endsWith('-ai.json')) {
 						chapterList.push({
 							volume,
 							chapter: chapter.replace('.json', ''),
@@ -95,8 +96,27 @@ export const readChapter = async (
 			volume,
 			`${chapter}-ai.json`
 		)
-		const content = await fs.readFile(filePath, 'utf-8')
-		const chapterData = JSON.parse(content)
+
+		// Check if the chapter file exists
+		try {
+			await fs.access(filePath)
+		} catch (error) {
+			console.error(`Chapter file not found: ${filePath}`)
+			throw new Error(`Chapter ${chapter} not found in volume ${volume}`)
+		}
+
+		// Read and parse the chapter file
+		let chapterData
+		try {
+			const content = await fs.readFile(filePath, 'utf-8')
+			chapterData = JSON.parse(content)
+			if (!chapterData || !chapterData.body) {
+				throw new Error('Invalid chapter data format')
+			}
+		} catch (error) {
+			console.error(`Error reading chapter file: ${filePath}`, error)
+			throw new Error(`Failed to read chapter ${chapter} in volume ${volume}`)
+		}
 
 		const plainText = chapterData.body
 			.replace(/<\/p>/g, '\n\n')
@@ -138,11 +158,30 @@ export const readChapter = async (
 			const aiContent = await fs.readFile(aiFilePath, 'utf-8')
 			const aiData = JSON.parse(aiContent)
 
+			// Validate AI data structure
+			if (!aiData || !aiData.body) {
+				console.error('Invalid AI data format:', aiData)
+				throw new Error('Invalid AI data format')
+			}
+
+			// Extract paragraphs from HTML body
+			const aiHtml = aiData.body
+				.replace(/<\/p>/g, '\n\n')
+				.replace(/<p>/g, '')
+				.replace(/<br\s*\/?>/g, '\n')
+				.replace(/<[^>]*>/g, '')
+				.trim()
+
+			aiParagraphs = splitIntoParagraphs(aiHtml)
+
 			// Check if the AI content indicates a failed generation
-			const hasFailedContent = aiData.paragraphs.some((p: string) =>
-				p
-					.toLowerCase()
-					.includes("i'm sorry, but i don't have enough information to answer")
+			const hasFailedContent = aiParagraphs.some(
+				(p: string) =>
+					p
+						.toLowerCase()
+						.includes("i don't have enough information to answer") ||
+					p.toLowerCase().includes('could you clarify your question?') ||
+					p.toLowerCase().includes("i'm not sure i fully understood it")
 			)
 
 			if (hasFailedContent) {
@@ -153,9 +192,18 @@ export const readChapter = async (
 				throw new Error('Failed AI generation detected')
 			}
 
-			aiParagraphs = aiData.paragraphs
 			console.log('Using existing AI content from file:', aiFilePath)
-		} catch (error) {
+		} catch (error: any) {
+			if (error.message === 'Invalid AI data format') {
+				// If the AI file is corrupted, delete it and regenerate
+				try {
+					await fs.unlink(aiFilePath)
+					console.log('Deleted corrupted AI file:', aiFilePath)
+				} catch (unlinkError) {
+					// Ignore if file doesn't exist
+				}
+			}
+
 			// Generate new AI content if file doesn't exist or is invalid
 			console.log('Generating new AI content...')
 			const result = await askAI({
@@ -166,35 +214,62 @@ export const readChapter = async (
 
 			// Split AI result into paragraphs and check for failed generation
 			aiParagraphs = splitIntoParagraphs(result)
-			const hasFailedContent = aiParagraphs.some((p) =>
-				p
-					.toLowerCase()
-					.includes("i'm sorry, but i don't have enough information to answer")
+			const hasFailedContent = aiParagraphs.some(
+				(p) =>
+					p
+						.toLowerCase()
+						.includes(
+							"i'm sorry, but i don't have enough information to answer"
+						) ||
+					p
+						.toLowerCase()
+						.includes("i'm sorry. could you clarify your question?") ||
+					p.toLowerCase().includes("i'm not sure i fully understood it")
 			)
 
 			if (hasFailedContent) {
 				console.error('AI generation failed with insufficient information')
-				throw new Error('AI generation failed with insufficient information')
+				// Fall back to original content
+				formattedResult = originalParagraphs
+					.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+					.join('\n')
+				chapterData.body = formattedResult
+				return chapterData
 			}
 
 			// Save AI content to file
 			try {
+				// Format AI paragraphs in the same HTML structure as original
+				const aiHtml = aiParagraphs
+					.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+					.join('\n')
+
+				// Create AI chapter data with same structure as original
+				const aiChapterData = {
+					...chapterData, // Copy all original metadata
+					body: aiHtml, // Replace body with AI content
+					isAIGenerated: true,
+					generatedAt: new Date().toISOString(),
+				}
+
+				// Wait for the file to be saved before continuing
 				await fs.writeFile(
 					aiFilePath,
-					JSON.stringify(
-						{
-							originalChapter: chapter,
-							timestamp: new Date().toISOString(),
-							paragraphs: aiParagraphs,
-						},
-						null,
-						2
-					),
+					JSON.stringify(aiChapterData, null, 2),
 					'utf-8'
 				)
 				console.log('Saved AI content to file:', aiFilePath)
+
+				// Use the AI content for display
+				aiParagraphs = splitIntoParagraphs(aiHtml)
 			} catch (saveError) {
 				console.error('Error saving AI content:', saveError)
+				// Fall back to original content if we can't save AI content
+				formattedResult = originalParagraphs
+					.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+					.join('\n')
+				chapterData.body = formattedResult
+				return chapterData
 			}
 		}
 

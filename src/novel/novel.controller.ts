@@ -56,7 +56,7 @@ try {
 		const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'))
 		globalState._aiRewrite = settings.enabled
 		globalState._aiPrompt = settings.prompt || ''
-		console.log('Loaded AI settings:', settings)
+		// console.log('Loaded AI settings:', settings)
 	} else {
 		console.log('No saved AI settings found, using defaults:', {
 			enabled: globalState._aiRewrite,
@@ -928,12 +928,12 @@ export const readChapter = async (
 
 		// Use global state for AI preference
 		const useAI = globalState.aiRewrite
-		console.log('AI Rewrite Settings:', {
-			enabled: useAI,
-			compare,
-			globalState: globalState,
-			requestBody: req.body,
-		})
+		// console.log('AI Rewrite Settings:', {
+		// 	enabled: useAI,
+		// 	compare,
+		// 	globalState: globalState,
+		// 	requestBody: req.body,
+		// })
 
 		const chapterData = await getChapterContent(
 			novelId,
