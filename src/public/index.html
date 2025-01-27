@@ -89,6 +89,30 @@
 				height: 100%;
 				margin: 0;
 			}
+
+			/* Settings Modal Dark Mode */
+			html.dark .settings-modal-content {
+				background-color: #1a1a1a;
+				color: #e5e7eb;
+			}
+			html.dark .settings-modal-textarea {
+				background-color: #374151;
+				border-color: #4b5563;
+				color: #e5e7eb;
+				line-height: 1.5rem;
+			}
+			html.dark .settings-modal-textarea::placeholder {
+				color: #9ca3af;
+			}
+			html.dark .settings-modal-label {
+				color: #e5e7eb;
+			}
+			html.dark .settings-modal-close {
+				color: #9ca3af;
+			}
+			html.dark .settings-modal-close:hover {
+				color: #e5e7eb;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-100">
@@ -199,36 +223,33 @@
 			class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50"
 		>
 			<div
-				class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-2xl shadow-lg"
+				class="settings-modal-content bg-gray-50 p-6 rounded-lg w-full max-w-2xl shadow-lg"
 			>
 				<div class="flex justify-between items-center mb-4">
-					<h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+					<h2 class="text-2xl font-bold text-gray-500 transition-colors">
 						Settings
 					</h2>
 					<button
 						id="closeSettingsBtn"
-						class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+						class="settings-modal-close text-gray-500 hover:text-gray-700 transition-colors"
 					>
 						<i class="fas fa-times"></i>
 					</button>
 				</div>
 				<div class="mb-4">
-					<label
-						class="block text-gray-700 dark:text-gray-300 font-bold mb-2"
-						for="aiPrompt"
-					>
+					<label class="settings-modal-label block mb-2" for="aiPrompt">
 						AI Rewrite Instructions
 					</label>
 					<textarea
 						id="aiPrompt"
-						class="w-full h-64 px-3 py-2 text-gray-700 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none transition-colors placeholder-gray-500 dark:placeholder-gray-400"
+						class="settings-modal-textarea w-full h-64 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-colors"
 						placeholder="Enter AI rewrite instructions..."
 					></textarea>
 				</div>
 				<div class="flex justify-end">
 					<button
 						id="saveSettingsBtn"
-						class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+						class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 					>
 						Save
 					</button>
