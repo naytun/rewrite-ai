@@ -3,6 +3,7 @@ import {
 	listChapters as getChapters,
 	readChapter as getChapterContent,
 	listNovels as getNovels,
+	bulkGenerateAIContent as generateAIContent,
 } from './novel.service'
 import fs from 'fs'
 import path from 'path'
@@ -1027,5 +1028,26 @@ export const setAIRewriteSettings = async (
 	} catch (error) {
 		console.error('Error setting AI settings:', error)
 		res.status(500).json({ error: 'Failed to save AI settings' })
+	}
+}
+
+export const bulkGenerateAIContent = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	try {
+		const { novelId } = req.params
+		const { startChapter, endChapter } = req.query
+
+		await generateAIContent(
+			novelId,
+			startChapter as string | undefined,
+			endChapter as string | undefined
+		)
+
+		res.json({ message: 'Bulk generation started successfully' })
+	} catch (error) {
+		console.error('Error in bulk generation endpoint:', error)
+		res.status(500).json({ error: 'Failed to start bulk generation' })
 	}
 }
