@@ -8,14 +8,24 @@ import fs from 'fs'
 import path from 'path'
 
 // Global state store with persistence
-const globalState = {
+export const globalState = {
 	_aiRewrite: false,
+	_aiPrompt: '',
 	get aiRewrite() {
 		return this._aiRewrite
 	},
+	get aiPrompt() {
+		return this._aiPrompt
+	},
 	set aiRewrite(value: boolean) {
 		this._aiRewrite = value
-		// Persist the setting
+		this.persistSettings()
+	},
+	set aiPrompt(value: string) {
+		this._aiPrompt = value
+		this.persistSettings()
+	},
+	persistSettings() {
 		try {
 			const settingsPath = path.join(__dirname, '../../.settings')
 			if (!fs.existsSync(settingsPath)) {
@@ -23,11 +33,18 @@ const globalState = {
 			}
 			fs.writeFileSync(
 				path.join(settingsPath, 'ai-rewrite.json'),
-				JSON.stringify({ enabled: value }),
+				JSON.stringify(
+					{
+						enabled: this._aiRewrite,
+						prompt: this._aiPrompt,
+					},
+					null,
+					2
+				),
 				'utf8'
 			)
 		} catch (error) {
-			console.error('Failed to persist AI rewrite setting:', error)
+			console.error('Failed to persist AI settings:', error)
 		}
 	},
 }
@@ -38,15 +55,16 @@ try {
 	if (fs.existsSync(settingsFile)) {
 		const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'))
 		globalState._aiRewrite = settings.enabled
-		console.log('Loaded AI rewrite setting:', settings.enabled)
+		globalState._aiPrompt = settings.prompt || ''
+		console.log('Loaded AI settings:', settings)
 	} else {
-		console.log(
-			'No saved AI rewrite setting found, using default:',
-			globalState._aiRewrite
-		)
+		console.log('No saved AI settings found, using defaults:', {
+			enabled: globalState._aiRewrite,
+			prompt: globalState._aiPrompt,
+		})
 	}
 } catch (error) {
-	console.error('Failed to load AI rewrite setting:', error)
+	console.error('Failed to load AI settings:', error)
 }
 
 interface Chapter {
@@ -978,7 +996,10 @@ export const listNovels = async (req: Request, res: Response) => {
 
 export const getAIRewriteSettings = async (req: Request, res: Response) => {
 	try {
-		res.json({ enabled: globalState.aiRewrite })
+		res.json({
+			enabled: globalState.aiRewrite,
+			prompt: globalState.aiPrompt,
+		})
 	} catch (error) {
 		console.error('Error getting AI settings:', error)
 		res.status(500).json({ error: 'Failed to get AI settings' })
@@ -990,13 +1011,19 @@ export const setAIRewriteSettings = async (
 	res: Response
 ): Promise<void> => {
 	try {
-		const { enabled } = req.body
+		const { enabled, prompt } = req.body
 		if (typeof enabled !== 'boolean') {
-			res.status(400).json({ error: 'Invalid settings data' })
+			res.status(400).json({ error: 'Invalid enabled value' })
 			return
 		}
 		globalState.aiRewrite = enabled
-		res.json({ enabled: globalState.aiRewrite })
+		if (prompt !== undefined) {
+			globalState.aiPrompt = prompt
+		}
+		res.json({
+			enabled: globalState.aiRewrite,
+			prompt: globalState.aiPrompt,
+		})
 	} catch (error) {
 		console.error('Error setting AI settings:', error)
 		res.status(500).json({ error: 'Failed to save AI settings' })

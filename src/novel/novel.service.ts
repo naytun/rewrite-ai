@@ -2,7 +2,7 @@ import path from 'path'
 import { promises as fs } from 'fs'
 
 import { askAI } from '../orama/orama.service'
-import { AI_INSTRUCTIONS } from './constants'
+import { getAISettings } from '../settings/settings.service'
 
 const basePath = 'Lightnovels'
 
@@ -135,7 +135,12 @@ export const readChapter = async (
 				) || []
 
 		// If AI is not enabled, return original content
+		let formattedResult: string
 		if (!useAI) {
+			formattedResult = originalParagraphs
+				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+				.join('\n')
+			chapterData.body = formattedResult
 			return chapterData
 		}
 
@@ -146,63 +151,37 @@ export const readChapter = async (
 		} else {
 			// Only make AI call if AI is enabled and we don't have existing content
 			const result = await askAI({
-				question: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} ---\n ${plainText}`,
+				question: `${plainText}`,
 			})
+
+			// Split AI result into paragraphs
 			aiParagraphs = splitIntoParagraphs(result)
 		}
 
-		let formattedResult
-		if (useAI) {
-			// Always include both AI and original content when AI is enabled
-			const pairs: string[] = []
-			const maxLength = Math.min(originalParagraphs.length, aiParagraphs.length)
-
-			for (let i = 0; i < maxLength; i++) {
-				const originalPara = originalParagraphs[i]
-				const aiPara = aiParagraphs[i]
-
-				if (originalPara && aiPara) {
-					pairs.push(
-						`<div class="paragraph-pair">
-							<p class="ai-text">${aiPara}</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-								compare ? 'block' : 'none'
-							}">${originalPara}</p>
-						</div>`
-					)
-				} else if (originalPara) {
-					pairs.push(
-						`<div class="paragraph-pair">
-							<p class="ai-text">(No AI rewrite available)</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-								compare ? 'block' : 'none'
-							}">${originalPara}</p>
-						</div>`
-					)
-				} else if (aiPara) {
-					pairs.push(
-						`<div class="paragraph-pair">
-							<p class="ai-text">${aiPara}</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-								compare ? 'block' : 'none'
-							}">(No original text available)</p>
-						</div>`
-					)
-				}
-			}
+		// Format the result based on compare mode
+		if (compare) {
+			// Create pairs of original and AI paragraphs
+			const pairs = originalParagraphs.map((original: string, i: number) => {
+				const ai = aiParagraphs[i] || '(No AI rewrite available)'
+				return `
+					<div class="paragraph-pair mb-6">
+						<p class="original-text mb-2 text-gray-600 dark:text-gray-400">${original}</p>
+						<p class="ai-text pl-4 border-l-4 border-blue-500">${ai}</p>
+					</div>`
+			})
 
 			formattedResult = pairs.join('\n')
 		} else {
-			// If AI is not enabled, just show original paragraphs
-			formattedResult = originalParagraphs
-				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+			// If compare mode is off, show only AI paragraphs
+			formattedResult = aiParagraphs
+				.map(
+					(paragraph: string) => `<p class="ai-text">${paragraph.trim()}</p>`
+				)
 				.join('\n')
 		}
 
-		return {
-			...chapterData,
-			body: formattedResult,
-		}
+		chapterData.body = formattedResult
+		return chapterData
 	} catch (error) {
 		console.error('Error reading chapter:', error)
 		throw error

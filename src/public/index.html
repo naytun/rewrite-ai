@@ -112,6 +112,12 @@
 									<span class="toggle-slider"></span>
 								</label>
 							</div>
+							<button
+								id="settingsBtn"
+								class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+							>
+								<i class="fas fa-cog mr-2"></i>Settings
+							</button>
 						</div>
 					</div>
 					<div id="loading" class="text-center text-gray-600 mb-4">
@@ -185,6 +191,49 @@
 					</div>
 				</div>
 			</footer>
+		</div>
+
+		<!-- Settings Modal -->
+		<div
+			id="settingsModal"
+			class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50"
+		>
+			<div
+				class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-2xl shadow-lg"
+			>
+				<div class="flex justify-between items-center mb-4">
+					<h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+						Settings
+					</h2>
+					<button
+						id="closeSettingsBtn"
+						class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+					>
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+				<div class="mb-4">
+					<label
+						class="block text-gray-700 dark:text-gray-300 font-bold mb-2"
+						for="aiPrompt"
+					>
+						AI Rewrite Instructions
+					</label>
+					<textarea
+						id="aiPrompt"
+						class="w-full h-64 px-3 py-2 text-gray-700 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent resize-none transition-colors placeholder-gray-500 dark:placeholder-gray-400"
+						placeholder="Enter AI rewrite instructions..."
+					></textarea>
+				</div>
+				<div class="flex justify-end">
+					<button
+						id="saveSettingsBtn"
+						class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+					>
+						Save
+					</button>
+				</div>
+			</div>
 		</div>
 
 		<script>
@@ -343,6 +392,60 @@
 
 			// Load novels when the page loads
 			window.addEventListener('load', loadNovels)
+
+			// Settings Modal Functionality
+			const settingsModal = document.getElementById('settingsModal')
+			const settingsBtn = document.getElementById('settingsBtn')
+			const closeSettingsBtn = document.getElementById('closeSettingsBtn')
+			const saveSettingsBtn = document.getElementById('saveSettingsBtn')
+			const aiPromptTextarea = document.getElementById('aiPrompt')
+
+			// Load settings when opening modal
+			settingsBtn.addEventListener('click', async () => {
+				settingsModal.classList.remove('hidden')
+				try {
+					const response = await fetch('/api/novel/settings/ai-rewrite')
+					const settings = await response.json()
+					aiPromptTextarea.value = settings.prompt || ''
+					aiToggle.checked = settings.enabled
+				} catch (error) {
+					console.error('Error loading settings:', error)
+				}
+			})
+
+			closeSettingsBtn.addEventListener('click', () => {
+				settingsModal.classList.add('hidden')
+			})
+
+			saveSettingsBtn.addEventListener('click', async () => {
+				try {
+					const response = await fetch('/api/novel/settings/ai-rewrite', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							enabled: aiToggle.checked,
+							prompt: aiPromptTextarea.value,
+						}),
+					})
+
+					if (response.ok) {
+						settingsModal.classList.add('hidden')
+					} else {
+						console.error('Failed to save settings')
+					}
+				} catch (error) {
+					console.error('Error saving settings:', error)
+				}
+			})
+
+			// Close modal when clicking outside
+			settingsModal.addEventListener('click', (e) => {
+				if (e.target === settingsModal) {
+					settingsModal.classList.add('hidden')
+				}
+			})
 		</script>
 	</body>
 </html>

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import { OramaClient } from '@oramacloud/client'
+import { globalState } from '../novel/novel.controller'
 
 import { AI_INSTRUCTIONS } from '../novel/constants'
 
@@ -40,8 +41,9 @@ export const askAI = async ({
 			throw new Error('Question is required')
 		}
 
+		const prompt = globalState.aiPrompt || 'Rewrite the following passage:'
 		const session = await oramaClient.createAnswerSession({
-			userContext: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} --- ${context}`,
+			userContext: `${prompt} ---\n ${context}`,
 			inferenceType: 'documentation',
 		})
 
