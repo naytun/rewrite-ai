@@ -113,6 +113,55 @@
 			html.dark .settings-modal-close:hover {
 				color: #e5e7eb;
 			}
+
+			/* Add or update these styles */
+			.original-text {
+				display: none;
+				color: #808080;
+				font-style: italic;
+				margin-left: 2em;
+			}
+			.compare-mode .original-text {
+				display: block !important;
+			}
+			.paragraph-pair {
+				margin-bottom: 1.5rem;
+			}
+			.ai-text {
+				margin-bottom: 0.5rem;
+			}
+			.compare-button {
+				position: fixed;
+				bottom: 80px;
+				right: 20px;
+				width: 56px;
+				height: 56px;
+				border-radius: 50%;
+				background-color: #9ca3af;
+				color: white;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+				transition: all 0.3s ease;
+				z-index: 100;
+			}
+			.compare-button.show {
+				display: flex;
+			}
+			.compare-button.active {
+				background-color: #3b82f6;
+			}
+			.compare-button:hover {
+				transform: scale(1.1);
+			}
+			html.dark .compare-button {
+				background-color: #4b5563;
+			}
+			html.dark .compare-button.active {
+				background-color: #3b82f6;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-100">
@@ -465,6 +514,58 @@
 			settingsModal.addEventListener('click', (e) => {
 				if (e.target === settingsModal) {
 					settingsModal.classList.add('hidden')
+				}
+			})
+
+			// Update the compare toggle function
+			function toggleCompare() {
+				const compareButton = document.getElementById('compareButton')
+				const aiToggle = document.getElementById('aiToggle')
+				const content = document.querySelector('.chapter-content')
+
+				// Only allow compare when AI is enabled
+				if (!aiToggle.checked) {
+					alert('AI Rewrite must be enabled to use Compare mode')
+					return
+				}
+
+				// Toggle the active state of the button
+				const isCompareMode = compareButton.classList.contains('active')
+
+				if (isCompareMode) {
+					compareButton.classList.remove('active')
+					content.classList.remove('compare-mode')
+				} else {
+					compareButton.classList.add('active')
+					content.classList.add('compare-mode')
+				}
+
+				// Update URL without reloading
+				const currentUrl = new URL(window.location.href)
+				if (isCompareMode) {
+					currentUrl.searchParams.delete('compare')
+				} else {
+					currentUrl.searchParams.set('compare', 'true')
+				}
+				window.history.pushState({}, '', currentUrl.toString())
+			}
+
+			// Initialize compare button state on page load
+			document.addEventListener('DOMContentLoaded', () => {
+				const compareButton = document.getElementById('compareButton')
+				const aiToggle = document.getElementById('aiToggle')
+				const content = document.querySelector('.chapter-content')
+				const urlParams = new URLSearchParams(window.location.search)
+
+				// Show compare button if AI is enabled
+				if (aiToggle.checked) {
+					compareButton.classList.add('show')
+				}
+
+				// Set initial compare mode state
+				if (urlParams.get('compare') === 'true' && aiToggle.checked) {
+					compareButton.classList.add('active')
+					content.classList.add('compare-mode')
 				}
 			})
 		</script>

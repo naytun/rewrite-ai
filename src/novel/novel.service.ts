@@ -161,24 +161,50 @@ export const readChapter = async (
 		}
 
 		// Format the result based on compare mode
-		if (compare) {
-			// Create pairs of original and AI paragraphs
-			const pairs = originalParagraphs.map((original: string, i: number) => {
-				const ai = aiParagraphs[i] || '(No AI rewrite available)'
-				return `
-					<div class="paragraph-pair mb-6">
-						<p class="original-text mb-2 text-gray-600 dark:text-gray-400">${original}</p>
-						<p class="ai-text pl-4 border-l-4 border-blue-500">${ai}</p>
-					</div>`
-			})
+		if (useAI) {
+			// Always include both AI and original content when AI is enabled
+			const pairs: string[] = []
+			const maxLength = Math.min(originalParagraphs.length, aiParagraphs.length)
+
+			for (let i = 0; i < maxLength; i++) {
+				const originalPara = originalParagraphs[i]
+				const aiPara = aiParagraphs[i]
+
+				if (originalPara && aiPara) {
+					pairs.push(
+						`<div class="paragraph-pair">
+							<p class="ai-text">${aiPara}</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+								compare ? 'block' : 'none'
+							}">${originalPara}</p>
+						</div>`
+					)
+				} else if (originalPara) {
+					pairs.push(
+						`<div class="paragraph-pair">
+							<p class="ai-text">(No AI rewrite available)</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+								compare ? 'block' : 'none'
+							}">${originalPara}</p>
+						</div>`
+					)
+				} else if (aiPara) {
+					pairs.push(
+						`<div class="paragraph-pair">
+							<p class="ai-text">${aiPara}</p>
+							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+								compare ? 'block' : 'none'
+							}">(No original text available)</p>
+						</div>`
+					)
+				}
+			}
 
 			formattedResult = pairs.join('\n')
 		} else {
-			// If compare mode is off, show only AI paragraphs
-			formattedResult = aiParagraphs
-				.map(
-					(paragraph: string) => `<p class="ai-text">${paragraph.trim()}</p>`
-				)
+			// If AI is not enabled, just show original paragraphs
+			formattedResult = originalParagraphs
+				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
 				.join('\n')
 		}
 

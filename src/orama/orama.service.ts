@@ -42,7 +42,6 @@ export const askAI = async ({
 		}
 
 		const prompt = globalState.aiPrompt || 'Rewrite the following passage:'
-		console.log('Using AI prompt:', prompt)
 
 		const session = await oramaClient.createAnswerSession({
 			userContext: prompt,
