@@ -89,6 +89,12 @@ export const readChapter = async (
 	try {
 		const novelPath = await getNovelPath(novelId)
 		const filePath = path.join(novelPath, 'json', volume, `${chapter}.json`)
+		const aiFilePath = path.join(
+			novelPath,
+			'json',
+			volume,
+			`${chapter}-ai.json`
+		)
 		const content = await fs.readFile(filePath, 'utf-8')
 		const chapterData = JSON.parse(content)
 
@@ -116,24 +122,6 @@ export const readChapter = async (
 
 		const originalParagraphs = splitIntoParagraphs(plainText)
 
-		// Try to extract existing AI content first
-		const existingBody = chapterData.body
-		const aiContent =
-			existingBody
-				.match(/<p class="ai-text">(.*?)<\/p>/g)
-				?.map((p: string) =>
-					p
-						.replace(/<p class="ai-text">/, '')
-						.replace(/<\/p>/, '')
-						.trim()
-				)
-				?.filter(
-					(p: string) =>
-						p !== '(No AI rewrite available)' &&
-						p.length > 5 &&
-						!p.startsWith('Chapter')
-				) || []
-
 		// If AI is not enabled, return original content
 		let formattedResult: string
 		if (!useAI) {
@@ -144,70 +132,112 @@ export const readChapter = async (
 			return chapterData
 		}
 
-		// If we have existing AI content, use it
+		// Try to load existing AI content first
 		let aiParagraphs: string[]
-		if (aiContent.length > 0) {
-			aiParagraphs = aiContent
-		} else {
-			// Only make AI call if AI is enabled and we don't have existing content
+		try {
+			const aiContent = await fs.readFile(aiFilePath, 'utf-8')
+			const aiData = JSON.parse(aiContent)
+
+			// Check if the AI content indicates a failed generation
+			const hasFailedContent = aiData.paragraphs.some((p: string) =>
+				p
+					.toLowerCase()
+					.includes("i'm sorry, but i don't have enough information to answer")
+			)
+
+			if (hasFailedContent) {
+				console.log(
+					'Found failed AI generation, deleting file and regenerating...'
+				)
+				await fs.unlink(aiFilePath)
+				throw new Error('Failed AI generation detected')
+			}
+
+			aiParagraphs = aiData.paragraphs
+			console.log('Using existing AI content from file:', aiFilePath)
+		} catch (error) {
+			// Generate new AI content if file doesn't exist or is invalid
+			console.log('Generating new AI content...')
 			const result = await askAI({
 				question: plainText,
 				context:
 					'Please rewrite the following novel chapter text to enhance its quality while maintaining the original story and meaning.',
 			})
 
-			// Split AI result into paragraphs
+			// Split AI result into paragraphs and check for failed generation
 			aiParagraphs = splitIntoParagraphs(result)
+			const hasFailedContent = aiParagraphs.some((p) =>
+				p
+					.toLowerCase()
+					.includes("i'm sorry, but i don't have enough information to answer")
+			)
+
+			if (hasFailedContent) {
+				console.error('AI generation failed with insufficient information')
+				throw new Error('AI generation failed with insufficient information')
+			}
+
+			// Save AI content to file
+			try {
+				await fs.writeFile(
+					aiFilePath,
+					JSON.stringify(
+						{
+							originalChapter: chapter,
+							timestamp: new Date().toISOString(),
+							paragraphs: aiParagraphs,
+						},
+						null,
+						2
+					),
+					'utf-8'
+				)
+				console.log('Saved AI content to file:', aiFilePath)
+			} catch (saveError) {
+				console.error('Error saving AI content:', saveError)
+			}
 		}
 
 		// Format the result based on compare mode
-		if (useAI) {
-			// Always include both AI and original content when AI is enabled
-			const pairs: string[] = []
-			const maxLength = Math.min(originalParagraphs.length, aiParagraphs.length)
+		// Always include both AI and original content when AI is enabled
+		const pairs: string[] = []
+		const maxLength = Math.min(originalParagraphs.length, aiParagraphs.length)
 
-			for (let i = 0; i < maxLength; i++) {
-				const originalPara = originalParagraphs[i]
-				const aiPara = aiParagraphs[i]
+		for (let i = 0; i < maxLength; i++) {
+			const originalPara = originalParagraphs[i]
+			const aiPara = aiParagraphs[i]
 
-				if (originalPara && aiPara) {
-					pairs.push(
-						`<div class="paragraph-pair">
-							<p class="ai-text">${aiPara}</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-								compare ? 'block' : 'none'
-							}">${originalPara}</p>
-						</div>`
-					)
-				} else if (originalPara) {
-					pairs.push(
-						`<div class="paragraph-pair">
-							<p class="ai-text">(No AI rewrite available)</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-								compare ? 'block' : 'none'
-							}">${originalPara}</p>
-						</div>`
-					)
-				} else if (aiPara) {
-					pairs.push(
-						`<div class="paragraph-pair">
-							<p class="ai-text">${aiPara}</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-								compare ? 'block' : 'none'
-							}">(No original text available)</p>
-						</div>`
-					)
-				}
+			if (originalPara && aiPara) {
+				pairs.push(
+					`<div class="paragraph-pair">
+						<p class="ai-text">${aiPara}</p>
+						<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+							compare ? 'block' : 'none'
+						}">${originalPara}</p>
+					</div>`
+				)
+			} else if (originalPara) {
+				pairs.push(
+					`<div class="paragraph-pair">
+						<p class="ai-text">(No AI rewrite available)</p>
+						<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+							compare ? 'block' : 'none'
+						}">${originalPara}</p>
+					</div>`
+				)
+			} else if (aiPara) {
+				pairs.push(
+					`<div class="paragraph-pair">
+						<p class="ai-text">${aiPara}</p>
+						<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+							compare ? 'block' : 'none'
+						}">(No original text available)</p>
+					</div>`
+				)
 			}
-
-			formattedResult = pairs.join('\n')
-		} else {
-			// If AI is not enabled, just show original paragraphs
-			formattedResult = originalParagraphs
-				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
-				.join('\n')
 		}
 
+		formattedResult = pairs.join('\n')
 		chapterData.body = formattedResult
 		return chapterData
 	} catch (error) {
