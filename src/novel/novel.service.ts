@@ -151,7 +151,9 @@ export const readChapter = async (
 		} else {
 			// Only make AI call if AI is enabled and we don't have existing content
 			const result = await askAI({
-				question: `${plainText}`,
+				question: plainText,
+				context:
+					'Please rewrite the following novel chapter text to enhance its quality while maintaining the original story and meaning.',
 			})
 
 			// Split AI result into paragraphs
