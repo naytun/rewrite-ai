@@ -53,7 +53,8 @@ export const listChapters = async (
 				const chapters = await fs.readdir(volumePath)
 
 				for (const chapter of chapters) {
-					if (chapter.endsWith('.json')) {
+					// Skip AI-generated files and only include original chapter files
+					if (chapter.endsWith('.json') && !chapter.endsWith('-ai.json')) {
 						chapterList.push({
 							volume,
 							chapter: chapter.replace('.json', ''),
@@ -79,6 +80,144 @@ export const listChapters = async (
 	}
 }
 
+// Helper function to preload AI content for a chapter
+const preloadAIContent = async (
+	novelId: string,
+	volume: string,
+	chapter: string
+): Promise<void> => {
+	try {
+		const novelPath = await getNovelPath(novelId)
+		const filePath = path.join(novelPath, 'json', volume, `${chapter}.json`)
+		const aiFilePath = path.join(
+			novelPath,
+			'json',
+			volume,
+			`${chapter}-ai.json`
+		)
+
+		// Check if AI content already exists
+		try {
+			await fs.access(aiFilePath)
+			// AI content exists, no need to generate
+			return
+		} catch {
+			// AI content doesn't exist, continue with generation
+		}
+
+		// Check if original chapter exists
+		try {
+			await fs.access(filePath)
+		} catch {
+			// Original chapter doesn't exist, can't generate AI content
+			return
+		}
+
+		// Read and parse the chapter file
+		const content = await fs.readFile(filePath, 'utf-8')
+		const chapterData = JSON.parse(content)
+		if (!chapterData || !chapterData.body) {
+			return
+		}
+
+		const plainText = chapterData.body
+			.replace(/<\/p>/g, '\n\n')
+			.replace(/<p>/g, '')
+			.replace(/<br\s*\/?>/g, '\n')
+			.replace(/<[^>]*>/g, '')
+			.trim()
+
+		// Generate AI content
+		console.log('Preloading AI content for next chapter...')
+		const result = await askAI({
+			question: plainText,
+			context:
+				'Please rewrite the following novel chapter text to enhance its quality while maintaining the original story and meaning.',
+		})
+
+		// Split AI result into paragraphs
+		const splitIntoParagraphs = (text: string): string[] => {
+			return text
+				.split(/\n\s*\n/)
+				.map((p: string) => p.replace(/\s+/g, ' ').trim())
+				.filter((p: string) => p.length > 0)
+				.filter(
+					(p: string) =>
+						!p.startsWith('Translator:') &&
+						!p.startsWith('Editor:') &&
+						!p.startsWith('Chapter') &&
+						p.length > 5
+				)
+		}
+
+		const aiParagraphs = splitIntoParagraphs(result)
+
+		// Check for failed generation
+		const hasFailedContent = aiParagraphs.some(
+			(p) =>
+				p.toLowerCase().includes("i don't have enough information to answer") ||
+				p.toLowerCase().includes('could you clarify your question?') ||
+				p.toLowerCase().includes("i'm not sure i fully understood it")
+		)
+
+		if (hasFailedContent) {
+			return
+		}
+
+		// Format and save AI content
+		const aiHtml = aiParagraphs
+			.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+			.join('\n')
+
+		const aiChapterData = {
+			...chapterData,
+			body: aiHtml,
+			isAIGenerated: true,
+			generatedAt: new Date().toISOString(),
+		}
+
+		await fs.writeFile(
+			aiFilePath,
+			JSON.stringify(aiChapterData, null, 2),
+			'utf-8'
+		)
+		console.log('Saved preloaded AI content to file:', aiFilePath)
+	} catch (error) {
+		console.error('Error preloading AI content:', error)
+	}
+}
+
+// Helper function to preload multiple chapters ahead
+const preloadMultipleChapters = async (
+	novelId: string,
+	currentChapter: { volume: string; chapter: string },
+	chapters: any[],
+	numChapters: number = 5
+): Promise<void> => {
+	try {
+		const currentIndex = chapters.findIndex(
+			(ch) =>
+				ch.volume === currentChapter.volume &&
+				ch.chapter === currentChapter.chapter
+		)
+
+		if (currentIndex === -1) return
+
+		// Get the next N chapters
+		const chaptersToPreload = chapters.slice(
+			currentIndex + 1,
+			currentIndex + 1 + numChapters
+		)
+
+		// Preload each chapter in sequence to avoid overwhelming the AI service
+		for (const chapter of chaptersToPreload) {
+			await preloadAIContent(novelId, chapter.volume, chapter.chapter)
+		}
+	} catch (error) {
+		console.error('Error preloading multiple chapters:', error)
+	}
+}
+
 export const readChapter = async (
 	novelId: string,
 	volume: string,
@@ -89,8 +228,33 @@ export const readChapter = async (
 	try {
 		const novelPath = await getNovelPath(novelId)
 		const filePath = path.join(novelPath, 'json', volume, `${chapter}.json`)
-		const content = await fs.readFile(filePath, 'utf-8')
-		const chapterData = JSON.parse(content)
+		const aiFilePath = path.join(
+			novelPath,
+			'json',
+			volume,
+			`${chapter}-ai.json`
+		)
+
+		// Check if the chapter file exists
+		try {
+			await fs.access(filePath)
+		} catch (error) {
+			console.error(`Chapter file not found: ${filePath}`)
+			throw new Error(`Chapter ${chapter} not found in volume ${volume}`)
+		}
+
+		// Read and parse the chapter file
+		let chapterData
+		try {
+			const content = await fs.readFile(filePath, 'utf-8')
+			chapterData = JSON.parse(content)
+			if (!chapterData || !chapterData.body) {
+				throw new Error('Invalid chapter data format')
+			}
+		} catch (error) {
+			console.error(`Error reading chapter file: ${filePath}`, error)
+			throw new Error(`Failed to read chapter ${chapter} in volume ${volume}`)
+		}
 
 		const plainText = chapterData.body
 			.replace(/<\/p>/g, '\n\n')
@@ -116,24 +280,6 @@ export const readChapter = async (
 
 		const originalParagraphs = splitIntoParagraphs(plainText)
 
-		// Try to extract existing AI content first
-		const existingBody = chapterData.body
-		const aiContent =
-			existingBody
-				.match(/<p class="ai-text">(.*?)<\/p>/g)
-				?.map((p: string) =>
-					p
-						.replace(/<p class="ai-text">/, '')
-						.replace(/<\/p>/, '')
-						.trim()
-				)
-				?.filter(
-					(p: string) =>
-						p !== '(No AI rewrite available)' &&
-						p.length > 5 &&
-						!p.startsWith('Chapter')
-				) || []
-
 		// If AI is not enabled, return original content
 		let formattedResult: string
 		if (!useAI) {
@@ -144,71 +290,178 @@ export const readChapter = async (
 			return chapterData
 		}
 
-		// If we have existing AI content, use it
+		// Try to load existing AI content first
 		let aiParagraphs: string[]
-		if (aiContent.length > 0) {
-			aiParagraphs = aiContent
-		} else {
-			// Only make AI call if AI is enabled and we don't have existing content
+		try {
+			const aiContent = await fs.readFile(aiFilePath, 'utf-8')
+			const aiData = JSON.parse(aiContent)
+
+			// Validate AI data structure
+			if (!aiData || !aiData.body) {
+				console.error('Invalid AI data format:', aiData)
+				throw new Error('Invalid AI data format')
+			}
+
+			// Extract paragraphs from HTML body
+			const aiHtml = aiData.body
+				.replace(/<\/p>/g, '\n\n')
+				.replace(/<p>/g, '')
+				.replace(/<br\s*\/?>/g, '\n')
+				.replace(/<[^>]*>/g, '')
+				.trim()
+
+			aiParagraphs = splitIntoParagraphs(aiHtml)
+
+			// Check if the AI content indicates a failed generation
+			const hasFailedContent = aiParagraphs.some(
+				(p: string) =>
+					p
+						.toLowerCase()
+						.includes("i don't have enough information to answer") ||
+					p.toLowerCase().includes('could you clarify your question?') ||
+					p.toLowerCase().includes("i'm not sure i fully understood it")
+			)
+
+			if (hasFailedContent) {
+				console.log(
+					'Found failed AI generation, deleting file and regenerating...'
+				)
+				await fs.unlink(aiFilePath)
+				throw new Error('Failed AI generation detected')
+			}
+
+			console.log('Using existing AI content from file:', aiFilePath)
+		} catch (error: any) {
+			if (error.message === 'Invalid AI data format') {
+				// If the AI file is corrupted, delete it and regenerate
+				try {
+					await fs.unlink(aiFilePath)
+					console.log('Deleted corrupted AI file:', aiFilePath)
+				} catch (unlinkError) {
+					// Ignore if file doesn't exist
+				}
+			}
+
+			// Generate new AI content if file doesn't exist or is invalid
+			console.log('Generating new AI content...')
 			const result = await askAI({
 				question: plainText,
 				context:
 					'Please rewrite the following novel chapter text to enhance its quality while maintaining the original story and meaning.',
 			})
 
-			// Split AI result into paragraphs
+			// Split AI result into paragraphs and check for failed generation
 			aiParagraphs = splitIntoParagraphs(result)
+			const hasFailedContent = aiParagraphs.some(
+				(p) =>
+					p
+						.toLowerCase()
+						.includes(
+							"i'm sorry, but i don't have enough information to answer"
+						) ||
+					p
+						.toLowerCase()
+						.includes("i'm sorry. could you clarify your question?") ||
+					p.toLowerCase().includes("i'm not sure i fully understood it")
+			)
+
+			if (hasFailedContent) {
+				console.error('AI generation failed with insufficient information')
+				// Fall back to original content
+				formattedResult = originalParagraphs
+					.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+					.join('\n')
+				chapterData.body = formattedResult
+				return chapterData
+			}
+
+			// Save AI content to file
+			try {
+				// Format AI paragraphs in the same HTML structure as original
+				const aiHtml = aiParagraphs
+					.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+					.join('\n')
+
+				// Create AI chapter data with same structure as original
+				const aiChapterData = {
+					...chapterData, // Copy all original metadata
+					body: aiHtml, // Replace body with AI content
+					isAIGenerated: true,
+					generatedAt: new Date().toISOString(),
+				}
+
+				// Wait for the file to be saved before continuing
+				await fs.writeFile(
+					aiFilePath,
+					JSON.stringify(aiChapterData, null, 2),
+					'utf-8'
+				)
+				console.log('Saved AI content to file:', aiFilePath)
+
+				// Use the AI content for display
+				aiParagraphs = splitIntoParagraphs(aiHtml)
+			} catch (saveError) {
+				console.error('Error saving AI content:', saveError)
+				// Fall back to original content if we can't save AI content
+				formattedResult = originalParagraphs
+					.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+					.join('\n')
+				chapterData.body = formattedResult
+				return chapterData
+			}
 		}
 
 		// Format the result based on compare mode
-		if (useAI) {
-			// Always include both AI and original content when AI is enabled
-			const pairs: string[] = []
-			const maxLength = Math.min(originalParagraphs.length, aiParagraphs.length)
+		// Always include both AI and original content when AI is enabled
+		const pairs: string[] = []
+		const maxLength = Math.min(originalParagraphs.length, aiParagraphs.length)
 
-			for (let i = 0; i < maxLength; i++) {
-				const originalPara = originalParagraphs[i]
-				const aiPara = aiParagraphs[i]
+		for (let i = 0; i < maxLength; i++) {
+			const originalPara = originalParagraphs[i]
+			const aiPara = aiParagraphs[i]
 
-				if (originalPara && aiPara) {
-					pairs.push(
-						`<div class="paragraph-pair">
-							<p class="ai-text">${aiPara}</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-								compare ? 'block' : 'none'
-							}">${originalPara}</p>
-						</div>`
-					)
-				} else if (originalPara) {
-					pairs.push(
-						`<div class="paragraph-pair">
-							<p class="ai-text">(No AI rewrite available)</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-								compare ? 'block' : 'none'
-							}">${originalPara}</p>
-						</div>`
-					)
-				} else if (aiPara) {
-					pairs.push(
-						`<div class="paragraph-pair">
-							<p class="ai-text">${aiPara}</p>
-							<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-								compare ? 'block' : 'none'
-							}">(No original text available)</p>
-						</div>`
-					)
-				}
+			if (originalPara && aiPara) {
+				pairs.push(
+					`<div class="paragraph-pair">
+						<p class="ai-text">${aiPara}</p>
+						<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+							compare ? 'block' : 'none'
+						}">${originalPara}</p>
+					</div>`
+				)
+			} else if (originalPara) {
+				pairs.push(
+					`<div class="paragraph-pair">
+						<p class="ai-text">(No AI rewrite available)</p>
+						<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+							compare ? 'block' : 'none'
+						}">${originalPara}</p>
+					</div>`
+				)
+			} else if (aiPara) {
+				pairs.push(
+					`<div class="paragraph-pair">
+						<p class="ai-text">${aiPara}</p>
+						<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
+							compare ? 'block' : 'none'
+						}">(No original text available)</p>
+					</div>`
+				)
 			}
-
-			formattedResult = pairs.join('\n')
-		} else {
-			// If AI is not enabled, just show original paragraphs
-			formattedResult = originalParagraphs
-				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
-				.join('\n')
 		}
 
+		formattedResult = pairs.join('\n')
 		chapterData.body = formattedResult
+
+		// If AI is enabled, preload the next few chapters' AI content
+		if (useAI) {
+			const { chapters } = await listChapters(novelId)
+			// Preload multiple chapters in the background
+			preloadMultipleChapters(novelId, { volume, chapter }, chapters).catch(
+				(error) => console.error('Error preloading chapters:', error)
+			)
+		}
+
 		return chapterData
 	} catch (error) {
 		console.error('Error reading chapter:', error)
@@ -275,3 +528,53 @@ export const listNovels = async (): Promise<any[]> => {
 // 	images: {},
 // 	success: true,
 // }
+
+// Utility function to bulk generate AI content for a range of chapters
+export const bulkGenerateAIContent = async (
+	novelId: string,
+	startChapter?: string,
+	endChapter?: string
+): Promise<void> => {
+	try {
+		const { chapters } = await listChapters(novelId)
+
+		let startIndex = 0
+		let endIndex = chapters.length
+
+		if (startChapter) {
+			const start = chapters.findIndex((ch) => ch.chapter === startChapter)
+			if (start !== -1) startIndex = start
+		}
+
+		if (endChapter) {
+			const end = chapters.findIndex((ch) => ch.chapter === endChapter)
+			if (end !== -1) endIndex = end + 1
+		}
+
+		const chaptersToProcess = chapters.slice(startIndex, endIndex)
+		console.log(
+			`Bulk generating AI content for chapters ${startIndex + 1} to ${endIndex}`
+		)
+
+		// Process chapters in sequence to avoid overwhelming the AI service
+		for (const chapter of chaptersToProcess) {
+			try {
+				await preloadAIContent(novelId, chapter.volume, chapter.chapter)
+				console.log(
+					`Generated AI content for chapter ${chapter.chapter} in volume ${chapter.volume}`
+				)
+			} catch (error) {
+				console.error(
+					`Error generating AI content for chapter ${chapter.chapter}:`,
+					error
+				)
+				// Continue with next chapter even if one fails
+			}
+		}
+
+		console.log('Bulk generation completed')
+	} catch (error) {
+		console.error('Error in bulk generation:', error)
+		throw error
+	}
+}
