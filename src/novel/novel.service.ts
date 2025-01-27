@@ -2,7 +2,7 @@ import path from 'path'
 import { promises as fs } from 'fs'
 
 import { askAI } from '../orama/orama.service'
-import { AI_INSTRUCTIONS } from './constants'
+import { getAISettings } from '../settings/settings.service'
 
 const basePath = 'Lightnovels'
 
@@ -135,7 +135,12 @@ export const readChapter = async (
 				) || []
 
 		// If AI is not enabled, return original content
+		let formattedResult: string
 		if (!useAI) {
+			formattedResult = originalParagraphs
+				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
+				.join('\n')
+			chapterData.body = formattedResult
 			return chapterData
 		}
 
@@ -146,12 +151,16 @@ export const readChapter = async (
 		} else {
 			// Only make AI call if AI is enabled and we don't have existing content
 			const result = await askAI({
-				question: `${AI_INSTRUCTIONS.REWRITE_CHAPTER} ---\n ${plainText}`,
+				question: plainText,
+				context:
+					'Please rewrite the following novel chapter text to enhance its quality while maintaining the original story and meaning.',
 			})
+
+			// Split AI result into paragraphs
 			aiParagraphs = splitIntoParagraphs(result)
 		}
 
-		let formattedResult
+		// Format the result based on compare mode
 		if (useAI) {
 			// Always include both AI and original content when AI is enabled
 			const pairs: string[] = []
@@ -199,10 +208,8 @@ export const readChapter = async (
 				.join('\n')
 		}
 
-		return {
-			...chapterData,
-			body: formattedResult,
-		}
+		chapterData.body = formattedResult
+		return chapterData
 	} catch (error) {
 		console.error('Error reading chapter:', error)
 		throw error

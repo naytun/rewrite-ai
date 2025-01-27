@@ -89,6 +89,79 @@
 				height: 100%;
 				margin: 0;
 			}
+
+			/* Settings Modal Dark Mode */
+			html.dark .settings-modal-content {
+				background-color: #1a1a1a;
+				color: #e5e7eb;
+			}
+			html.dark .settings-modal-textarea {
+				background-color: #374151;
+				border-color: #4b5563;
+				color: #e5e7eb;
+				line-height: 1.5rem;
+			}
+			html.dark .settings-modal-textarea::placeholder {
+				color: #9ca3af;
+			}
+			html.dark .settings-modal-label {
+				color: #e5e7eb;
+			}
+			html.dark .settings-modal-close {
+				color: #9ca3af;
+			}
+			html.dark .settings-modal-close:hover {
+				color: #e5e7eb;
+			}
+
+			/* Add or update these styles */
+			.original-text {
+				display: none;
+				color: #808080;
+				font-style: italic;
+				margin-left: 2em;
+			}
+			.compare-mode .original-text {
+				display: block !important;
+			}
+			.paragraph-pair {
+				margin-bottom: 1.5rem;
+			}
+			.ai-text {
+				margin-bottom: 0.5rem;
+			}
+			.compare-button {
+				position: fixed;
+				bottom: 80px;
+				right: 20px;
+				width: 56px;
+				height: 56px;
+				border-radius: 50%;
+				background-color: #9ca3af;
+				color: white;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+				transition: all 0.3s ease;
+				z-index: 100;
+			}
+			.compare-button.show {
+				display: flex;
+			}
+			.compare-button.active {
+				background-color: #3b82f6;
+			}
+			.compare-button:hover {
+				transform: scale(1.1);
+			}
+			html.dark .compare-button {
+				background-color: #4b5563;
+			}
+			html.dark .compare-button.active {
+				background-color: #3b82f6;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-100">
@@ -112,6 +185,12 @@
 									<span class="toggle-slider"></span>
 								</label>
 							</div>
+							<button
+								id="settingsBtn"
+								class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+							>
+								<i class="fas fa-cog mr-2"></i>Settings
+							</button>
 						</div>
 					</div>
 					<div id="loading" class="text-center text-gray-600 mb-4">
@@ -185,6 +264,46 @@
 					</div>
 				</div>
 			</footer>
+		</div>
+
+		<!-- Settings Modal -->
+		<div
+			id="settingsModal"
+			class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50"
+		>
+			<div
+				class="settings-modal-content bg-gray-50 p-6 rounded-lg w-full max-w-2xl shadow-lg"
+			>
+				<div class="flex justify-between items-center mb-4">
+					<h2 class="text-2xl font-bold text-gray-500 transition-colors">
+						Settings
+					</h2>
+					<button
+						id="closeSettingsBtn"
+						class="settings-modal-close text-gray-500 hover:text-gray-700 transition-colors"
+					>
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+				<div class="mb-4">
+					<label class="settings-modal-label block mb-2" for="aiPrompt">
+						AI Rewrite Instructions
+					</label>
+					<textarea
+						id="aiPrompt"
+						class="settings-modal-textarea w-full h-64 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-colors"
+						placeholder="Enter AI rewrite instructions..."
+					></textarea>
+				</div>
+				<div class="flex justify-end">
+					<button
+						id="saveSettingsBtn"
+						class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+					>
+						Save
+					</button>
+				</div>
+			</div>
 		</div>
 
 		<script>
@@ -343,6 +462,112 @@
 
 			// Load novels when the page loads
 			window.addEventListener('load', loadNovels)
+
+			// Settings Modal Functionality
+			const settingsModal = document.getElementById('settingsModal')
+			const settingsBtn = document.getElementById('settingsBtn')
+			const closeSettingsBtn = document.getElementById('closeSettingsBtn')
+			const saveSettingsBtn = document.getElementById('saveSettingsBtn')
+			const aiPromptTextarea = document.getElementById('aiPrompt')
+
+			// Load settings when opening modal
+			settingsBtn.addEventListener('click', async () => {
+				settingsModal.classList.remove('hidden')
+				try {
+					const response = await fetch('/api/novel/settings/ai-rewrite')
+					const settings = await response.json()
+					aiPromptTextarea.value = settings.prompt || ''
+					aiToggle.checked = settings.enabled
+				} catch (error) {
+					console.error('Error loading settings:', error)
+				}
+			})
+
+			closeSettingsBtn.addEventListener('click', () => {
+				settingsModal.classList.add('hidden')
+			})
+
+			saveSettingsBtn.addEventListener('click', async () => {
+				try {
+					const response = await fetch('/api/novel/settings/ai-rewrite', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							enabled: aiToggle.checked,
+							prompt: aiPromptTextarea.value,
+						}),
+					})
+
+					if (response.ok) {
+						settingsModal.classList.add('hidden')
+					} else {
+						console.error('Failed to save settings')
+					}
+				} catch (error) {
+					console.error('Error saving settings:', error)
+				}
+			})
+
+			// Close modal when clicking outside
+			settingsModal.addEventListener('click', (e) => {
+				if (e.target === settingsModal) {
+					settingsModal.classList.add('hidden')
+				}
+			})
+
+			// Update the compare toggle function
+			function toggleCompare() {
+				const compareButton = document.getElementById('compareButton')
+				const aiToggle = document.getElementById('aiToggle')
+				const content = document.querySelector('.chapter-content')
+
+				// Only allow compare when AI is enabled
+				if (!aiToggle.checked) {
+					alert('AI Rewrite must be enabled to use Compare mode')
+					return
+				}
+
+				// Toggle the active state of the button
+				const isCompareMode = compareButton.classList.contains('active')
+
+				if (isCompareMode) {
+					compareButton.classList.remove('active')
+					content.classList.remove('compare-mode')
+				} else {
+					compareButton.classList.add('active')
+					content.classList.add('compare-mode')
+				}
+
+				// Update URL without reloading
+				const currentUrl = new URL(window.location.href)
+				if (isCompareMode) {
+					currentUrl.searchParams.delete('compare')
+				} else {
+					currentUrl.searchParams.set('compare', 'true')
+				}
+				window.history.pushState({}, '', currentUrl.toString())
+			}
+
+			// Initialize compare button state on page load
+			document.addEventListener('DOMContentLoaded', () => {
+				const compareButton = document.getElementById('compareButton')
+				const aiToggle = document.getElementById('aiToggle')
+				const content = document.querySelector('.chapter-content')
+				const urlParams = new URLSearchParams(window.location.search)
+
+				// Show compare button if AI is enabled
+				if (aiToggle.checked) {
+					compareButton.classList.add('show')
+				}
+
+				// Set initial compare mode state
+				if (urlParams.get('compare') === 'true' && aiToggle.checked) {
+					compareButton.classList.add('active')
+					content.classList.add('compare-mode')
+				}
+			})
 		</script>
 	</body>
 </html>
