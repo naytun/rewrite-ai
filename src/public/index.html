@@ -358,6 +358,9 @@
 					if (result.enabled !== isEnabled) {
 						aiToggle.checked = result.enabled
 					}
+
+					// Reload the page to reflect the new AI state
+					window.location.reload()
 				} catch (error) {
 					console.error('Failed to save AI preference:', error)
 					// Revert the toggle if the API call fails
