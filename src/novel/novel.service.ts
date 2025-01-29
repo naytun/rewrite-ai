@@ -87,6 +87,11 @@ export const preloadAIContent = async (
 	chapter: string
 ): Promise<void> => {
 	try {
+		console.log('Starting AI content generation for:', {
+			novelId,
+			volume,
+			chapter,
+		})
 		const novelPath = await getNovelPath(novelId)
 		const filePath = path.join(novelPath, 'json', volume, `${chapter}.json`)
 		const aiFilePath = path.join(
@@ -99,24 +104,32 @@ export const preloadAIContent = async (
 		// Check if AI content already exists
 		try {
 			await fs.access(aiFilePath)
+			console.log('AI content already exists:', aiFilePath)
 			// AI content exists, no need to generate
 			return
 		} catch {
-			// AI content doesn't exist, continue with generation
+			console.log('No existing AI content found, will generate new content')
 		}
 
 		// Check if original chapter exists
 		try {
 			await fs.access(filePath)
-		} catch {
-			// Original chapter doesn't exist, can't generate AI content
+		} catch (error) {
+			console.error('Original chapter file not found:', filePath)
 			return
 		}
 
 		// Read and parse the chapter file
-		const content = await fs.readFile(filePath, 'utf-8')
-		const chapterData = JSON.parse(content)
-		if (!chapterData || !chapterData.body) {
+		let chapterData
+		try {
+			const content = await fs.readFile(filePath, 'utf-8')
+			chapterData = JSON.parse(content)
+			if (!chapterData || !chapterData.body) {
+				console.error('Invalid chapter data format:', chapterData)
+				return
+			}
+		} catch (error) {
+			console.error('Error reading/parsing chapter file:', error)
 			return
 		}
 
@@ -128,12 +141,19 @@ export const preloadAIContent = async (
 			.trim()
 
 		// Generate AI content
-		console.log('Preloading AI content for next chapter...')
-		const result = await askAI({
-			question: plainText,
-			context:
-				'Please rewrite the following novel chapter text to enhance its quality while maintaining the original story and meaning.',
-		})
+		console.log('Calling AI service for content generation...')
+		let result
+		try {
+			result = await askAI({
+				question: plainText,
+				context:
+					'Please rewrite the following novel chapter text to enhance its quality while maintaining the original story and meaning.',
+			})
+			console.log('AI content generation successful, length:', result.length)
+		} catch (error) {
+			console.error('Error during AI content generation:', error)
+			throw error
+		}
 
 		// Split AI result into paragraphs
 		const splitIntoParagraphs = (text: string): string[] => {
@@ -151,6 +171,7 @@ export const preloadAIContent = async (
 		}
 
 		const aiParagraphs = splitIntoParagraphs(result)
+		console.log('Processed AI paragraphs count:', aiParagraphs.length)
 
 		// Check for failed generation
 		const hasFailedContent = aiParagraphs.some(
@@ -161,6 +182,7 @@ export const preloadAIContent = async (
 		)
 
 		if (hasFailedContent) {
+			console.error('AI generation produced invalid content')
 			return
 		}
 
@@ -176,14 +198,20 @@ export const preloadAIContent = async (
 			generatedAt: new Date().toISOString(),
 		}
 
-		await fs.writeFile(
-			aiFilePath,
-			JSON.stringify(aiChapterData, null, 2),
-			'utf-8'
-		)
-		console.log('Saved preloaded AI content to file:', aiFilePath)
+		try {
+			await fs.writeFile(
+				aiFilePath,
+				JSON.stringify(aiChapterData, null, 2),
+				'utf-8'
+			)
+			console.log('Successfully saved AI content to:', aiFilePath)
+		} catch (error) {
+			console.error('Error saving AI content to file:', error)
+			throw error
+		}
 	} catch (error) {
-		console.error('Error preloading AI content:', error)
+		console.error('Error in preloadAIContent:', error)
+		throw error // Re-throw to ensure the error is properly propagated
 	}
 }
 

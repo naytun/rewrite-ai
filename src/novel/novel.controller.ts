@@ -550,55 +550,106 @@ export const regenerateChapter = async (
 	res: Response
 ): Promise<void> => {
 	try {
+		console.log('Regenerate endpoint hit with params:', req.params)
 		const { novelId, volume, chapter } = req.params
+		console.log('Starting chapter regeneration:', { novelId, volume, chapter })
 
 		// Get the chapter content
-		const chapterData = await getChapterContent(
-			novelId,
-			volume,
-			chapter,
-			true,
-			false
-		)
+		let chapterData
+		try {
+			console.log('Attempting to get chapter content...')
+			chapterData = await getChapterContent(
+				novelId,
+				volume,
+				chapter,
+				true,
+				false
+			)
+			console.log('Successfully retrieved original chapter content')
+		} catch (error: any) {
+			console.error('Error getting original chapter content:', error)
+			res.status(500).json({
+				error: 'Failed to get original chapter content',
+				details: error.message || 'Unknown error',
+			})
+			return
+		}
 
 		// Delete the existing AI file to force regeneration
-		const novelPath = await getNovelPath(novelId)
-		const aiFilePath = path.join(
-			novelPath,
-			'json',
-			volume,
-			`${chapter}-ai.json`
-		)
-
 		try {
-			await fs.promises.unlink(aiFilePath)
-		} catch (error) {
-			// Ignore if file doesn't exist
+			console.log('Getting novel path...')
+			const novelPath = await getNovelPath(novelId)
+			const aiFilePath = path.join(
+				novelPath,
+				'json',
+				volume,
+				`${chapter}-ai.json`
+			)
+			console.log('AI file path:', aiFilePath)
+
+			try {
+				console.log('Attempting to delete existing AI file...')
+				await fs.promises.unlink(aiFilePath)
+				console.log('Successfully deleted existing AI file')
+			} catch (error: any) {
+				// Ignore if file doesn't exist
+				console.log('No existing AI file to delete or error:', error.message)
+			}
+
+			// Regenerate the AI content
+			console.log('Starting AI content regeneration...')
+			const regeneratedData = await getChapterContent(
+				novelId,
+				volume,
+				chapter,
+				true,
+				false
+			)
+
+			if (!regeneratedData) {
+				console.error('No data returned from regeneration')
+				throw new Error('Failed to generate new AI content')
+			}
+			console.log('Successfully generated new AI content')
+
+			// Preload the next chapter
+			try {
+				console.log('Attempting to preload next chapter...')
+				const { chapters } = await getChapters(novelId)
+				const currentIndex = chapters.findIndex(
+					(ch) => ch.volume === volume && ch.chapter === chapter
+				)
+
+				if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
+					const nextChapter = chapters[currentIndex + 1]
+					await preloadAIContent(
+						novelId,
+						nextChapter.volume,
+						nextChapter.chapter
+					)
+					console.log('Successfully preloaded next chapter')
+				} else {
+					console.log('No next chapter to preload')
+				}
+			} catch (error: any) {
+				// Don't fail the whole operation if preloading next chapter fails
+				console.error('Error preloading next chapter:', error)
+			}
+
+			console.log('Chapter regeneration completed successfully')
+			res.json({ success: true, data: regeneratedData })
+		} catch (error: any) {
+			console.error('Error during regeneration process:', error)
+			res.status(500).json({
+				error: 'Failed to regenerate chapter',
+				details: error.message || 'Unknown error',
+			})
 		}
-
-		// Regenerate the AI content by reading the chapter again with AI enabled
-		const regeneratedData = await getChapterContent(
-			novelId,
-			volume,
-			chapter,
-			true,
-			false
-		)
-
-		// Preload the next chapter
-		const { chapters } = await getChapters(novelId)
-		const currentIndex = chapters.findIndex(
-			(ch) => ch.volume === volume && ch.chapter === chapter
-		)
-
-		if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
-			const nextChapter = chapters[currentIndex + 1]
-			await preloadAIContent(novelId, nextChapter.volume, nextChapter.chapter)
-		}
-
-		res.json({ success: true, data: regeneratedData })
-	} catch (error) {
-		console.error('Error regenerating chapter:', error)
-		res.status(500).json({ error: 'Failed to regenerate chapter' })
+	} catch (error: any) {
+		console.error('Unexpected error in regenerateChapter:', error)
+		res.status(500).json({
+			error: 'An unexpected error occurred',
+			details: error.message || 'Unknown error',
+		})
 	}
 }

@@ -643,7 +643,7 @@
 
 				try {
 					const response = await fetch(
-						'/novels/{{novel_id}}/chapters/{{current_volume}}/{{current_chapter}}/regenerate',
+						'/api/novel/novels/{{novel_id}}/chapters/{{current_volume}}/{{current_chapter}}/regenerate',
 						{
 							method: 'POST',
 							headers: {
