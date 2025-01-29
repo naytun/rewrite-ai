@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{{novel_title}} - {{chapter_title}}</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+			rel="stylesheet"
+		/>
+		<style>
+			.chapter-content {
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 4rem;
+				padding-top: 1rem;
+				padding-bottom: 10rem;
+				line-height: 1.6;
+				font-size: 1.5rem;
+			}
+			.original-text {
+				display: none !important;
+				color: #808080;
+				font-style: italic;
+				margin-top: 1rem;
+				padding-top: 1rem;
+				border-top: 1px solid #e5e7eb;
+			}
+			.compare-mode .original-text {
+				display: block !important;
+			}
+			html.dark .original-text {
+				border-top-color: #4b5563;
+			}
+			.chapter-content p {
+				margin-bottom: 1.5rem;
+				font-size: 1.4rem;
+				line-height: 1.6;
+			}
+			@media (min-width: 640px) {
+				.chapter-content {
+					font-size: 1.4rem;
+				}
+				.chapter-content p {
+					font-size: 1.4rem;
+					line-height: 1.6;
+				}
+			}
+			.navigation {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				background: white;
+				padding: 1.25rem;
+				box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+				display: flex;
+				justify-content: center;
+				gap: 1rem;
+				transition: transform 0.3s ease;
+			}
+			.navigation.hidden {
+				transform: translateY(100%);
+			}
+			.toggle-container {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+			}
+			.toggle-label {
+				display: flex;
+				font-size: 1rem;
+				align-items: center;
+				margin-left: 1.5rem;
+				gap: 1rem;
+				cursor: pointer;
+			}
+			.toggle-switch {
+				position: relative;
+				display: inline-block;
+				width: 48px;
+				height: 24px;
+			}
+			.toggle-switch input {
+				opacity: 0;
+				width: 0;
+				height: 0;
+			}
+			.toggle-slider {
+				position: absolute;
+				cursor: pointer;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: #ccc;
+				transition: 0.4s;
+				border-radius: 24px;
+			}
+			.toggle-slider:before {
+				position: absolute;
+				content: '';
+				height: 16px;
+				width: 16px;
+				left: 4px;
+				bottom: 4px;
+				background-color: white;
+				transition: 0.4s;
+				border-radius: 50%;
+			}
+			input:checked + .toggle-slider {
+				background-color: #3b82f6;
+			}
+			input:checked + .toggle-slider:before {
+				transform: translateX(24px);
+			}
+			html.dark .toggle-slider {
+				background-color: #4b5563;
+			}
+			html.dark input:checked + .toggle-slider {
+				background-color: #60a5fa;
+			}
+			.back-button {
+				display: inline-flex;
+				align-items: center;
+				color: #3b82f6;
+				text-decoration: none;
+				padding: 0.5rem 1rem;
+				padding-left: 0;
+				border-radius: 0.5rem;
+				transition: all 0.2s;
+				font-size: 1rem;
+				font-weight: 500;
+			}
+			.back-button:hover {
+				background: #e5e7eb;
+			}
+			html.dark body {
+				background-color: #222;
+				color: #e5e7eb;
+			}
+			html.dark .chapter-content {
+				color: #e5e7eb;
+			}
+			html.dark .navigation {
+				background-color: #2d2d2d;
+				box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+			}
+			html.dark .nav-button {
+				background: #3b82f6;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+				margin-left: 1rem;
+				margin-right: 1rem;
+			}
+			html.dark .nav-button:hover {
+				background: #2563eb;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+			}
+			html.dark .nav-button.disabled {
+				background: #4b5563;
+				box-shadow: none;
+			}
+			html.dark .back-button {
+				color: #60a5fa;
+			}
+			html.dark .back-button:hover {
+				background: #374151;
+			}
+			.loading {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.7);
+				z-index: 1000;
+				justify-content: center;
+				align-items: center;
+			}
+			.loading.active {
+				display: flex;
+			}
+			.spinner {
+				width: 50px;
+				height: 50px;
+				border: 5px solid #f3f3f3;
+				border-top: 5px solid #3b82f6;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			.nav-button {
+				padding: 0.55rem 1.2rem;
+				border-radius: 9999px;
+				background: #3b82f6;
+				color: white;
+				cursor: pointer;
+				transition: all 0.2s;
+				font-size: 1.2rem;
+				font-weight: 500;
+				min-width: 120px;
+				text-align: center;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				margin-left: 1rem;
+				margin-right: 1rem;
+				opacity: 0.8;
+			}
+			.nav-button:hover {
+				background: #2563eb;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			}
+			.nav-button.disabled {
+				background: #9ca3af;
+				cursor: not-allowed;
+				transform: none;
+				box-shadow: none;
+			}
+			@media (min-width: 640px) {
+				.navigation {
+					gap: 2rem;
+				}
+			}
+			.floating-button {
+				position: fixed;
+				right: 20px;
+				width: 56px;
+				height: 56px;
+				border-radius: 50%;
+				color: white;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+				transition: all 0.3s ease;
+				z-index: 100;
+			}
+			.floating-button:hover {
+				transform: scale(1.1);
+			}
+			.floating-button.show {
+				display: flex;
+			}
+			.floating-button.disabled {
+				background-color: #9ca3af !important;
+				cursor: not-allowed;
+				transform: none;
+			}
+			.floating-button:before {
+				content: attr(data-tooltip);
+				position: absolute;
+				bottom: 120%;
+				right: 50%;
+				transform: translateX(50%);
+				padding: 0.5rem 1rem;
+				background-color: #1f2937;
+				color: white;
+				border-radius: 0.375rem;
+				font-size: 0.875rem;
+				white-space: nowrap;
+				opacity: 0;
+				visibility: hidden;
+				transition: all 0.2s ease;
+			}
+			/* Only show tooltips on desktop/larger screens */
+			@media (max-width: 1024px) {
+				.floating-button:before {
+					display: none;
+				}
+				.floating-button:hover:before {
+					opacity: 0;
+					visibility: hidden;
+				}
+			}
+			/* Original hover state for desktop */
+			@media (min-width: 1025px) {
+				.floating-button:hover:before {
+					opacity: 1;
+					visibility: visible;
+				}
+			}
+			.compare-button {
+				bottom: 80px;
+				background-color: #3b82f6;
+			}
+			.regenerate-button {
+				bottom: 150px;
+				background-color: #10b981;
+			}
+			html.dark .floating-button:before {
+				background-color: #374151;
+			}
+			html.dark .compare-button {
+				background-color: #3b82f6;
+			}
+			html.dark .regenerate-button {
+				background-color: #059669;
+			}
+			html.dark .compare-button:hover {
+				background-color: #2563eb;
+			}
+			html.dark .regenerate-button:hover {
+				background-color: #047857;
+			}
+			.novel-title {
+				font-size: 1rem;
+				color: #4b5563;
+				margin-bottom: 0.75rem;
+				font-weight: 500;
+				letter-spacing: 0.025em;
+			}
+			html.dark .novel-title {
+				color: #9ca3af;
+			}
+			#generateAIBtn {
+				display: none;
+			}
+			#generateAIBtn.show {
+				display: inline-block;
+			}
+			html.dark #generateAIBtn {
+				background-color: #059669;
+			}
+			html.dark #generateAIBtn:hover {
+				background-color: #047857;
+			}
+		</style>
+	</head>
+	<body class="bg-gray-200">
+		<div id="loading" class="loading">
+			<div class="spinner"></div>
+		</div>
+
+		<div class="chapter-content">
+			<div class="flex justify-between items-center mb-8">
+				<a href="/" class="back-button" onclick="showLoading()">← Library</a>
+
+				<div class="toggle-container">
+					<label class="toggle-label">
+						<span>AI Rewrite </span>
+						<div class="toggle-switch">
+							<input type="checkbox" id="aiToggle" onchange="toggleAI()" />
+							<span class="toggle-slider"></span>
+						</div>
+					</label>
+					<label class="toggle-label">
+						<span>Dark Mode </span>
+						<div class="toggle-switch">
+							<input type="checkbox" id="darkModeToggle" />
+							<span class="toggle-slider"></span>
+						</div>
+					</label>
+				</div>
+			</div>
+
+			<div class="text-left mb-8">
+				<div class="novel-title">{{novel_title}} - {{volume}}</div>
+				<h1 class="text-3xl font-bold">{{chapter_title}}</h1>
+			</div>
+
+			{{chapter_body}}
+		</div>
+
+		<div class="navigation">{{navigation_buttons}}</div>
+
+		<div
+			class="floating-button compare-button"
+			id="compareButton"
+			onclick="toggleCompare()"
+			data-tooltip="Compare original and AI rewritten text"
+		>
+			<i class="fas fa-columns fa-lg"></i>
+		</div>
+
+		<div
+			class="floating-button regenerate-button"
+			id="regenerateButton"
+			onclick="regenerateChapter()"
+			data-tooltip="Regenerate AI content"
+		>
+			<i class="fas fa-sync-alt fa-lg"></i>
+		</div>
+
+		<script>
+			// Check for dark mode preference
+			if (localStorage.getItem('darkMode') === 'true') {
+				document.documentElement.classList.add('dark')
+			}
+
+			// Handle navigation bar visibility on scroll
+			let lastScrollY = window.scrollY
+			let scrollThreshold = window.innerHeight * 0.2 // 20% of window height
+			const nav = document.querySelector('.navigation')
+
+			window.addEventListener('scroll', () => {
+				const currentScrollY = window.scrollY
+
+				// Show nav when scrolling up or at top
+				if (currentScrollY < lastScrollY || currentScrollY < scrollThreshold) {
+					nav.classList.remove('hidden')
+				}
+				// Hide nav when scrolling down and past threshold
+				else if (currentScrollY > scrollThreshold) {
+					nav.classList.add('hidden')
+				}
+
+				lastScrollY = currentScrollY
+			})
+
+			// Recalculate threshold on window resize
+			window.addEventListener('resize', () => {
+				scrollThreshold = window.innerHeight * 0.2
+			})
+
+			function showLoading() {
+				document.getElementById('loading').classList.add('active')
+			}
+
+			// Initialize AI toggle state and compare button visibility
+			document.addEventListener('DOMContentLoaded', async () => {
+				const aiToggle = document.getElementById('aiToggle')
+				const darkModeToggle = document.getElementById('darkModeToggle')
+				const compareButton = document.getElementById('compareButton')
+				const regenerateButton = document.getElementById('regenerateButton')
+
+				// Initialize dark mode
+				const isDarkMode = localStorage.getItem('darkMode') === 'true'
+				if (isDarkMode) {
+					document.documentElement.classList.add('dark')
+					darkModeToggle.checked = true
+				}
+
+				// Add dark mode toggle event listener
+				darkModeToggle.addEventListener('change', () => {
+					const isDark = darkModeToggle.checked
+					if (isDark) {
+						document.documentElement.classList.add('dark')
+						localStorage.setItem('darkMode', 'true')
+					} else {
+						document.documentElement.classList.remove('dark')
+						localStorage.setItem('darkMode', 'false')
+					}
+				})
+
+				// Initialize compare mode from URL
+				const urlParams = new URLSearchParams(window.location.search)
+				if (urlParams.get('compare') === 'true') {
+					compareButton.classList.add('active')
+				}
+
+				try {
+					// Get AI preference from backend
+					const response = await fetch('/api/novel/settings/ai-rewrite', {
+						headers: {
+							Accept: 'application/json',
+						},
+					})
+
+					if (!response.ok) {
+						throw new Error('Failed to get AI settings')
+					}
+
+					const { enabled } = await response.json()
+					console.log('Initial AI state:', enabled)
+					aiToggle.checked = enabled
+					localStorage.setItem('aiRewrite', enabled.toString())
+
+					// Show buttons only if AI is enabled
+					if (enabled) {
+						setTimeout(() => {
+							compareButton.classList.add('show')
+							regenerateButton.classList.add('show')
+						}, 100)
+					}
+				} catch (error) {
+					console.error('Failed to get AI preference:', error)
+					// Use localStorage as fallback
+					const savedAIState = localStorage.getItem('aiRewrite') === 'true'
+					aiToggle.checked = savedAIState
+					if (savedAIState) {
+						setTimeout(() => {
+							compareButton.classList.add('show')
+							regenerateButton.classList.add('show')
+						}, 100)
+					}
+				}
+			})
+
+			// AI Toggle functionality
+			async function toggleAI() {
+				const aiToggle = document.getElementById('aiToggle')
+				const compareButton = document.getElementById('compareButton')
+				const regenerateButton = document.getElementById('regenerateButton')
+				const isEnabled = aiToggle.checked
+
+				try {
+					// Send toggle state to backend
+					const response = await fetch('/api/novel/settings/ai-rewrite', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							Accept: 'application/json',
+						},
+						body: JSON.stringify({ enabled: isEnabled }),
+					})
+
+					if (!response.ok) {
+						throw new Error('Failed to update AI settings')
+					}
+
+					const result = await response.json()
+					console.log('AI toggle response:', result)
+
+					// Store the AI state in localStorage
+					localStorage.setItem('aiRewrite', isEnabled.toString())
+
+					// Show/hide buttons based on AI state
+					if (isEnabled) {
+						compareButton.classList.add('show')
+						regenerateButton.classList.add('show')
+					} else {
+						compareButton.classList.remove('show', 'active')
+						regenerateButton.classList.remove('show')
+						// Remove compare parameter if AI is disabled
+						const currentUrl = new URL(window.location.href)
+						currentUrl.searchParams.delete('compare')
+						window.location.href = currentUrl.toString()
+						return
+					}
+
+					// Show loading and reload page to get new content
+					showLoading()
+					window.location.reload()
+				} catch (error) {
+					console.error('Failed to save AI preference:', error)
+					// Revert the toggle if the API call fails
+					aiToggle.checked = !isEnabled
+					localStorage.setItem('aiRewrite', (!isEnabled).toString())
+					compareButton.classList.toggle('show', !isEnabled)
+					regenerateButton.classList.toggle('show', !isEnabled)
+					document.getElementById('loading').classList.remove('active')
+				}
+			}
+
+			// Compare Toggle functionality
+			function toggleCompare() {
+				const compareButton = document.getElementById('compareButton')
+				const aiToggle = document.getElementById('aiToggle')
+
+				// Only allow compare when AI is enabled
+				if (!aiToggle.checked) {
+					alert('AI Rewrite must be enabled to use Compare mode')
+					return
+				}
+
+				// Toggle the active state of the button
+				const isCompareMode = compareButton.classList.contains('active')
+				if (isCompareMode) {
+					compareButton.classList.remove('active')
+				} else {
+					compareButton.classList.add('active')
+				}
+
+				// Update URL without reloading
+				const currentUrl = new URL(window.location.href)
+				if (isCompareMode) {
+					currentUrl.searchParams.delete('compare')
+				} else {
+					currentUrl.searchParams.set('compare', 'true')
+				}
+				window.history.pushState({}, '', currentUrl.toString())
+
+				// Toggle visibility of original text
+				document
+					.querySelector('.chapter-content')
+					.classList.toggle('compare-mode')
+			}
+
+			function saveLastChapter(volume, chapter) {
+				localStorage.setItem('lastChapter_' + '{{novel_id}}', chapter)
+				localStorage.setItem('lastVolume_' + '{{novel_id}}', volume)
+			}
+
+			// Save current chapter when page loads
+			document.addEventListener('DOMContentLoaded', () => {
+				const currentVolume = '{{current_volume}}'
+				const currentChapter = '{{current_chapter}}'
+				saveLastChapter(currentVolume, currentChapter)
+			})
+
+			// Keyboard navigation
+			document.addEventListener('keydown', (e) => {
+				const prevVolume = '{{prev_volume}}'
+				const prevChapter = '{{prev_chapter}}'
+				const nextVolume = '{{next_volume}}'
+				const nextChapter = '{{next_chapter}}'
+				const novelId = '{{novel_id}}'
+
+				if (e.key === 'ArrowLeft' && prevChapter) {
+					showLoading()
+					saveLastChapter(prevVolume, prevChapter)
+					window.location.href =
+						'/api/novel/novels/' +
+						encodeURIComponent(novelId) +
+						'/chapters/' +
+						encodeURIComponent(prevVolume) +
+						'/' +
+						encodeURIComponent(prevChapter)
+				} else if (e.key === 'ArrowRight' && nextChapter) {
+					showLoading()
+					saveLastChapter(nextVolume, nextChapter)
+					window.location.href =
+						'/api/novel/novels/' +
+						encodeURIComponent(novelId) +
+						'/chapters/' +
+						encodeURIComponent(nextVolume) +
+						'/' +
+						encodeURIComponent(nextChapter)
+				}
+			})
+
+			// Regenerate chapter functionality
+			async function regenerateChapter() {
+				const regenerateButton = document.getElementById('regenerateButton')
+				const loadingEl = document.getElementById('loading')
+
+				// Disable button and show loading
+				regenerateButton.classList.add('disabled')
+				loadingEl.classList.add('active')
+
+				try {
+					const response = await fetch(
+						'/novels/{{novel_id}}/chapters/{{current_volume}}/{{current_chapter}}/regenerate',
+						{
+							method: 'POST',
+							headers: {
+								Accept: 'application/json',
+							},
+						}
+					)
+
+					if (!response.ok) {
+						throw new Error(
+							`Failed to regenerate chapter: ${response.statusText}`
+						)
+					}
+
+					const result = await response.json()
+					if (!result.success) {
+						throw new Error(result.error || 'Failed to regenerate chapter')
+					}
+
+					// Reload the page to show new content
+					window.location.reload()
+				} catch (error) {
+					console.error('Failed to regenerate chapter:', error)
+					alert(
+						error.message || 'Failed to regenerate chapter. Please try again.'
+					)
+					// Re-enable button
+					regenerateButton.classList.remove('disabled')
+					loadingEl.classList.remove('active')
+				}
+			}
+		</script>
+	</body>
+</html>

@@ -281,806 +281,65 @@ const generateChapterHtml = (
 	chapters: Chapter[],
 	currentNovelId: string
 ): string => {
-	const html = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${chapterData.novel_title || ''} - ${
-		chapterData.title
-	}</title>
-            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-            <style>
-                .chapter-content {
-                    max-width: 800px;
-                    margin: 0 auto;
-                    padding: 4rem;
-                    padding-top: 1rem;
-                    padding-bottom: 10rem;
-                    line-height: 1.6;
-                    font-size: 1.5rem;
-                }
-                .original-text {
-                    display: none !important;
-                    color: #808080;
-                    font-style: italic;
-                    margin-top: 1rem;
-                    padding-top: 1rem;
-                    border-top: 1px solid #e5e7eb;
-                }
-                .compare-mode .original-text {
-                    display: block !important;
-                }
-                html.dark .original-text {
-                    border-top-color: #4b5563;
-                }
-                .chapter-content p {
-                    margin-bottom: 1.5rem;
-                    font-size: 1.4rem;
-                    line-height: 1.6;
-                }
-                @media (min-width: 640px) {
-                    .chapter-content {
-                        font-size: 1.4rem;
-                    }
-                    .chapter-content p {
-                        font-size: 1.4rem;
-                        line-height: 1.6;
-                    }
-                }
-                .navigation {
-                    position: fixed;
-                    bottom: 0;
-                    left: 0;
-                    right: 0;
-                    background: white;
-                    padding: 1.25rem;
-                    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-                    display: flex;
-                    justify-content: center;
-                    gap: 1rem;
-                    transition: transform 0.3s ease;
-                }
-                .navigation.hidden {
-                    transform: translateY(100%);
-                }
-                .toggle-container {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                }
-                .toggle-label {
-                    display: flex;
-                    font-size: 1rem;
-                    align-items: center;
-                    margin-left: 1.5rem;
-                    gap: 1rem;
-                    cursor: pointer;
-                }
-                .toggle-switch {
-                    position: relative;
-                    display: inline-block;
-                    width: 48px;
-                    height: 24px;
-                }
-                .toggle-switch input {
-                    opacity: 0;
-                    width: 0;
-                    height: 0;
-                }
-                .toggle-slider {
-                    position: absolute;
-                    cursor: pointer;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background-color: #ccc;
-                    transition: .4s;
-                    border-radius: 24px;
-                }
-                .toggle-slider:before {
-                    position: absolute;
-                    content: "";
-                    height: 16px;
-                    width: 16px;
-                    left: 4px;
-                    bottom: 4px;
-                    background-color: white;
-                    transition: .4s;
-                    border-radius: 50%;
-                }
-                input:checked + .toggle-slider {
-                    background-color: #3b82f6;
-                }
-                input:checked + .toggle-slider:before {
-                    transform: translateX(24px);
-                }
-                html.dark .toggle-slider {
-                    background-color: #4b5563;
-                }
-                html.dark input:checked + .toggle-slider {
-                    background-color: #60a5fa;
-                }
-                .back-button {
-                    display: inline-flex;
-                    align-items: center;
-                    color: #3b82f6;
-                    text-decoration: none;
-                    padding: 0.5rem 1rem;
-                    padding-left: 0;
-                    border-radius: 0.5rem;
-                    transition: all 0.2s;
-                    font-size: 1rem;
-                    font-weight: 500;
-                }
-                .back-button:hover {
-                    background: #e5e7eb;
-                }
-                html.dark body {
-                    background-color: #222;
-                    color: #e5e7eb;
-                }
-                html.dark .chapter-content {
-                    color: #e5e7eb;
-                }
-                html.dark .navigation {
-                    background-color: #2d2d2d;
-                    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-                }
-                html.dark .nav-button {
-                    background: #3b82f6;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-                    margin-left: 1rem;
-                    margin-right: 1rem;
-                }
-                html.dark .nav-button:hover {
-                    background: #2563eb;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-                }
-                html.dark .nav-button.disabled {
-                    background: #4b5563;
-                    box-shadow: none;
-                }
-                html.dark .back-button {
-                    color: #60a5fa;
-                }
-                html.dark .back-button:hover {
-                    background: #374151;
-                }
-                .loading {
-                    display: none;
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0, 0, 0, 0.7);
-                    z-index: 1000;
-                    justify-content: center;
-                    align-items: center;
-                }
-                .loading.active {
-                    display: flex;
-                }
-                .spinner {
-                    width: 50px;
-                    height: 50px;
-                    border: 5px solid #f3f3f3;
-                    border-top: 5px solid #3b82f6;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                }
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-                .nav-button {
-                    padding: 0.55rem 1.2rem;
-                    border-radius: 9999px;
-                    background: #3b82f6;
-                    color: white;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    font-size: 1.2rem;
-                    font-weight: 500;
-                    min-width: 120px;
-                    text-align: center;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                    margin-left: 1rem;
-                    margin-right: 1rem;
-                    opacity: 0.8;
-                }
-                .nav-button:hover {
-                    background: #2563eb;
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                }
-                .nav-button.disabled {
-                    background: #9ca3af;
-                    cursor: not-allowed;
-                    transform: none;
-                    box-shadow: none;
-                }
-                @media (min-width: 640px) {
-                    .navigation {
-                        gap: 2rem;
-                    }
-                }
-                .compare-button {
-                    position: fixed;
-                    bottom: 80px;
-                    right: 20px;
-                    width: 56px;
-                    height: 56px;
-                    border-radius: 50%;
-                    background-color: #9ca3af;
-                    color: white;
-                    display: none;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: pointer;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    transition: all 0.3s ease;
-                    z-index: 100;
-                }
-                .compare-button.show {
-                    display: flex;
-                }
-                .compare-button.active {
-                    background-color: #3b82f6;
-                }
-                .compare-button:hover {
-                    transform: scale(1.1);
-                }
-                html.dark .compare-button {
-                    background-color: #4b5563;
-                }
-                html.dark .compare-button.active {
-                    background-color: #3b82f6;
-                }
-                .compare-button:before {
-                    content: attr(data-tooltip);
-                    position: absolute;
-                    bottom: 120%;
-                    right: 50%;
-                    transform: translateX(50%);
-                    padding: 0.5rem 1rem;
-                    background-color: #1f2937;
-                    color: white;
-                    border-radius: 0.375rem;
-                    font-size: 0.875rem;
-                    white-space: nowrap;
-                    opacity: 0;
-                    visibility: hidden;
-                    transition: all 0.2s ease;
-                }
-                .compare-button:hover:before {
-                    opacity: 1;
-                    visibility: visible;
-                }
-                html.dark .compare-button:before {
-                    background-color: #374151;
-                }
-                .regenerate-button {
-                    position: fixed;
-                    bottom: 150px;
-                    right: 20px;
-                    width: 56px;
-                    height: 56px;
-                    border-radius: 50%;
-                    background-color: #3b82f6;
-                    color: white;
-                    display: none;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: pointer;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    transition: all 0.3s ease;
-                    z-index: 100;
-                }
-                .regenerate-button.show {
-                    display: flex;
-                }
-                .regenerate-button:hover {
-                    transform: scale(1.1);
-                    background-color: #2563eb;
-                }
-                .regenerate-button.disabled {
-                    background-color: #9ca3af;
-                    cursor: not-allowed;
-                    transform: none;
-                }
-                html.dark .regenerate-button {
-                    background-color: #3b82f6;
-                }
-                html.dark .regenerate-button:hover {
-                    background-color: #2563eb;
-                }
-                html.dark .regenerate-button.disabled {
-                    background-color: #4b5563;
-                }
-                .regenerate-button:before {
-                    content: attr(data-tooltip);
-                    position: absolute;
-                    bottom: 120%;
-                    right: 50%;
-                    transform: translateX(50%);
-                    padding: 0.5rem 1rem;
-                    background-color: #1f2937;
-                    color: white;
-                    border-radius: 0.375rem;
-                    font-size: 0.875rem;
-                    white-space: nowrap;
-                    opacity: 0;
-                    visibility: hidden;
-                    transition: all 0.2s ease;
-                }
-                .regenerate-button:hover:before {
-                    opacity: 1;
-                    visibility: visible;
-                }
-                html.dark .regenerate-button:before {
-                    background-color: #374151;
-                }
-                .floating-button {
-                    position: fixed;
-                    right: 20px;
-                    width: 56px;
-                    height: 56px;
-                    border-radius: 50%;
-                    color: white;
-                    display: none;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: pointer;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    transition: all 0.3s ease;
-                    z-index: 100;
-                }
-                
-                .floating-button:hover {
-                    transform: scale(1.1);
-                }
-                
-                .floating-button.show {
-                    display: flex;
-                }
-                
-                .floating-button.disabled {
-                    background-color: #9ca3af !important;
-                    cursor: not-allowed;
-                    transform: none;
-                }
-                
-                .floating-button:before {
-                    content: attr(data-tooltip);
-                    position: absolute;
-                    bottom: 120%;
-                    right: 50%;
-                    transform: translateX(50%);
-                    padding: 0.5rem 1rem;
-                    background-color: #1f2937;
-                    color: white;
-                    border-radius: 0.375rem;
-                    font-size: 0.875rem;
-                    white-space: nowrap;
-                    opacity: 0;
-                    visibility: hidden;
-                    transition: all 0.2s ease;
-                }
-                
-                .floating-button:hover:before {
-                    opacity: 1;
-                    visibility: visible;
-                }
-                
-                .compare-button {
-                    bottom: 80px;
-                    background-color: #3b82f6;
-                }
-                
-                .regenerate-button {
-                    bottom: 150px;
-                    background-color: #10b981;
-                }
-                
-                html.dark .floating-button:before {
-                    background-color: #374151;
-                }
-                
-                html.dark .compare-button {
-                    background-color: #3b82f6;
-                }
-                
-                html.dark .regenerate-button {
-                    background-color: #059669;
-                }
-                
-                html.dark .compare-button:hover {
-                    background-color: #2563eb;
-                }
-                
-                html.dark .regenerate-button:hover {
-                    background-color: #047857;
-                }
-                .novel-title {
-                    font-size: 1rem;
-                    color: #4B5563;
-                    margin-bottom: 0.75rem;
-                    font-weight: 500;
-                    letter-spacing: 0.025em;
-                }
-                html.dark .novel-title {
-                    color: #9CA3AF;
-                }
-            </style>
-        </head>
-        <body class="bg-gray-200">
-            <div id="loading" class="loading">
-                <div class="spinner"></div>
-            </div>
+	try {
+		// Read the template file
+		const templatePath = path.join(__dirname, 'templates', 'chapter.html')
+		let template = fs.readFileSync(templatePath, 'utf-8')
 
-            <div class="chapter-content">
-                <div class="flex justify-between items-center mb-8">
-                    <a href="/" class="back-button" onclick="showLoading()">← Library</a>
-                    
-                    <div class="toggle-container">
-                        <label class="toggle-label">
-                            <span>AI Rewrite </span>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="aiToggle" onchange="toggleAI()">
-                                <span class="toggle-slider"></span>
-                            </div>
-                        </label>
-                        <label class="toggle-label">
-                            <span>Dark Mode </span>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="darkModeToggle">
-                                <span class="toggle-slider"></span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
+		// Generate navigation buttons HTML
+		const navButtons = `
+			${
+				navigation.prev
+					? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
+							currentNovelId
+					  )}/chapters/${encodeURIComponent(
+							navigation.prev.volume
+					  )}/${encodeURIComponent(
+							navigation.prev.chapter
+					  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+							navigation.prev.volume
+					  )}', '${encodeURIComponent(
+							navigation.prev.chapter
+					  )}')" >← Previous</a>`
+					: '<span class="nav-button disabled">← Previous</span>'
+			}
+			<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
+				currentNovelId
+			)}/chapters" onclick="showLoading()">Chapter List</a>
+			${
+				navigation.next
+					? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
+							currentNovelId
+					  )}/chapters/${encodeURIComponent(
+							navigation.next.volume
+					  )}/${encodeURIComponent(
+							navigation.next.chapter
+					  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+							navigation.next.volume
+					  )}', '${encodeURIComponent(navigation.next.chapter)}')" >Next →</a>`
+					: '<span class="nav-button disabled">Next →</span>'
+			}`
 
-                <div class="text-center mb-8">
-                    <div class="novel-title">${
-											chapterData.novel_title || ''
-										}</div>
-                    <h1 class="text-3xl font-bold mb-2">${
-											chapterData.title
-										}</h1>
-                    <h2 class="text-xl text-gray-600 dark:text-gray-400">${
-											navigation.current.volume
-										}</h2>
-                </div>
+		// Replace template variables
+		template = template
+			.replace(/{{novel_title}}/g, chapterData.novel_title || '')
+			.replace(/{{chapter_title}}/g, chapterData.title)
+			.replace(/{{volume}}/g, navigation.current.volume)
+			.replace(/{{chapter_body}}/g, chapterData.body)
+			.replace(/{{navigation_buttons}}/g, navButtons)
+			.replace(/{{novel_id}}/g, currentNovelId)
+			.replace(/{{current_volume}}/g, navigation.current.volume)
+			.replace(/{{current_chapter}}/g, navigation.current.chapter)
+			.replace(/{{prev_volume}}/g, navigation.prev?.volume || '')
+			.replace(/{{prev_chapter}}/g, navigation.prev?.chapter || '')
+			.replace(/{{next_volume}}/g, navigation.next?.volume || '')
+			.replace(/{{next_chapter}}/g, navigation.next?.chapter || '')
 
-                ${chapterData.body}
-            </div>
-            
-            <div class="navigation">
-                ${
-									navigation.prev
-										? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
-												currentNovelId
-										  )}/chapters/${encodeURIComponent(
-												navigation.prev.volume
-										  )}/${encodeURIComponent(
-												navigation.prev.chapter
-										  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
-												navigation.prev.volume
-										  )}', '${encodeURIComponent(
-												navigation.prev.chapter
-										  )}')" >← Previous</a>`
-										: '<span class="nav-button disabled">← Previous</span>'
-								}
-                <a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
-									currentNovelId
-								)}/chapters" onclick="showLoading()">Chapter List</a>
-                ${
-									navigation.next
-										? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
-												currentNovelId
-										  )}/chapters/${encodeURIComponent(
-												navigation.next.volume
-										  )}/${encodeURIComponent(
-												navigation.next.chapter
-										  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
-												navigation.next.volume
-										  )}', '${encodeURIComponent(
-												navigation.next.chapter
-										  )}')" >Next →</a>`
-										: '<span class="nav-button disabled">Next →</span>'
-								}
-            </div>
-
-            <div class="floating-button compare-button" id="compareButton" onclick="toggleCompare()" data-tooltip="Compare original and AI rewritten text">
-                <i class="fas fa-columns fa-lg"></i>
-            </div>
-
-            <div class="floating-button regenerate-button" id="regenerateButton" onclick="regenerateChapter()" data-tooltip="Regenerate AI content">
-                <i class="fas fa-sync-alt fa-lg"></i>
-            </div>
-
-            <script>
-                // Check for dark mode preference
-                if (localStorage.getItem('darkMode') === 'true') {
-                    document.documentElement.classList.add('dark');
-                }
-
-                // Handle navigation bar visibility on scroll
-                let lastScrollY = window.scrollY;
-                let scrollThreshold = window.innerHeight * 0.2; // 20% of window height
-                const nav = document.querySelector('.navigation');
-
-                window.addEventListener('scroll', () => {
-                    const currentScrollY = window.scrollY;
-                    
-                    // Show nav when scrolling up or at top
-                    if (currentScrollY < lastScrollY || currentScrollY < scrollThreshold) {
-                        nav.classList.remove('hidden');
-                    } 
-                    // Hide nav when scrolling down and past threshold
-                    else if (currentScrollY > scrollThreshold) {
-                        nav.classList.add('hidden');
-                    }
-                    
-                    lastScrollY = currentScrollY;
-                });
-
-                // Recalculate threshold on window resize
-                window.addEventListener('resize', () => {
-                    scrollThreshold = window.innerHeight * 0.2;
-                });
-
-                function showLoading() {
-                    document.getElementById('loading').classList.add('active');
-                }
-
-                // Initialize AI toggle state and compare button visibility
-                document.addEventListener('DOMContentLoaded', async () => {
-                    const aiToggle = document.getElementById('aiToggle');
-                    const darkModeToggle = document.getElementById('darkModeToggle');
-                    const compareButton = document.getElementById('compareButton');
-                    const regenerateButton = document.getElementById('regenerateButton');
-                    
-                    // Initialize dark mode
-                    const isDarkMode = localStorage.getItem('darkMode') === 'true';
-                    if (isDarkMode) {
-                        document.documentElement.classList.add('dark');
-                        darkModeToggle.checked = true;
-                    }
-
-                    // Add dark mode toggle event listener
-                    darkModeToggle.addEventListener('change', () => {
-                        const isDark = darkModeToggle.checked;
-                        if (isDark) {
-                            document.documentElement.classList.add('dark');
-                            localStorage.setItem('darkMode', 'true');
-                        } else {
-                            document.documentElement.classList.remove('dark');
-                            localStorage.setItem('darkMode', 'false');
-                        }
-                    });
-
-                    // Initialize compare mode from URL
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.get('compare') === 'true') {
-                        compareButton.classList.add('active');
-                    }
-                    
-                    try {
-                        // Get AI preference from backend
-                        const response = await fetch('/api/novel/settings/ai-rewrite', {
-                            headers: {
-                                'Accept': 'application/json'
-                            }
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error('Failed to get AI settings');
-                        }
-                        
-                        const { enabled } = await response.json();
-                        console.log('Initial AI state:', enabled);
-                        aiToggle.checked = enabled;
-                        localStorage.setItem('aiRewrite', enabled.toString());
-                        
-                        // Show compare button only if AI is enabled
-                        if (enabled) {
-                            setTimeout(() => {
-                                compareButton.classList.add('show');
-                                regenerateButton.classList.add('show');
-                            }, 100);
-                        }
-
-                        // Show regenerate button only if AI is enabled
-                        if (enabled) {
-                            setTimeout(() => {
-                                regenerateButton.classList.add('show');
-                            }, 100);
-                        }
-                    } catch (error) {
-                        console.error('Failed to get AI preference:', error);
-                        // Use localStorage as fallback
-                        const savedAIState = localStorage.getItem('aiRewrite') === 'true';
-                        aiToggle.checked = savedAIState;
-                        if (savedAIState) {
-                            setTimeout(() => {
-                                compareButton.classList.add('show');
-                                regenerateButton.classList.add('show');
-                            }, 100);
-                        }
-                    }
-                });
-
-                // AI Toggle functionality
-                async function toggleAI() {
-                    const aiToggle = document.getElementById('aiToggle');
-                    const compareButton = document.getElementById('compareButton');
-                    const regenerateButton = document.getElementById('regenerateButton');
-                    const isEnabled = aiToggle.checked;
-                    
-                    try {
-                        // Send toggle state to backend
-                        const response = await fetch('/api/novel/settings/ai-rewrite', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({ enabled: isEnabled })
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error('Failed to update AI settings');
-                        }
-                        
-                        const result = await response.json();
-                        console.log('AI toggle response:', result);
-                        
-                        // Store the AI state in localStorage
-                        localStorage.setItem('aiRewrite', isEnabled.toString());
-
-                        // Show/hide buttons based on AI state
-                        if (isEnabled) {
-                            compareButton.classList.add('show');
-                            regenerateButton.classList.add('show');
-                        } else {
-                            compareButton.classList.remove('show', 'active');
-                            regenerateButton.classList.remove('show');
-                            // Remove compare parameter if AI is disabled
-                            const currentUrl = new URL(window.location.href);
-                            currentUrl.searchParams.delete('compare');
-                            window.location.href = currentUrl.toString();
-                            return;
-                        }
-                        
-                        // Show loading and reload page to get new content
-                        showLoading();
-                        window.location.reload();
-                    } catch (error) {
-                        console.error('Failed to save AI preference:', error);
-                        // Revert the toggle if the API call fails
-                        aiToggle.checked = !isEnabled;
-                        localStorage.setItem('aiRewrite', (!isEnabled).toString());
-                        compareButton.classList.toggle('show', !isEnabled);
-                        regenerateButton.classList.toggle('show', !isEnabled);
-                        document.getElementById('loading').classList.remove('active');
-                    }
-                }
-
-                // Compare Toggle functionality
-                function toggleCompare() {
-                    const compareButton = document.getElementById('compareButton');
-                    const aiToggle = document.getElementById('aiToggle');
-                    
-                    // Only allow compare when AI is enabled
-                    if (!aiToggle.checked) {
-                        alert('AI Rewrite must be enabled to use Compare mode');
-                        return;
-                    }
-
-                    // Toggle the active state of the button
-                    const isCompareMode = compareButton.classList.contains('active');
-                    if (isCompareMode) {
-                        compareButton.classList.remove('active');
-                    } else {
-                        compareButton.classList.add('active');
-                    }
-                    
-                    // Update URL without reloading
-                    const currentUrl = new URL(window.location.href);
-                    if (isCompareMode) {
-                        currentUrl.searchParams.delete('compare');
-                    } else {
-                        currentUrl.searchParams.set('compare', 'true');
-                    }
-                    window.history.pushState({}, '', currentUrl.toString());
-
-                    // Toggle visibility of original text
-                    document.querySelector('.chapter-content').classList.toggle('compare-mode');
-                }
-
-                function saveLastChapter(volume, chapter) {
-                    localStorage.setItem('lastChapter_' + '${currentNovelId}', chapter);
-                    localStorage.setItem('lastVolume_' + '${currentNovelId}', volume);
-                }
-
-                // Save current chapter when page loads
-                document.addEventListener('DOMContentLoaded', () => {
-                    const currentVolume = '${navigation.current.volume}';
-                    const currentChapter = '${navigation.current.chapter}';
-                    saveLastChapter(currentVolume, currentChapter);
-                });
-
-                // Keyboard navigation
-                document.addEventListener('keydown', (e) => {
-                    const prevVolume = '${navigation.prev?.volume || ''}';
-                    const prevChapter = '${navigation.prev?.chapter || ''}';
-                    const nextVolume = '${navigation.next?.volume || ''}';
-                    const nextChapter = '${navigation.next?.chapter || ''}';
-                    const novelId = '${currentNovelId}';
-
-                    if (e.key === 'ArrowLeft' && ${!!navigation.prev}) {
-                        showLoading();
-                        saveLastChapter(prevVolume, prevChapter);
-                        window.location.href = '/api/novel/novels/' + 
-                            encodeURIComponent(novelId) + '/chapters/' + 
-                            encodeURIComponent(prevVolume) + '/' + 
-                            encodeURIComponent(prevChapter);
-                    } else if (e.key === 'ArrowRight' && ${!!navigation.next}) {
-                        showLoading();
-                        saveLastChapter(nextVolume, nextChapter);
-                        window.location.href = '/api/novel/novels/' + 
-                            encodeURIComponent(novelId) + '/chapters/' + 
-                            encodeURIComponent(nextVolume) + '/' + 
-                            encodeURIComponent(nextChapter);
-                    }
-                });
-
-                // Regenerate chapter functionality
-                async function regenerateChapter() {
-                    const regenerateButton = document.getElementById('regenerateButton');
-                    const loadingEl = document.getElementById('loading');
-                    
-                    // Disable the button and show loading
-                    regenerateButton.classList.add('disabled');
-                    loadingEl.classList.add('active');
-                    
-                    try {
-                        const response = await fetch(
-                            '/api/novel/novels/${currentNovelId}/chapters/${encodeURIComponent(
-		navigation.current.volume
-	)}/${encodeURIComponent(navigation.current.chapter)}/regenerate',
-                            {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json'
-                                }
-                            }
-                        );
-                        
-                        if (!response.ok) {
-                            throw new Error('Failed to regenerate chapter');
-                        }
-                        
-                        // Reload the page to show new content
-                        window.location.reload();
-                    } catch (error) {
-                        console.error('Failed to regenerate chapter:', error);
-                        alert('Failed to regenerate chapter. Please try again.');
-                        regenerateButton.classList.remove('disabled');
-                        loadingEl.classList.remove('active');
-                    }
-                }
-            </script>
-        </body>
-        </html>
-    `
-	return html
+		return template
+	} catch (error) {
+		console.error('Error generating chapter HTML:', error)
+		throw error
+	}
 }
 
 const navigationButtons = (
@@ -1145,14 +404,23 @@ export const readChapter = async (
 		const { novelId, volume, chapter } = req.params
 		const compare = req.query.compare === 'true'
 
+		// Add cache control headers
+		res.setHeader(
+			'Cache-Control',
+			'no-store, no-cache, must-revalidate, proxy-revalidate'
+		)
+		res.setHeader('Pragma', 'no-cache')
+		res.setHeader('Expires', '0')
+		res.setHeader('Content-Type', 'text/html; charset=utf-8')
+
 		// Use global state for AI preference
 		const useAI = globalState.aiRewrite
-		// console.log('AI Rewrite Settings:', {
-		// 	enabled: useAI,
-		// 	compare,
-		// 	globalState: globalState,
-		// 	requestBody: req.body,
-		// })
+		console.log('Reading chapter with settings:', {
+			useAI,
+			compare,
+			volume,
+			chapter,
+		})
 
 		const chapterData = await getChapterContent(
 			novelId,
@@ -1165,8 +433,10 @@ export const readChapter = async (
 			console.error('No chapter data returned')
 			throw new Error('Failed to get chapter content')
 		}
+		console.log('Chapter data retrieved successfully')
 
 		const { chapters } = await getChapters(novelId)
+		console.log('Got chapters list, total chapters:', chapters.length)
 
 		// Find current chapter index
 		const allChapters = chapters.sort((a: Chapter, b: Chapter) => {
@@ -1179,6 +449,7 @@ export const readChapter = async (
 		const currentIndex = allChapters.findIndex(
 			(ch: Chapter) => ch.volume === volume && ch.chapter === chapter
 		)
+		console.log('Current chapter index:', currentIndex)
 
 		const navigation: ChapterNavigation = {
 			current: allChapters[currentIndex],
@@ -1188,6 +459,7 @@ export const readChapter = async (
 					? allChapters[currentIndex + 1]
 					: undefined,
 		}
+		console.log('Navigation data prepared')
 
 		// Generate and return HTML for reading, regardless of AI status
 		const html = generateChapterHtml(
@@ -1196,7 +468,10 @@ export const readChapter = async (
 			allChapters,
 			novelId
 		)
+		console.log('HTML generated, length:', html.length)
+
 		res.send(html)
+		console.log('Response sent successfully')
 	} catch (error) {
 		console.error('Error reading chapter:', error)
 		res.status(500).send('Error loading chapter')
