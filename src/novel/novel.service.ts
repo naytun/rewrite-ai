@@ -6,7 +6,7 @@ import { getAISettings } from '../settings/settings.service'
 
 const basePath = 'Lightnovels'
 
-const getNovelPath = async (novelId: string): Promise<string> => {
+export const getNovelPath = async (novelId: string): Promise<string> => {
 	const websites = await fs.readdir(path.join(process.cwd(), basePath))
 
 	for (const website of websites) {
@@ -81,7 +81,7 @@ export const listChapters = async (
 }
 
 // Helper function to preload AI content for a chapter
-const preloadAIContent = async (
+export const preloadAIContent = async (
 	novelId: string,
 	volume: string,
 	chapter: string
@@ -187,12 +187,11 @@ const preloadAIContent = async (
 	}
 }
 
-// Helper function to preload multiple chapters ahead
-const preloadMultipleChapters = async (
+// Helper function to preload the next chapter
+const preloadNextChapter = async (
 	novelId: string,
 	currentChapter: { volume: string; chapter: string },
-	chapters: any[],
-	numChapters: number = 5
+	chapters: any[]
 ): Promise<void> => {
 	try {
 		const currentIndex = chapters.findIndex(
@@ -201,20 +200,13 @@ const preloadMultipleChapters = async (
 				ch.chapter === currentChapter.chapter
 		)
 
-		if (currentIndex === -1) return
+		if (currentIndex === -1 || currentIndex === chapters.length - 1) return
 
-		// Get the next N chapters
-		const chaptersToPreload = chapters.slice(
-			currentIndex + 1,
-			currentIndex + 1 + numChapters
-		)
-
-		// Preload each chapter in sequence to avoid overwhelming the AI service
-		for (const chapter of chaptersToPreload) {
-			await preloadAIContent(novelId, chapter.volume, chapter.chapter)
-		}
+		// Get the next chapter
+		const nextChapter = chapters[currentIndex + 1]
+		await preloadAIContent(novelId, nextChapter.volume, nextChapter.chapter)
 	} catch (error) {
-		console.error('Error preloading multiple chapters:', error)
+		console.error('Error preloading next chapter:', error)
 	}
 }
 
@@ -235,6 +227,10 @@ export const readChapter = async (
 			`${chapter}-ai.json`
 		)
 
+		// Get novel metadata for the title
+		const metadata = await getNovelMetadata(novelId)
+		const novelTitle = metadata.novel.title
+
 		// Check if the chapter file exists
 		try {
 			await fs.access(filePath)
@@ -251,6 +247,8 @@ export const readChapter = async (
 			if (!chapterData || !chapterData.body) {
 				throw new Error('Invalid chapter data format')
 			}
+			// Add novel title to chapter data
+			chapterData.novel_title = novelTitle
 		} catch (error) {
 			console.error(`Error reading chapter file: ${filePath}`, error)
 			throw new Error(`Failed to read chapter ${chapter} in volume ${volume}`)
@@ -287,6 +285,8 @@ export const readChapter = async (
 				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
 				.join('\n')
 			chapterData.body = formattedResult
+			// Make sure novel title is preserved
+			chapterData.novel_title = novelTitle
 			return chapterData
 		}
 
@@ -453,15 +453,19 @@ export const readChapter = async (
 		formattedResult = pairs.join('\n')
 		chapterData.body = formattedResult
 
-		// If AI is enabled, preload the next few chapters' AI content
+		// If AI is enabled, preload the next chapter
 		if (useAI) {
 			const { chapters } = await listChapters(novelId)
-			// Preload multiple chapters in the background
-			preloadMultipleChapters(novelId, { volume, chapter }, chapters).catch(
-				(error) => console.error('Error preloading chapters:', error)
-			)
+			await preloadNextChapter(novelId, { volume, chapter }, chapters)
 		}
 
+		// Make sure novel title is preserved in AI content
+		if (useAI && aiParagraphs) {
+			chapterData.novel_title = novelTitle
+		}
+
+		// Make sure novel title is preserved in the final response
+		chapterData.novel_title = novelTitle
 		return chapterData
 	} catch (error) {
 		console.error('Error reading chapter:', error)

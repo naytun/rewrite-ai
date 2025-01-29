@@ -394,39 +394,21 @@
 						card.className =
 							'overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer w-[75%] mx-auto flex flex-col h-[400px]'
 
-						card.onclick = (e) => {
-							e.preventDefault()
-							const url = `/api/novel/novels/${novel.id}/chapters`
-
-							// Get the chapter number from the URL or localStorage
-							fetch(url)
-								.then((response) => response.json())
-								.then((chapters) => {
-									const lastChapter = localStorage.getItem(
-										`lastChapter_${novel.id}`
-									)
-									const targetChapter =
-										lastChapter || (chapters.length > 0 ? '1' : 'Not available')
-									saveLastOpenedChapter(novel.id, targetChapter)
-									window.location.href = `${url}/${targetChapter}`
-								})
-								.catch((error) => {
-									console.error('Error fetching chapters:', error)
-									window.location.href = url
-								})
-						}
+						card.onclick = null
 
 						card.innerHTML = `
 							<div class="h-[280px] w-full overflow-hidden flex-shrink-0">
-								<img src="${novel.cover_url || '/placeholder.jpg'}" 
-									class="w-full h-[280px] object-cover object-center rounded-xl custom-shadow"
-									onerror="this.src='/placeholder.jpg'">
+								<a href="/api/novel/novels/${novel.id}/chapters" class="block h-full">
+									<img src="${novel.cover_url || '/placeholder.jpg'}" 
+										class="w-full h-[280px] object-cover object-center rounded-xl custom-shadow"
+										onerror="this.src='/placeholder.jpg'">
+								</a>
 							</div>
 							<div class="p-3 h-[120px] flex flex-col flex-shrink-0 bg-transparent">
 								<h2 class="text-lg font-semibold mb-2 line-clamp-2 flex-grow">
-									<a href="${
-										novel.url
-									}" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 dark:hover:text-blue-400" onclick="event.stopPropagation()">
+									<a href="/api/novel/novels/${
+										novel.id
+									}/chapters" class="hover:text-blue-600 dark:hover:text-blue-400">
 										${novel.title}
 									</a>
 								</h2>
@@ -434,18 +416,60 @@
 									<p class="text-gray-600 text-xs">Author: ${
 										novel.authors ? novel.authors.join(', ') : 'Unknown'
 									}</p>
-									<p class="text-gray-400 dark:text-gray-500 text-xs mt-1">
-										Chapter ${
-											Number(localStorage.getItem(`lastChapter_${novel.id}`)) ||
-											'Not started'
-										}
-										<svg class="w-4 h-4 inline-block ml-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-											<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
-										</svg>
-									</p>
+									<a href="#" class="last-chapter-link" data-novel-id="${novel.id}">
+										<p class="text-gray-800 dark:text-gray-500 text-xs mt-1 hover:text-blue-600 dark:hover:text-blue-400">
+											Chapter ${
+												Number(
+													localStorage.getItem(`lastChapter_${novel.id}`)
+												) || 'Not started'
+											}
+											<svg class="w-4 h-4 inline-block ml-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+												<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+											</svg>
+										</p>
+									</a>
 								</div>
 							</div>
 						`
+
+						// Add click handler for last chapter links
+						const lastChapterLinks = card.querySelectorAll('.last-chapter-link')
+						lastChapterLinks.forEach((link) => {
+							link.onclick = async (e) => {
+								e.preventDefault()
+								const novelId = link.dataset.novelId
+								const lastChapter = localStorage.getItem(
+									`lastChapter_${novelId}`
+								)
+								const lastVolume = localStorage.getItem(`lastVolume_${novelId}`)
+								const url = `/api/novel/novels/${novelId}/chapters`
+
+								try {
+									if (lastChapter && lastVolume) {
+										// Go directly to the last read chapter
+										window.location.href = `/api/novel/novels/${novelId}/chapters/${encodeURIComponent(
+											lastVolume
+										)}/${encodeURIComponent(lastChapter)}`
+									} else {
+										// If no last read chapter, fetch first chapter info
+										const response = await fetch(url)
+										const data = await response.json()
+										if (data.chapters && data.chapters.length > 0) {
+											const firstChapter = data.chapters[0]
+											window.location.href = `/api/novel/novels/${novelId}/chapters/${encodeURIComponent(
+												firstChapter.volume
+											)}/${encodeURIComponent(firstChapter.chapter)}`
+										} else {
+											// Fallback to chapter list if no chapters found
+											window.location.href = url
+										}
+									}
+								} catch (error) {
+									console.error('Error fetching chapters:', error)
+									window.location.href = url
+								}
+							}
+						})
 
 						novelsContainer.appendChild(card)
 					})

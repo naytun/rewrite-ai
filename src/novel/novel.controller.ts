@@ -4,6 +4,8 @@ import {
 	readChapter as getChapterContent,
 	listNovels as getNovels,
 	bulkGenerateAIContent as generateAIContent,
+	getNovelPath,
+	preloadAIContent,
 } from './novel.service'
 import fs from 'fs'
 import path from 'path'
@@ -285,7 +287,9 @@ const generateChapterHtml = (
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${chapterData.title}</title>
+            <title>${chapterData.novel_title || ''} - ${
+		chapterData.title
+	}</title>
             <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
             <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
             <style>
@@ -560,6 +564,158 @@ const generateChapterHtml = (
                 html.dark .compare-button:before {
                     background-color: #374151;
                 }
+                .regenerate-button {
+                    position: fixed;
+                    bottom: 150px;
+                    right: 20px;
+                    width: 56px;
+                    height: 56px;
+                    border-radius: 50%;
+                    background-color: #3b82f6;
+                    color: white;
+                    display: none;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    transition: all 0.3s ease;
+                    z-index: 100;
+                }
+                .regenerate-button.show {
+                    display: flex;
+                }
+                .regenerate-button:hover {
+                    transform: scale(1.1);
+                    background-color: #2563eb;
+                }
+                .regenerate-button.disabled {
+                    background-color: #9ca3af;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+                html.dark .regenerate-button {
+                    background-color: #3b82f6;
+                }
+                html.dark .regenerate-button:hover {
+                    background-color: #2563eb;
+                }
+                html.dark .regenerate-button.disabled {
+                    background-color: #4b5563;
+                }
+                .regenerate-button:before {
+                    content: attr(data-tooltip);
+                    position: absolute;
+                    bottom: 120%;
+                    right: 50%;
+                    transform: translateX(50%);
+                    padding: 0.5rem 1rem;
+                    background-color: #1f2937;
+                    color: white;
+                    border-radius: 0.375rem;
+                    font-size: 0.875rem;
+                    white-space: nowrap;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: all 0.2s ease;
+                }
+                .regenerate-button:hover:before {
+                    opacity: 1;
+                    visibility: visible;
+                }
+                html.dark .regenerate-button:before {
+                    background-color: #374151;
+                }
+                .floating-button {
+                    position: fixed;
+                    right: 20px;
+                    width: 56px;
+                    height: 56px;
+                    border-radius: 50%;
+                    color: white;
+                    display: none;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    transition: all 0.3s ease;
+                    z-index: 100;
+                }
+                
+                .floating-button:hover {
+                    transform: scale(1.1);
+                }
+                
+                .floating-button.show {
+                    display: flex;
+                }
+                
+                .floating-button.disabled {
+                    background-color: #9ca3af !important;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+                
+                .floating-button:before {
+                    content: attr(data-tooltip);
+                    position: absolute;
+                    bottom: 120%;
+                    right: 50%;
+                    transform: translateX(50%);
+                    padding: 0.5rem 1rem;
+                    background-color: #1f2937;
+                    color: white;
+                    border-radius: 0.375rem;
+                    font-size: 0.875rem;
+                    white-space: nowrap;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: all 0.2s ease;
+                }
+                
+                .floating-button:hover:before {
+                    opacity: 1;
+                    visibility: visible;
+                }
+                
+                .compare-button {
+                    bottom: 80px;
+                    background-color: #3b82f6;
+                }
+                
+                .regenerate-button {
+                    bottom: 150px;
+                    background-color: #10b981;
+                }
+                
+                html.dark .floating-button:before {
+                    background-color: #374151;
+                }
+                
+                html.dark .compare-button {
+                    background-color: #3b82f6;
+                }
+                
+                html.dark .regenerate-button {
+                    background-color: #059669;
+                }
+                
+                html.dark .compare-button:hover {
+                    background-color: #2563eb;
+                }
+                
+                html.dark .regenerate-button:hover {
+                    background-color: #047857;
+                }
+                .novel-title {
+                    font-size: 1rem;
+                    color: #4B5563;
+                    margin-bottom: 0.75rem;
+                    font-weight: 500;
+                    letter-spacing: 0.025em;
+                }
+                html.dark .novel-title {
+                    color: #9CA3AF;
+                }
             </style>
         </head>
         <body class="bg-gray-200">
@@ -589,10 +745,18 @@ const generateChapterHtml = (
                     </div>
                 </div>
 
-                <h1 class="text-3xl font-bold mb-2">${chapterData.title}</h1>
-                <h2 class="text-xl text-gray-600 mb-8">${
-									navigation.current.volume
-								}</h2>
+                <div class="text-center mb-8">
+                    <div class="novel-title">${
+											chapterData.novel_title || ''
+										}</div>
+                    <h1 class="text-3xl font-bold mb-2">${
+											chapterData.title
+										}</h1>
+                    <h2 class="text-xl text-gray-600 dark:text-gray-400">${
+											navigation.current.volume
+										}</h2>
+                </div>
+
                 ${chapterData.body}
             </div>
             
@@ -632,8 +796,12 @@ const generateChapterHtml = (
 								}
             </div>
 
-            <div class="compare-button" id="compareButton" onclick="toggleCompare()" data-tooltip="Compare original and AI rewritten text">
+            <div class="floating-button compare-button" id="compareButton" onclick="toggleCompare()" data-tooltip="Compare original and AI rewritten text">
                 <i class="fas fa-columns fa-lg"></i>
+            </div>
+
+            <div class="floating-button regenerate-button" id="regenerateButton" onclick="regenerateChapter()" data-tooltip="Regenerate AI content">
+                <i class="fas fa-sync-alt fa-lg"></i>
             </div>
 
             <script>
@@ -676,6 +844,7 @@ const generateChapterHtml = (
                     const aiToggle = document.getElementById('aiToggle');
                     const darkModeToggle = document.getElementById('darkModeToggle');
                     const compareButton = document.getElementById('compareButton');
+                    const regenerateButton = document.getElementById('regenerateButton');
                     
                     // Initialize dark mode
                     const isDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -723,6 +892,14 @@ const generateChapterHtml = (
                         if (enabled) {
                             setTimeout(() => {
                                 compareButton.classList.add('show');
+                                regenerateButton.classList.add('show');
+                            }, 100);
+                        }
+
+                        // Show regenerate button only if AI is enabled
+                        if (enabled) {
+                            setTimeout(() => {
+                                regenerateButton.classList.add('show');
                             }, 100);
                         }
                     } catch (error) {
@@ -733,6 +910,7 @@ const generateChapterHtml = (
                         if (savedAIState) {
                             setTimeout(() => {
                                 compareButton.classList.add('show');
+                                regenerateButton.classList.add('show');
                             }, 100);
                         }
                     }
@@ -742,6 +920,7 @@ const generateChapterHtml = (
                 async function toggleAI() {
                     const aiToggle = document.getElementById('aiToggle');
                     const compareButton = document.getElementById('compareButton');
+                    const regenerateButton = document.getElementById('regenerateButton');
                     const isEnabled = aiToggle.checked;
                     
                     try {
@@ -765,11 +944,13 @@ const generateChapterHtml = (
                         // Store the AI state in localStorage
                         localStorage.setItem('aiRewrite', isEnabled.toString());
 
-                        // Show/hide compare button based on AI state
+                        // Show/hide buttons based on AI state
                         if (isEnabled) {
                             compareButton.classList.add('show');
+                            regenerateButton.classList.add('show');
                         } else {
                             compareButton.classList.remove('show', 'active');
+                            regenerateButton.classList.remove('show');
                             // Remove compare parameter if AI is disabled
                             const currentUrl = new URL(window.location.href);
                             currentUrl.searchParams.delete('compare');
@@ -786,6 +967,7 @@ const generateChapterHtml = (
                         aiToggle.checked = !isEnabled;
                         localStorage.setItem('aiRewrite', (!isEnabled).toString());
                         compareButton.classList.toggle('show', !isEnabled);
+                        regenerateButton.classList.toggle('show', !isEnabled);
                         document.getElementById('loading').classList.remove('active');
                     }
                 }
@@ -858,6 +1040,42 @@ const generateChapterHtml = (
                             encodeURIComponent(nextChapter);
                     }
                 });
+
+                // Regenerate chapter functionality
+                async function regenerateChapter() {
+                    const regenerateButton = document.getElementById('regenerateButton');
+                    const loadingEl = document.getElementById('loading');
+                    
+                    // Disable the button and show loading
+                    regenerateButton.classList.add('disabled');
+                    loadingEl.classList.add('active');
+                    
+                    try {
+                        const response = await fetch(
+                            '/api/novel/novels/${currentNovelId}/chapters/${encodeURIComponent(
+		navigation.current.volume
+	)}/${encodeURIComponent(navigation.current.chapter)}/regenerate',
+                            {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json'
+                                }
+                            }
+                        );
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to regenerate chapter');
+                        }
+                        
+                        // Reload the page to show new content
+                        window.location.reload();
+                    } catch (error) {
+                        console.error('Failed to regenerate chapter:', error);
+                        alert('Failed to regenerate chapter. Please try again.');
+                        regenerateButton.classList.remove('disabled');
+                        loadingEl.classList.remove('active');
+                    }
+                }
             </script>
         </body>
         </html>
@@ -1049,5 +1267,63 @@ export const bulkGenerateAIContent = async (
 	} catch (error) {
 		console.error('Error in bulk generation endpoint:', error)
 		res.status(500).json({ error: 'Failed to start bulk generation' })
+	}
+}
+
+export const regenerateChapter = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	try {
+		const { novelId, volume, chapter } = req.params
+
+		// Get the chapter content
+		const chapterData = await getChapterContent(
+			novelId,
+			volume,
+			chapter,
+			true,
+			false
+		)
+
+		// Delete the existing AI file to force regeneration
+		const novelPath = await getNovelPath(novelId)
+		const aiFilePath = path.join(
+			novelPath,
+			'json',
+			volume,
+			`${chapter}-ai.json`
+		)
+
+		try {
+			await fs.promises.unlink(aiFilePath)
+		} catch (error) {
+			// Ignore if file doesn't exist
+		}
+
+		// Regenerate the AI content by reading the chapter again with AI enabled
+		const regeneratedData = await getChapterContent(
+			novelId,
+			volume,
+			chapter,
+			true,
+			false
+		)
+
+		// Preload the next chapter
+		const { chapters } = await getChapters(novelId)
+		const currentIndex = chapters.findIndex(
+			(ch) => ch.volume === volume && ch.chapter === chapter
+		)
+
+		if (currentIndex !== -1 && currentIndex < chapters.length - 1) {
+			const nextChapter = chapters[currentIndex + 1]
+			await preloadAIContent(novelId, nextChapter.volume, nextChapter.chapter)
+		}
+
+		res.json({ success: true, data: regeneratedData })
+	} catch (error) {
+		console.error('Error regenerating chapter:', error)
+		res.status(500).json({ error: 'Failed to regenerate chapter' })
 	}
 }
