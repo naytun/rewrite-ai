@@ -371,34 +371,7 @@
 				<h1 class="text-3xl font-bold">{{chapter_title}}</h1>
 			</div>
 
-			<div
-				id="noAIContent"
-				class="{{#if showNoAIContent}}block{{else}}hidden{{/if}} text-center py-12"
-			>
-				<div class="mb-8">
-					<i class="fas fa-robot text-6xl text-gray-400 mb-4 block"></i>
-					<h2 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-2">
-						No AI Generated Content
-					</h2>
-					<p class="text-gray-500 dark:text-gray-400">
-						This chapter doesn't have AI generated content yet.
-					</p>
-				</div>
-				<button
-					onclick="regenerateChapter()"
-					class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors flex items-center mx-auto"
-				>
-					<i class="fas fa-sync-alt mr-2"></i>
-					Generate AI Content
-				</button>
-			</div>
-
-			<div
-				id="chapterBody"
-				class="{{#if showNoAIContent}}hidden{{else}}block{{/if}}"
-			>
-				{{chapter_body}}
-			</div>
+			<div id="chapterBody">{{chapter_body}}</div>
 		</div>
 
 		<div class="navigation">{{navigation_buttons}}</div>
@@ -605,9 +578,36 @@
 
 						// Only show AI content if it exists
 						if (!exists) {
-							// Show the no AI content message
-							noAIContent.classList.remove('hidden')
-							chapterBody.classList.add('hidden')
+							// Create and show the no AI content message if it doesn't exist
+							if (!noAIContent) {
+								const noAIContentDiv = document.createElement('div')
+								noAIContentDiv.id = 'noAIContent'
+								noAIContentDiv.className = 'text-center py-12'
+								noAIContentDiv.innerHTML = `
+									<div class="mb-8">
+										<i class="fas fa-robot text-6xl text-gray-400 mb-4 block"></i>
+										<h2 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-2">
+											No AI Generated Content
+										</h2>
+										<p class="text-gray-500 dark:text-gray-400">
+											This chapter doesn't have AI generated content yet.
+										</p>
+									</div>
+									<button
+										onclick="regenerateChapter()"
+										class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors flex items-center mx-auto"
+									>
+										<i class="fas fa-sync-alt mr-2"></i>
+										Generate AI Content
+									</button>
+								`
+								document
+									.querySelector('.chapter-content')
+									.insertBefore(noAIContentDiv, chapterBody)
+							} else {
+								noAIContent.style.display = 'block'
+							}
+							chapterBody.style.display = 'none'
 						} else {
 							// If AI content exists, check if we were in compare mode before
 							const urlParams = new URLSearchParams(window.location.search)
@@ -629,8 +629,14 @@
 						document
 							.querySelector('.chapter-content')
 							.classList.remove('compare-mode')
-						noAIContent.classList.add('hidden')
-						chapterBody.classList.remove('hidden')
+
+						// Remove the no AI content section from the DOM
+						if (noAIContent) {
+							noAIContent.remove()
+						}
+
+						chapterBody.style.display = 'block'
+
 						// Remove compare parameter if AI is disabled
 						const currentUrl = new URL(window.location.href)
 						currentUrl.searchParams.delete('compare')
