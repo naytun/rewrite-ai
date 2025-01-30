@@ -422,18 +422,19 @@ export const readChapter = async (
 			chapter,
 		})
 
+		// First get the original content without AI to show immediately
 		const chapterData = await getChapterContent(
 			novelId,
 			volume,
 			chapter,
-			useAI,
-			compare
+			false,
+			false
 		)
 		if (!chapterData) {
 			console.error('No chapter data returned')
 			throw new Error('Failed to get chapter content')
 		}
-		console.log('Chapter data retrieved successfully')
+		console.log('Original chapter data retrieved successfully')
 
 		const { chapters } = await getChapters(novelId)
 		console.log('Got chapters list, total chapters:', chapters.length)
@@ -461,7 +462,7 @@ export const readChapter = async (
 		}
 		console.log('Navigation data prepared')
 
-		// Generate and return HTML for reading, regardless of AI status
+		// Generate and return HTML for reading with original content
 		const html = generateChapterHtml(
 			chapterData,
 			navigation,
@@ -470,8 +471,29 @@ export const readChapter = async (
 		)
 		console.log('HTML generated, length:', html.length)
 
+		// Send the response immediately with original content
 		res.send(html)
 		console.log('Response sent successfully')
+
+		// After sending response, generate AI content asynchronously if needed
+		if (useAI) {
+			console.log('Starting async AI generation for current chapter...')
+			preloadAIContent(novelId, volume, chapter).catch((error: any) => {
+				console.error('Background AI generation failed:', error)
+			})
+		}
+
+		// Also start preloading next chapter's AI content asynchronously
+		if (navigation.next) {
+			console.log('Starting async preload of next chapter...')
+			preloadAIContent(
+				novelId,
+				navigation.next.volume,
+				navigation.next.chapter
+			).catch((error: any) => {
+				console.error('Background preload of next chapter failed:', error)
+			})
+		}
 	} catch (error) {
 		console.error('Error reading chapter:', error)
 		res.status(500).send('Error loading chapter')

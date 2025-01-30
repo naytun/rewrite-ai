@@ -1,4 +1,4 @@
 {
-  "enabled": false,
+  "enabled": true,
   "prompt": "Rewrite the following passage with a focus on enhancing its novel-like qualities.\n1. Rewrite following contents to be in shorter sentences but don't summarize the paragraphs. \n2. Rewrite paragraph by paragraph. Do not remove any paragraphs. ep dialogues in dialogue format and just rephrase for better comprehension. Replace with commonly used words if necessary. Do not change the names of the characters.\n3.\tShift from ‘telling’ to ‘showing’ by illustrating emotions, actions, and intentions through character behavior and dialogue.\n4.\tMake the dialogue natural, engaging, and reflective of the characters’ personalities, with subtle hints of subtext.\n5.\tAdjust the style and voice to align with the intended tone, such as lyrical, dark, or whimsical.\n6.\tEnsure the stakes and conflict feel more gripping and emotionally charged."
 }
