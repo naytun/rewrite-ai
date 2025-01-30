@@ -677,6 +677,19 @@
 				const currentVolume = '{{current_volume}}'
 				const currentChapter = '{{current_chapter}}'
 				saveLastChapter(currentVolume, currentChapter)
+
+				// Update all chapter links to include AI state if enabled
+				const aiToggle = document.getElementById('aiToggle')
+				if (aiToggle && aiToggle.checked) {
+					const chapterLinks = document.querySelectorAll(
+						'a[href*="/chapters/"]'
+					)
+					chapterLinks.forEach((link) => {
+						const url = new URL(link.href, window.location.origin)
+						url.searchParams.set('useAI', 'true')
+						link.href = url.toString()
+					})
+				}
 			})
 
 			// Keyboard navigation
@@ -686,6 +699,9 @@
 				const nextVolume = '{{next_volume}}'
 				const nextChapter = '{{next_chapter}}'
 				const novelId = '{{novel_id}}'
+				const urlParams = new URLSearchParams(window.location.search)
+				const useAI = urlParams.get('useAI') === 'true'
+				const aiParam = useAI ? '?useAI=true' : ''
 
 				if (e.key === 'ArrowLeft' && prevChapter) {
 					showLoading()
@@ -696,7 +712,8 @@
 						'/chapters/' +
 						encodeURIComponent(prevVolume) +
 						'/' +
-						encodeURIComponent(prevChapter)
+						encodeURIComponent(prevChapter) +
+						aiParam
 				} else if (e.key === 'ArrowRight' && nextChapter) {
 					showLoading()
 					saveLastChapter(nextVolume, nextChapter)
@@ -706,7 +723,8 @@
 						'/chapters/' +
 						encodeURIComponent(nextVolume) +
 						'/' +
-						encodeURIComponent(nextChapter)
+						encodeURIComponent(nextChapter) +
+						aiParam
 				}
 			})
 

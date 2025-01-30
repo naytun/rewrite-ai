@@ -445,11 +445,26 @@
 								const url = `/api/novel/novels/${novelId}/chapters`
 
 								try {
+									// Get AI settings
+									const aiResponse = await fetch('/api/settings/ai-rewrite', {
+										headers: {
+											Accept: 'application/json',
+										},
+									})
+
+									let aiParam = ''
+									if (aiResponse.ok) {
+										const { enabled } = await aiResponse.json()
+										if (enabled) {
+											aiParam = '?useAI=true'
+										}
+									}
+
 									if (lastChapter && lastVolume) {
 										// Go directly to the last read chapter
 										window.location.href = `/api/novel/novels/${novelId}/chapters/${encodeURIComponent(
 											lastVolume
-										)}/${encodeURIComponent(lastChapter)}`
+										)}/${encodeURIComponent(lastChapter)}${aiParam}`
 									} else {
 										// If no last read chapter, fetch first chapter info
 										const response = await fetch(url)
@@ -458,7 +473,7 @@
 											const firstChapter = data.chapters[0]
 											window.location.href = `/api/novel/novels/${novelId}/chapters/${encodeURIComponent(
 												firstChapter.volume
-											)}/${encodeURIComponent(firstChapter.chapter)}`
+											)}/${encodeURIComponent(firstChapter.chapter)}${aiParam}`
 										} else {
 											// Fallback to chapter list if no chapters found
 											window.location.href = url

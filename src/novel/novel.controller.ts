@@ -14,8 +14,10 @@ import * as fs from 'node:fs/promises'
 
 const generateNavigationButtons = (
 	navigation: ChapterNavigation,
-	novelId: string
+	novelId: string,
+	useAI: boolean = false
 ): string => {
+	const aiParam = useAI ? '?useAI=true' : ''
 	return `
 		${
 			navigation.prev
@@ -25,7 +27,7 @@ const generateNavigationButtons = (
 						navigation.prev.volume
 				  )}/${encodeURIComponent(
 						navigation.prev.chapter
-				  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+				  )}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						navigation.prev.volume
 				  )}', '${encodeURIComponent(
 						navigation.prev.chapter
@@ -43,7 +45,7 @@ const generateNavigationButtons = (
 						navigation.next.volume
 				  )}/${encodeURIComponent(
 						navigation.next.chapter
-				  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+				  )}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						navigation.next.volume
 				  )}', '${encodeURIComponent(navigation.next.chapter)}')" >Next →</a>`
 				: '<span class="nav-button disabled">Next →</span>'
@@ -53,8 +55,10 @@ const generateNavigationButtons = (
 const generateChapterListHtml = (
 	chapters: Chapter[],
 	currentChapter: Chapter,
-	novelId: string
+	novelId: string,
+	useAI: boolean = false
 ): string => {
+	const aiParam = useAI ? '?useAI=true' : ''
 	return chapters
 		.map((chapter) => {
 			const isCurrentChapter =
@@ -67,7 +71,7 @@ const generateChapterListHtml = (
 						novelId
 					)}/chapters/${encodeURIComponent(
 				chapter.volume
-			)}/${encodeURIComponent(chapter.chapter)}"
+			)}/${encodeURIComponent(chapter.chapter)}${aiParam}"
 					class="chapter-link ${chapterClass}"
 					onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						chapter.volume
@@ -83,7 +87,8 @@ const generateChapterHtml = async (
 	chapterData: any,
 	navigation: ChapterNavigation,
 	allChapters: Chapter[],
-	novelId: string
+	novelId: string,
+	useAI: boolean = false
 ): Promise<string> => {
 	try {
 		// Read the template file
@@ -91,13 +96,14 @@ const generateChapterHtml = async (
 		let template = await fs.readFile(templatePath, 'utf-8')
 
 		// Generate navigation buttons HTML
-		const navButtons = generateNavigationButtons(navigation, novelId)
+		const navButtons = generateNavigationButtons(navigation, novelId, useAI)
 
 		// Generate chapter list HTML
 		const chapterListHtml = generateChapterListHtml(
 			allChapters,
 			navigation.current,
-			novelId
+			novelId,
+			useAI
 		)
 
 		// Replace placeholders in template
@@ -173,6 +179,8 @@ export const listChapters = async (
 	try {
 		const { novelId } = req.params
 		const { title, chapters } = await getChapters(novelId)
+		const aiSettings = await getAISettings()
+		const aiEnabled = aiSettings.enabled
 
 		// Group chapters by volume
 		const volumeGroups = chapters.reduce<Record<string, Chapter[]>>(
@@ -321,14 +329,34 @@ export const listChapters = async (
 						document.getElementById('loading').classList.add('active');
 					}
 
-					function openChapter(novelId, volume, chapter) {
+					async function openChapter(novelId, volume, chapter) {
 						showLoading();
 						// Save the last opened chapter
 						localStorage.setItem(\`lastChapter_\${novelId}\`, chapter);
 						localStorage.setItem(\`lastVolume_\${novelId}\`, volume);
 						
-						// Navigate to the chapter
-						window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\`;
+						try {
+							// Get AI settings
+							const response = await fetch('/api/settings/ai-rewrite', {
+								headers: {
+									'Accept': 'application/json'
+								}
+							});
+							
+							if (response.ok) {
+								const { enabled } = await response.json();
+								// Navigate to the chapter with AI parameter if enabled
+								const aiParam = enabled ? '?useAI=true' : '';
+								window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\${aiParam}\`;
+							} else {
+								// Fallback to no AI if settings can't be fetched
+								window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\`;
+							}
+						} catch (error) {
+							console.error('Error checking AI settings:', error);
+							// Fallback to no AI if there's an error
+							window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\`;
+						}
 					}
 
 					// Highlight the last opened chapter if any
@@ -352,6 +380,7 @@ export const listChapters = async (
 			</body>
 			</html>
 		`
+
 		res.send(html)
 	} catch (error) {
 		res.status(500).send('Error loading chapters')
@@ -504,7 +533,8 @@ export const readChapter = async (
 			},
 			navigation,
 			allChapters,
-			novelId
+			novelId,
+			useAI && aiEnabled
 		)
 
 		res.send(html)
