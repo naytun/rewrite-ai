@@ -180,11 +180,33 @@
 			}
 
 			/* iPad mini specific styles */
-			@media screen and (min-width: 768px) and (max-width: 820px) {
+			@media (min-width: 768px) and (max-width: 820px) {
 				#novels {
 					grid-template-columns: repeat(4, 1fr) !important;
 					gap: 1rem !important;
 					width: 95% !important;
+				}
+			}
+
+			/* Desktop specific styles */
+			@media (min-width: 1280px) {
+				#novels {
+					grid-template-columns: repeat(6, 1fr) !important;
+					gap: 1.5rem !important;
+					width: 98% !important;
+				}
+
+				#novels > div {
+					width: 85% !important;
+					height: 380px !important;
+				}
+
+				#novels > div .h-[280px] {
+					height: 260px !important;
+				}
+
+				#novels > div img {
+					height: 260px !important;
 				}
 			}
 		</style>
@@ -224,7 +246,7 @@
 					<div id="error" class="text-center text-red-600 mb-4 hidden"></div>
 					<div
 						id="novels"
-						class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12 w-[90%] mx-auto"
+						class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 gap-y-12 w-[90%] mx-auto"
 					>
 						<!-- Novels will be loaded here -->
 					</div>
@@ -425,7 +447,7 @@
 							<div class="h-[280px] w-full overflow-hidden flex-shrink-0">
 								<a href="#" class="last-chapter-link block h-full" data-novel-id="${novel.id}">
 									<img src="${novel.cover_url || '/placeholder.jpg'}" 
-										class="w-full h-[280px] object-cover object-center rounded-xl custom-shadow"
+										class="w-full h-[280px] object-cover object-center rounded-lg hover:opacity-90 transition-opacity"
 										onerror="this.src='/placeholder.jpg'">
 								</a>
 							</div>
