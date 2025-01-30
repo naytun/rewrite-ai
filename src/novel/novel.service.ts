@@ -277,223 +277,101 @@ export const readChapter = async (
 			}
 			// Add novel title to chapter data
 			chapterData.novel_title = novelTitle
+
+			// Remove chapter title from body (both h1 and first p tag containing chapter title)
+			chapterData.body = chapterData.body
+				.replace(/<h[1-6]>.*?<\/h[1-6]>\s*/i, '') // Remove h1-h6 tags
+				.replace(/<p>Chapter\s+\d+[:\s].*?<\/p>\s*/i, '') // Remove chapter title paragraph
+				.replace(/<p><strong>Translator:<\/strong>.*?<\/p>\s*/i, '') // Remove translator line
 		} catch (error) {
 			console.error(`Error reading chapter file: ${filePath}`, error)
 			throw new Error(`Failed to read chapter ${chapter} in volume ${volume}`)
 		}
 
-		const plainText = chapterData.body
-			.replace(/<\/p>/g, '\n\n')
-			.replace(/<p>/g, '')
-			.replace(/<br\s*\/?>/g, '\n')
-			.replace(/<[^>]*>/g, '')
-			.trim()
-
-		// Split into paragraphs and clean up empty lines
-		const splitIntoParagraphs = (text: string): string[] => {
-			return text
-				.split(/\n\s*\n/) // Split on one or more blank lines
-				.map((p: string) => p.replace(/\s+/g, ' ').trim()) // Normalize whitespace
-				.filter((p: string) => p.length > 0)
-				.filter(
-					(p: string) =>
-						!p.startsWith('Translator:') &&
-						!p.startsWith('Editor:') &&
-						!p.startsWith('Chapter') && // Remove chapter headers
-						p.length > 5 // Remove very short fragments
-				)
-		}
-
-		const originalParagraphs = splitIntoParagraphs(plainText)
-
 		// If AI is not enabled, return original content
-		let formattedResult: string
 		if (!useAI) {
-			formattedResult = originalParagraphs
-				.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
-				.join('\n')
-			chapterData.body = formattedResult
-			// Make sure novel title is preserved
-			chapterData.novel_title = novelTitle
 			return chapterData
 		}
 
-		// Try to load existing AI content first
-		let aiParagraphs: string[]
+		// If AI is enabled, check if AI content exists
+		let aiData = null
 		try {
 			const aiContent = await fs.readFile(aiFilePath, 'utf-8')
-			const aiData = JSON.parse(aiContent)
+			aiData = JSON.parse(aiContent)
 
 			// Validate AI data structure
-			if (!aiData || !aiData.body) {
-				console.error('Invalid AI data format:', aiData)
-				throw new Error('Invalid AI data format')
+			if (!aiData || !aiData.body || !aiData.isAIGenerated) {
+				console.log('Invalid AI data format, will generate new content')
+				aiData = null
 			}
-
-			// Extract paragraphs from HTML body
-			const aiHtml = aiData.body
-				.replace(/<\/p>/g, '\n\n')
-				.replace(/<p>/g, '')
-				.replace(/<br\s*\/?>/g, '\n')
-				.replace(/<[^>]*>/g, '')
-				.trim()
-
-			aiParagraphs = splitIntoParagraphs(aiHtml)
-
-			// Check if the AI content indicates a failed generation
-			const hasFailedContent = aiParagraphs.some(
-				(p: string) =>
-					p
-						.toLowerCase()
-						.includes("i don't have enough information to answer") ||
-					p.toLowerCase().includes('could you clarify your question?') ||
-					p.toLowerCase().includes("i'm not sure i fully understood it")
-			)
-
-			if (hasFailedContent) {
-				console.log(
-					'Found failed AI generation, deleting file and regenerating...'
-				)
-				await fs.unlink(aiFilePath)
-				throw new Error('Failed AI generation detected')
-			}
-
-			console.log('Using existing AI content from file:', aiFilePath)
 		} catch (error: any) {
-			if (error.message === 'Invalid AI data format') {
-				// If the AI file is corrupted, delete it and regenerate
-				try {
-					await fs.unlink(aiFilePath)
-					console.log('Deleted corrupted AI file:', aiFilePath)
-				} catch (unlinkError) {
-					// Ignore if file doesn't exist
-				}
-			}
-
-			// Generate new AI content if file doesn't exist or is invalid
-			console.log('Generating new AI content...')
-			const result = await askAI({
-				question: plainText,
-				context:
-					'Please rewrite the following novel chapter text to enhance its quality while maintaining the original story and meaning.',
-			})
-
-			// Split AI result into paragraphs and check for failed generation
-			aiParagraphs = splitIntoParagraphs(result)
-			const hasFailedContent = aiParagraphs.some(
-				(p) =>
-					p
-						.toLowerCase()
-						.includes(
-							"i'm sorry, but i don't have enough information to answer"
-						) ||
-					p
-						.toLowerCase()
-						.includes("i'm sorry. could you clarify your question?") ||
-					p.toLowerCase().includes("i'm not sure i fully understood it")
+			console.log(
+				'No AI content found, will generate new content:',
+				error.message
 			)
+		}
 
-			if (hasFailedContent) {
-				console.error('AI generation failed with insufficient information')
-				// Fall back to original content
-				formattedResult = originalParagraphs
-					.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
-					.join('\n')
-				chapterData.body = formattedResult
+		// If no valid AI content exists, generate it
+		if (!aiData) {
+			console.log('Generating new AI content...')
+			try {
+				await preloadAIContent(novelId, volume, chapter)
+				// Read the newly generated content
+				const aiContent = await fs.readFile(aiFilePath, 'utf-8')
+				aiData = JSON.parse(aiContent)
+			} catch (error) {
+				console.error('Failed to generate AI content:', error)
+				// If generation fails, return original content
 				return chapterData
 			}
+		}
 
-			// Save AI content to file
-			try {
-				// Format AI paragraphs in the same HTML structure as original
-				const aiHtml = aiParagraphs
-					.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
-					.join('\n')
-
-				// Create AI chapter data with same structure as original
-				const aiChapterData = {
-					...chapterData, // Copy all original metadata
-					body: aiHtml, // Replace body with AI content
-					isAIGenerated: true,
-					generatedAt: new Date().toISOString(),
+		// At this point we should have valid AI content
+		if (aiData && aiData.body) {
+			if (compare) {
+				// Split both contents into paragraphs
+				const splitParagraphs = (html: string): string[] => {
+					return html
+						.split('</p>')
+						.map((p) => p.trim())
+						.filter((p) => p.startsWith('<p>'))
+						.map((p) => p + '</p>')
 				}
 
-				// Wait for the file to be saved before continuing
-				await fs.writeFile(
-					aiFilePath,
-					JSON.stringify(aiChapterData, null, 2),
-					'utf-8'
-				)
-				console.log('Saved AI content to file:', aiFilePath)
+				const originalParagraphs = splitParagraphs(chapterData.body)
+				const aiParagraphs = splitParagraphs(aiData.body)
 
-				// Use the AI content for display
-				aiParagraphs = splitIntoParagraphs(aiHtml)
-			} catch (saveError) {
-				console.error('Error saving AI content:', saveError)
-				// Fall back to original content if we can't save AI content
-				formattedResult = originalParagraphs
-					.map((paragraph: string) => `<p>${paragraph.trim()}</p>`)
-					.join('\n')
-				chapterData.body = formattedResult
-				return chapterData
+				// Create pairs of paragraphs
+				const pairs: string[] = []
+				const maxLength = Math.max(
+					originalParagraphs.length,
+					aiParagraphs.length
+				)
+
+				for (let i = 0; i < maxLength; i++) {
+					const originalPara =
+						originalParagraphs[i] || '<p>(No original content)</p>'
+					const aiPara = aiParagraphs[i] || '<p>(No AI content)</p>'
+
+					pairs.push(`
+						<div class="paragraph-pair" style="margin-bottom: 1em;">
+							<div class="ai-text" style="margin-bottom: 0.5em;">${aiPara}</div>
+							<div class="original-text" style="color: #808080; font-style: italic; padding-left: 1em; border-left: 2px solid #ddd;">${originalPara}</div>
+						</div>
+					`)
+				}
+
+				// Wrap all pairs in a container
+				chapterData.body = `
+					<div class="compare-container" style="display: flex; flex-direction: column; gap: 1em;">
+						${pairs.join('')}
+					</div>`
+			} else {
+				// Just use AI content
+				chapterData.body = aiData.body
 			}
 		}
 
-		// Format the result based on compare mode
-		// Always include both AI and original content when AI is enabled
-		const pairs: string[] = []
-		const maxLength = Math.min(originalParagraphs.length, aiParagraphs.length)
-
-		for (let i = 0; i < maxLength; i++) {
-			const originalPara = originalParagraphs[i]
-			const aiPara = aiParagraphs[i]
-
-			if (originalPara && aiPara) {
-				pairs.push(
-					`<div class="paragraph-pair">
-						<p class="ai-text">${aiPara}</p>
-						<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-							compare ? 'block' : 'none'
-						}">${originalPara}</p>
-					</div>`
-				)
-			} else if (originalPara) {
-				pairs.push(
-					`<div class="paragraph-pair">
-						<p class="ai-text">(No AI rewrite available)</p>
-						<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-							compare ? 'block' : 'none'
-						}">${originalPara}</p>
-					</div>`
-				)
-			} else if (aiPara) {
-				pairs.push(
-					`<div class="paragraph-pair">
-						<p class="ai-text">${aiPara}</p>
-						<p class="original-text" style="color: #808080; font-style: italic; margin-left: 2em; display: ${
-							compare ? 'block' : 'none'
-						}">(No original text available)</p>
-					</div>`
-				)
-			}
-		}
-
-		formattedResult = pairs.join('\n')
-		chapterData.body = formattedResult
-
-		// If AI is enabled, preload the next chapter
-		if (useAI) {
-			const { chapters } = await listChapters(novelId)
-			await preloadNextChapter(novelId, { volume, chapter }, chapters)
-		}
-
-		// Make sure novel title is preserved in AI content
-		if (useAI && aiParagraphs) {
-			chapterData.novel_title = novelTitle
-		}
-
-		// Make sure novel title is preserved in the final response
-		chapterData.novel_title = novelTitle
 		return chapterData
 	} catch (error) {
 		console.error('Error reading chapter:', error)

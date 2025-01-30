@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "dist/server.js",
 	"scripts": {
-		"dev": " ts-node src/server.ts",
+		"dev": "nodemon src/server.ts",
 		"build": "tsc && copyfiles -u 1 src/public/**/* src/novel/templates/**/* dist/",
 		"start": "node dist/server.js",
 		"test": "jest",

@@ -7,6 +7,7 @@ import {
 	getNovelPath,
 	preloadAIContent,
 } from './novel.service'
+import type { Chapter, ChapterNavigation } from '../types/novel'
 import fs from 'fs'
 import path from 'path'
 
@@ -21,6 +22,7 @@ export const globalState = {
 		return this._aiPrompt
 	},
 	set aiRewrite(value: boolean) {
+		console.log('Setting AI rewrite to:', value)
 		this._aiRewrite = value
 		this.persistSettings()
 	},
@@ -30,57 +32,46 @@ export const globalState = {
 	},
 	persistSettings() {
 		try {
-			const settingsPath = path.join(__dirname, '../../.settings')
+			const settingsPath = path.join(process.cwd(), '.settings')
 			if (!fs.existsSync(settingsPath)) {
 				fs.mkdirSync(settingsPath, { recursive: true })
 			}
+			const settings = {
+				enabled: this._aiRewrite,
+				prompt: this._aiPrompt,
+			}
+			console.log('Persisting settings:', settings)
 			fs.writeFileSync(
 				path.join(settingsPath, 'ai-rewrite.json'),
-				JSON.stringify(
-					{
-						enabled: this._aiRewrite,
-						prompt: this._aiPrompt,
-					},
-					null,
-					2
-				),
+				JSON.stringify(settings, null, 2),
 				'utf8'
 			)
 		} catch (error) {
 			console.error('Failed to persist AI settings:', error)
 		}
 	},
+	loadSettings() {
+		try {
+			const settingsPath = path.join(process.cwd(), '.settings')
+			const settingsFile = path.join(settingsPath, 'ai-rewrite.json')
+			if (fs.existsSync(settingsFile)) {
+				const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'))
+				this._aiRewrite = settings.enabled
+				this._aiPrompt = settings.prompt || ''
+			} else {
+				console.log('No saved AI settings found, using defaults:', {
+					enabled: this._aiRewrite,
+					prompt: this._aiPrompt,
+				})
+			}
+		} catch (error) {
+			console.error('Failed to load AI settings:', error)
+		}
+	},
 }
 
-// Initialize AI rewrite setting from persistent storage
-try {
-	const settingsFile = path.join(__dirname, '../../.settings/ai-rewrite.json')
-	if (fs.existsSync(settingsFile)) {
-		const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'))
-		globalState._aiRewrite = settings.enabled
-		globalState._aiPrompt = settings.prompt || ''
-		// console.log('Loaded AI settings:', settings)
-	} else {
-		console.log('No saved AI settings found, using defaults:', {
-			enabled: globalState._aiRewrite,
-			prompt: globalState._aiPrompt,
-		})
-	}
-} catch (error) {
-	console.error('Failed to load AI settings:', error)
-}
-
-interface Chapter {
-	volume: string
-	chapter: string
-	path: string
-}
-
-interface ChapterNavigation {
-	current: Chapter
-	prev?: Chapter
-	next?: Chapter
-}
+// Initialize settings
+globalState.loadSettings()
 
 const generateChapterListHtml = (
 	title: string,
@@ -402,6 +393,7 @@ export const readChapter = async (
 ): Promise<void> => {
 	try {
 		const { novelId, volume, chapter } = req.params
+		// Convert compare parameter to boolean properly
 		const compare = req.query.compare === 'true'
 
 		// Add cache control headers
@@ -422,19 +414,19 @@ export const readChapter = async (
 			chapter,
 		})
 
-		// First get the original content without AI to show immediately
+		// Get chapter content based on AI setting
 		const chapterData = await getChapterContent(
 			novelId,
 			volume,
 			chapter,
-			false,
-			false
+			useAI,
+			compare // Pass the compare parameter to getChapterContent
 		)
 		if (!chapterData) {
 			console.error('No chapter data returned')
 			throw new Error('Failed to get chapter content')
 		}
-		console.log('Original chapter data retrieved successfully')
+		console.log('Chapter data retrieved successfully')
 
 		const { chapters } = await getChapters(novelId)
 		console.log('Got chapters list, total chapters:', chapters.length)
@@ -462,7 +454,7 @@ export const readChapter = async (
 		}
 		console.log('Navigation data prepared')
 
-		// Generate and return HTML for reading with original content
+		// Generate and return HTML for reading
 		const html = generateChapterHtml(
 			chapterData,
 			navigation,
@@ -471,20 +463,12 @@ export const readChapter = async (
 		)
 		console.log('HTML generated, length:', html.length)
 
-		// Send the response immediately with original content
+		// Send the response immediately
 		res.send(html)
 		console.log('Response sent successfully')
 
-		// After sending response, generate AI content asynchronously if needed
-		if (useAI) {
-			console.log('Starting async AI generation for current chapter...')
-			preloadAIContent(novelId, volume, chapter).catch((error: any) => {
-				console.error('Background AI generation failed:', error)
-			})
-		}
-
-		// Also start preloading next chapter's AI content asynchronously
-		if (navigation.next) {
+		// Start preloading next chapter's AI content asynchronously if AI is enabled
+		if (useAI && navigation.next) {
 			console.log('Starting async preload of next chapter...')
 			preloadAIContent(
 				novelId,
@@ -512,6 +496,10 @@ export const listNovels = async (req: Request, res: Response) => {
 
 export const getAIRewriteSettings = async (req: Request, res: Response) => {
 	try {
+		console.log('Getting AI settings:', {
+			enabled: globalState.aiRewrite,
+			prompt: globalState.aiPrompt,
+		})
 		res.json({
 			enabled: globalState.aiRewrite,
 			prompt: globalState.aiPrompt,
@@ -528,14 +516,26 @@ export const setAIRewriteSettings = async (
 ): Promise<void> => {
 	try {
 		const { enabled, prompt } = req.body
+		console.log('Setting AI settings:', { enabled, prompt })
+
 		if (typeof enabled !== 'boolean') {
+			console.error('Invalid enabled value:', enabled)
 			res.status(400).json({ error: 'Invalid enabled value' })
 			return
 		}
+
+		// Set the state
 		globalState.aiRewrite = enabled
 		if (prompt !== undefined) {
 			globalState.aiPrompt = prompt
 		}
+
+		// Verify the state was set
+		console.log('AI settings updated:', {
+			enabled: globalState.aiRewrite,
+			prompt: globalState.aiPrompt,
+		})
+
 		res.json({
 			enabled: globalState.aiRewrite,
 			prompt: globalState.aiPrompt,

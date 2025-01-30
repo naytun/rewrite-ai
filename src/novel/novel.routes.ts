@@ -37,17 +37,16 @@ router.post('/test', (req, res) => {
 router.get('/novels', listNovels)
 router.get('/novels/:novelId/chapters', listChapters)
 router.get('/novels/:novelId/chapters/:volume/:chapter', readChapter)
-router.post('/novels/:novelId/bulk-generate', bulkGenerateAIContent)
 
-// Chapter regeneration
-router.post(
-	'/novels/:novelId/chapters/:volume/:chapter/regenerate',
-	regenerateChapter
-)
-
-// Settings routes
+// AI settings routes
 router.get('/settings/ai-rewrite', getAIRewriteSettings)
 router.post('/settings/ai-rewrite', setAIRewriteSettings)
+
+// Bulk generation route
+router.post('/novels/:novelId/bulk-generate', bulkGenerateAIContent)
+
+// Regenerate specific chapter
+router.post('/novels/:novelId/regenerate/:volume/:chapter', regenerateChapter)
 
 router.get(
 	'/novels/:novelId/chapters/:volume/:chapter/ai-exists',
