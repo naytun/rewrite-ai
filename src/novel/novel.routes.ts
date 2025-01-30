@@ -8,6 +8,10 @@ import {
 	bulkGenerateAIContent,
 	regenerateChapter,
 } from './novel.controller'
+import { getNovelPath } from './novel.service'
+import path from 'path'
+import fs from 'fs'
+import { Request, Response } from 'express'
 
 const router = Router()
 
@@ -44,5 +48,27 @@ router.post(
 // Settings routes
 router.get('/settings/ai-rewrite', getAIRewriteSettings)
 router.post('/settings/ai-rewrite', setAIRewriteSettings)
+
+router.get(
+	'/novels/:novelId/chapters/:volume/:chapter/ai-exists',
+	async (req: Request, res: Response) => {
+		try {
+			const { novelId, volume, chapter } = req.params
+			const novelPath = await getNovelPath(novelId)
+			const aiFilePath = path.join(
+				novelPath,
+				'json',
+				volume,
+				`${chapter}-ai.json`
+			)
+
+			const exists = fs.existsSync(aiFilePath)
+			res.json({ exists })
+		} catch (error) {
+			console.error('Error checking AI content:', error)
+			res.status(500).json({ error: 'Failed to check AI content' })
+		}
+	}
+)
 
 export default router
