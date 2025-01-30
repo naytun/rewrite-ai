@@ -366,6 +366,7 @@ export const readChapter = async (
 		const { novelId, volume, chapter } = req.params
 		// Convert compare parameter to boolean properly
 		const compare = req.query.compare === 'true'
+		const useAI = req.query.useAI === 'true'
 
 		// Add cache control headers
 		res.setHeader(
@@ -378,8 +379,9 @@ export const readChapter = async (
 
 		// Get current AI settings
 		const aiSettings = await getAISettings()
-		const useAI = aiSettings.enabled
+		const aiEnabled = aiSettings.enabled
 		console.log('Reading chapter with settings:', {
+			aiEnabled,
 			useAI,
 			compare,
 			volume,
@@ -391,7 +393,7 @@ export const readChapter = async (
 			novelId,
 			volume,
 			chapter,
-			useAI,
+			useAI && aiEnabled,
 			compare
 		)
 		if (!chapterData) {
@@ -399,23 +401,28 @@ export const readChapter = async (
 			throw new Error('Failed to get chapter content')
 		}
 
+		console.log('Chapter data received:', {
+			hasBody: !!chapterData.body,
+			noAIContent: !!chapterData.noAIContent,
+			useAI,
+			aiEnabled,
+		})
+
 		// Handle AI content visibility:
-		// 1. If AI is enabled and content exists - show AI content (showNoAIContent = false)
-		// 2. If AI is enabled but no content exists - show no content message (showNoAIContent = true)
-		// 3. If AI is disabled - show original content (showNoAIContent = false)
-		if (useAI) {
-			// Check if we have the noAIContent flag from the service
+		if (useAI && aiEnabled) {
+			console.log('AI mode is active, checking content...')
 			if (chapterData.noAIContent) {
+				console.log('No AI content available, showing message')
 				chapterData.showNoAIContent = true
 				delete chapterData.noAIContent
-				// Make sure to keep the original content in chapterBody for when AI is disabled
-				chapterData.originalBody = chapterData.body
+				// Hide the original content when showing "No AI Content" message
+				chapterData.body = ''
 			} else {
-				// AI content exists, show it
+				console.log('AI content available, showing content')
 				chapterData.showNoAIContent = false
 			}
 		} else {
-			// AI is disabled, show original content
+			console.log('AI mode is not active, showing original content')
 			chapterData.showNoAIContent = false
 			// If we had saved the original body, restore it
 			if (chapterData.originalBody) {
@@ -424,27 +431,31 @@ export const readChapter = async (
 			}
 		}
 
+		console.log('Final chapter data state:', {
+			showNoAIContent: chapterData.showNoAIContent,
+			hasBody: !!chapterData.body,
+		})
+
 		// Clean up chapter content
 		if (chapterData.body) {
 			chapterData.body = chapterData.body
-				.replace(/<h[1-6]>.*?<\/h[1-6]>\s*/gi, '') // Remove h1-h6 tags
-				.replace(/<p>Chapter\s+\d+[:\s].*?<\/p>\s*/gi, '') // Remove chapter title paragraph
+				.replace(/<h[1-6]>.*?<\/h[1-6]>\s*/gi, '')
+				.replace(/<p>Chapter\s+\d+[:\s].*?<\/p>\s*/gi, '')
 				.replace(
 					/<p>[\s\n]*(?:Translator|TL|Translation|Translated by)[^<]*<\/p>\s*/gi,
 					''
-				) // Remove translator lines
+				)
 				.replace(
 					/<p>[\s\n]*(?:Editor|ED|Edited|Edited by|Editor:|ED:)[^<]*<\/p>\s*/gi,
 					''
-				) // Remove editor lines
-				.replace(/<p>[\s\n]*(?:PR|Proofread|Proofreader)[^<]*<\/p>\s*/gi, '') // Remove proofreader lines
-				.replace(/<p>[\s\n]*(?:QC|Quality Check)[^<]*<\/p>\s*/gi, '') // Remove QC lines
-				.replace(/<p>[\s\n]*(?:Note|N\/A|TN)[^<]*<\/p>\s*/gi, '') // Remove note lines
-				.replace(/<p>[\s\n]*(?:Raw|Source)[^<]*<\/p>\s*/gi, '') // Remove source lines
-				.replace(/<p>\s*\*+\s*<\/p>\s*/gi, '') // Remove divider lines
-				.replace(/<p>\s*-+\s*<\/p>\s*/gi, '') // Remove dash dividers
-				.replace(/(<p>\s*<\/p>\s*){2,}/gi, '<p></p>') // Collapse multiple empty paragraphs
-				// Additional cleanup for any remaining editor/translator lines
+				)
+				.replace(/<p>[\s\n]*(?:PR|Proofread|Proofreader)[^<]*<\/p>\s*/gi, '')
+				.replace(/<p>[\s\n]*(?:QC|Quality Check)[^<]*<\/p>\s*/gi, '')
+				.replace(/<p>[\s\n]*(?:Note|N\/A|TN)[^<]*<\/p>\s*/gi, '')
+				.replace(/<p>[\s\n]*(?:Raw|Source)[^<]*<\/p>\s*/gi, '')
+				.replace(/<p>\s*\*+\s*<\/p>\s*/gi, '')
+				.replace(/<p>\s*-+\s*<\/p>\s*/gi, '')
+				.replace(/(<p>\s*<\/p>\s*){2,}/gi, '<p></p>')
 				.replace(
 					/<p>[^<]*(?:Editor|ED|Edited by|Translator|TL):.*?<\/p>\s*/gi,
 					''
@@ -453,14 +464,13 @@ export const readChapter = async (
 					/<p>[^<]*(?:Editor|ED|Edited by|Translator|TL)\s*[:-].*?<\/p>\s*/gi,
 					''
 				)
-				// Handle editor lines with strong tags
 				.replace(
 					/<p><strong>(?:Editor|ED|Edited by|Translator|TL):?<\/strong>.*?<\/p>\s*/gi,
 					''
 				)
 		}
-		console.log('Chapter data cleaned and processed')
 
+		// Get chapters for navigation
 		const { chapters } = await getChapters(novelId)
 		console.log('Got chapters list, total chapters:', chapters.length)
 
@@ -485,32 +495,26 @@ export const readChapter = async (
 					? allChapters[currentIndex + 1]
 					: undefined,
 		}
-		console.log('Navigation data prepared')
 
-		// Generate and return HTML for reading
+		// Generate and send HTML
 		const html = await generateChapterHtml(
 			{
 				...chapterData,
-				chapter: chapter, // Add chapter number for title
+				chapter: chapter,
 			},
 			navigation,
 			allChapters,
 			novelId
 		)
-		console.log('HTML generated, length:', html.length)
 
-		// Send the response immediately
 		res.send(html)
-		console.log('Response sent successfully')
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Error in readChapter:', error)
+		const errorMessage =
+			error instanceof Error ? error.message : 'Unknown error'
 		res
 			.status(500)
-			.send(
-				`<html><body><h1>Error</h1><p>${
-					error.message || 'Unknown error'
-				}</p></body></html>`
-			)
+			.send(`<html><body><h1>Error</h1><p>${errorMessage}</p></body></html>`)
 	}
 }
 
