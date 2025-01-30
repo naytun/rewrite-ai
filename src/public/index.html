@@ -162,6 +162,31 @@
 			html.dark .compare-button.active {
 				background-color: #3b82f6;
 			}
+
+			/* Add novel cover image styles */
+			.novel-cover {
+				position: relative;
+				width: 100%;
+				padding-top: 133.33%; /* 3:4 aspect ratio */
+				overflow: hidden;
+			}
+			.novel-cover img {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+
+			/* iPad mini specific styles */
+			@media screen and (min-width: 768px) and (max-width: 820px) {
+				#novels {
+					grid-template-columns: repeat(4, 1fr) !important;
+					gap: 1rem !important;
+					width: 95% !important;
+				}
+			}
 		</style>
 	</head>
 	<body class="bg-gray-100">
@@ -199,7 +224,7 @@
 					<div id="error" class="text-center text-red-600 mb-4 hidden"></div>
 					<div
 						id="novels"
-						class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-y-12 w-[75%] mx-auto"
+						class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12 w-[90%] mx-auto"
 					>
 						<!-- Novels will be loaded here -->
 					</div>
