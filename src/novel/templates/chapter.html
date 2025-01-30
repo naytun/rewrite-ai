@@ -459,15 +459,12 @@
 					}
 				})
 
+				// Add AI toggle event listener
+				aiToggle.addEventListener('change', toggleAI)
+
 				// Initialize compare mode from URL
 				const urlParams = new URLSearchParams(window.location.search)
 				const isCompareMode = urlParams.get('compare') === 'true'
-				if (isCompareMode) {
-					compareButton.classList.add('active')
-					document
-						.querySelector('.chapter-content')
-						.classList.add('compare-mode')
-				}
 
 				try {
 					// Get AI preference from backend
@@ -483,6 +480,8 @@
 
 					const { enabled } = await response.json()
 					console.log('Initial AI state:', enabled)
+
+					// Set the toggle state
 					aiToggle.checked = enabled
 					localStorage.setItem('aiRewrite', enabled.toString())
 
@@ -498,13 +497,15 @@
 						const aiContentResponse = await fetch(
 							`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}/ai-exists`
 						)
-						const { exists } = await aiContentResponse.json()
 
-						if (exists && isCompareMode) {
-							compareButton.classList.add('active')
-							document
-								.querySelector('.chapter-content')
-								.classList.add('compare-mode')
+						if (aiContentResponse.ok) {
+							const { exists } = await aiContentResponse.json()
+							if (exists && isCompareMode) {
+								compareButton.classList.add('active')
+								document
+									.querySelector('.chapter-content')
+									.classList.add('compare-mode')
+							}
 						}
 					}
 				} catch (error) {
@@ -552,45 +553,6 @@
 					const currentSettings = await settingsResponse.json()
 					console.log('Current settings:', currentSettings)
 
-					let exists = false
-					// Only check for AI content existence if we're enabling AI
-					if (isEnabled) {
-						// Check if AI content exists for this chapter
-						const novelId = '{{novel_id}}'
-						const volume = '{{current_volume}}'
-						const chapter = '{{current_chapter}}'
-						console.log('Checking if AI content exists for:', {
-							novelId,
-							volume,
-							chapter,
-						})
-						const aiContentResponse = await fetch(
-							`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}/ai-exists`,
-							{
-								headers: {
-									Accept: 'application/json',
-									'Content-Type': 'application/json',
-								},
-							}
-						)
-
-						// If the endpoint returns 404, it means the content doesn't exist
-						if (aiContentResponse.status === 404) {
-							exists = false
-						} else if (!aiContentResponse.ok) {
-							throw new Error('Failed to check AI content')
-						} else {
-							try {
-								const result = await aiContentResponse.json()
-								exists = result.exists
-								console.log('AI content exists:', exists)
-							} catch (e) {
-								console.error('Failed to parse AI content response:', e)
-								exists = false
-							}
-						}
-					}
-
 					// Send toggle state to backend while preserving the prompt
 					console.log('Updating AI settings...')
 					const response = await fetch('/api/settings/ai-rewrite', {
@@ -612,107 +574,15 @@
 					const result = await response.json()
 					console.log('AI toggle response:', result)
 
-					// Show/hide floating buttons based on AI state
-					if (isEnabled) {
-						compareButton.classList.add('show')
-						regenerateButton.classList.add('show')
-					} else {
-						compareButton.classList.remove('show', 'active')
-						regenerateButton.classList.remove('show')
-						document
-							.querySelector('.chapter-content')
-							.classList.remove('compare-mode')
-					}
+					// Save AI state to localStorage with consistent key
+					localStorage.setItem('aiRewrite', isEnabled.toString())
 
-					// Reload the chapter content with AI if enabled
-					const novelId = '{{novel_id}}'
-					const volume = '{{current_volume}}'
-					const chapter = '{{current_chapter}}'
-					console.log('Fetching chapter content with AI:', isEnabled)
-					const chapterResponse = await fetch(
-						`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}?useAI=${isEnabled}`,
-						{
-							headers: {
-								Accept: 'application/json',
-								'Content-Type': 'application/json',
-							},
-						}
-					)
-
-					let chapterData
-					try {
-						if (chapterResponse.ok) {
-							chapterData = await chapterResponse.json()
-						} else {
-							console.error(
-								'Failed to load chapter content:',
-								chapterResponse.status
-							)
-							// If we failed to load AI content, treat it as not existing
-							exists = false
-						}
-					} catch (e) {
-						console.error('Failed to parse chapter response:', e)
-						exists = false
-					}
-
-					// Show/hide the no AI content message
-					if (isEnabled && !exists) {
-						console.log('Showing no AI content message')
-						// Create and show the no AI content message if it doesn't exist
-						if (!noAIContent) {
-							const noAIContentDiv = document.createElement('div')
-							noAIContentDiv.id = 'noAIContent'
-							noAIContentDiv.className = 'text-center py-12'
-							noAIContentDiv.innerHTML = `
-								<div class="mb-8">
-									<i class="fas fa-robot text-6xl text-gray-400 mb-4 block"></i>
-									<h2 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-2">
-										No AI Generated Content
-									</h2>
-									<p class="text-gray-500 dark:text-gray-400">
-										This chapter doesn't have AI generated content yet.
-									</p>
-								</div>
-								<button
-									onclick="regenerateChapter()"
-									class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors flex items-center mx-auto"
-								>
-									<i class="fas fa-sync-alt mr-2"></i>
-									Generate AI Content
-								</button>
-							`
-							document
-								.querySelector('.chapter-content')
-								.insertBefore(noAIContentDiv, chapterBody)
-						} else {
-							noAIContent.style.display = 'block'
-						}
-						chapterBody.style.display = 'none'
-					} else {
-						console.log('Showing chapter content')
-						if (noAIContent) {
-							noAIContent.style.display = 'none'
-						}
-						chapterBody.style.display = 'block'
-
-						// Update the chapter content if we have valid data
-						if (chapterData && chapterData.body) {
-							chapterBody.innerHTML = chapterData.body
-							console.log('Updated chapter content')
-						}
-					}
-
-					// Save AI state to localStorage
-					localStorage.setItem('aiEnabled', isEnabled.toString())
-					console.log('AI toggle completed successfully')
+					// Reload the page to show updated content
+					window.location.reload()
 				} catch (error) {
 					console.error('Error in toggleAI:', error)
-					// Only show alert for critical errors, not for missing content
-					if (error.message !== 'Failed to check AI content') {
-						alert(`Failed to toggle AI content: ${error.message}`)
-					}
-					// Revert the toggle state for critical errors
+					alert(`Failed to toggle AI content: ${error.message}`)
+					// Revert the toggle state
 					aiToggle.checked = !isEnabled
 					compareButton.classList.toggle('show', !isEnabled)
 					regenerateButton.classList.toggle('show', !isEnabled)

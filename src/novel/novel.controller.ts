@@ -103,7 +103,10 @@ const generateChapterHtml = async (
 		// Replace placeholders in template
 		template = template
 			.replace(/{{novel_title}}/g, chapterData.novel_title || '')
-			.replace(/{{chapter_title}}/g, `Chapter ${chapterData.chapter || ''}`)
+			.replace(
+				/{{chapter_title}}/g,
+				`Chapter ${Number(chapterData.chapter) || ''}`
+			)
 			.replace(/{{volume}}/g, navigation.current.volume || '')
 			.replace(/{{chapter_body}}/g, chapterData.body || '')
 			.replace(/{{navigation_buttons}}/g, navButtons)
@@ -296,7 +299,7 @@ export const listChapters = async (
 										)}', '${encodeURIComponent(
 											chapter.volume
 										)}', '${encodeURIComponent(chapter.chapter)}')">
-										<h3 class="font-semibold">Chapter ${chapter.chapter}</h3>
+										<h3 class="font-semibold">Chapter ${Number(chapter.chapter)}</h3>
 									</div>
 								`
 									)
