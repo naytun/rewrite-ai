@@ -457,8 +457,12 @@
 
 				// Initialize compare mode from URL
 				const urlParams = new URLSearchParams(window.location.search)
-				if (urlParams.get('compare') === 'true') {
+				const isCompareMode = urlParams.get('compare') === 'true'
+				if (isCompareMode) {
 					compareButton.classList.add('active')
+					document
+						.querySelector('.chapter-content')
+						.classList.add('compare-mode')
 				}
 
 				try {
@@ -480,10 +484,24 @@
 
 					// Show buttons only if AI is enabled
 					if (enabled) {
-						setTimeout(() => {
-							compareButton.classList.add('show')
-							regenerateButton.classList.add('show')
-						}, 100)
+						compareButton.classList.add('show')
+						regenerateButton.classList.add('show')
+
+						// Check if AI content exists for this chapter
+						const novelId = '{{novel_id}}'
+						const volume = '{{current_volume}}'
+						const chapter = '{{current_chapter}}'
+						const aiContentResponse = await fetch(
+							`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}/ai-exists`
+						)
+						const { exists } = await aiContentResponse.json()
+
+						if (exists && isCompareMode) {
+							compareButton.classList.add('active')
+							document
+								.querySelector('.chapter-content')
+								.classList.add('compare-mode')
+						}
 					}
 				} catch (error) {
 					console.error('Failed to get AI preference:', error)
@@ -491,10 +509,14 @@
 					const savedAIState = localStorage.getItem('aiRewrite') === 'true'
 					aiToggle.checked = savedAIState
 					if (savedAIState) {
-						setTimeout(() => {
-							compareButton.classList.add('show')
-							regenerateButton.classList.add('show')
-						}, 100)
+						compareButton.classList.add('show')
+						regenerateButton.classList.add('show')
+						if (isCompareMode) {
+							compareButton.classList.add('active')
+							document
+								.querySelector('.chapter-content')
+								.classList.add('compare-mode')
+						}
 					}
 				}
 			})
@@ -540,18 +562,36 @@
 					if (isEnabled) {
 						compareButton.classList.add('show')
 						regenerateButton.classList.add('show')
+
 						// Only reload if AI content doesn't exist
 						if (!exists) {
 							showLoading()
 							window.location.reload()
+						} else {
+							// If AI content exists, check if we were in compare mode before
+							const urlParams = new URLSearchParams(window.location.search)
+							const wasCompareMode = urlParams.get('compare') === 'true'
+							if (wasCompareMode) {
+								compareButton.classList.add('active')
+								document
+									.querySelector('.chapter-content')
+									.classList.add('compare-mode')
+							}
 						}
 					} else {
 						compareButton.classList.remove('show', 'active')
 						regenerateButton.classList.remove('show')
+						document
+							.querySelector('.chapter-content')
+							.classList.remove('compare-mode')
 						// Remove compare parameter if AI is disabled
 						const currentUrl = new URL(window.location.href)
 						currentUrl.searchParams.delete('compare')
-						window.location.href = currentUrl.toString()
+						window.history.pushState({}, '', currentUrl.toString())
+
+						// Reload the page to show original content
+						showLoading()
+						window.location.reload()
 					}
 				} catch (error) {
 					console.error('Failed to save AI preference:', error)
@@ -575,27 +615,19 @@
 					return
 				}
 
-				// Toggle the active state of the button
-				const isCompareMode = compareButton.classList.contains('active')
-				if (isCompareMode) {
-					compareButton.classList.remove('active')
-				} else {
-					compareButton.classList.add('active')
-				}
-
-				// Update URL without reloading
+				// Toggle the compare state in URL
 				const currentUrl = new URL(window.location.href)
+				const isCompareMode = currentUrl.searchParams.get('compare') === 'true'
+
 				if (isCompareMode) {
 					currentUrl.searchParams.delete('compare')
 				} else {
 					currentUrl.searchParams.set('compare', 'true')
 				}
-				window.history.pushState({}, '', currentUrl.toString())
 
-				// Toggle visibility of original text
-				document
-					.querySelector('.chapter-content')
-					.classList.toggle('compare-mode')
+				// Show loading and reload the page with new URL
+				showLoading()
+				window.location.href = currentUrl.toString()
 			}
 
 			function saveLastChapter(volume, chapter) {
