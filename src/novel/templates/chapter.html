@@ -463,7 +463,7 @@
 
 				try {
 					// Get AI preference from backend
-					const response = await fetch('/api/novel/settings/ai-rewrite', {
+					const response = await fetch('/api/settings/ai-rewrite', {
 						headers: {
 							Accept: 'application/json',
 						},
@@ -517,7 +517,7 @@
 					const { exists } = await aiContentResponse.json()
 
 					// Send toggle state to backend
-					const response = await fetch('/api/novel/settings/ai-rewrite', {
+					const response = await fetch('/api/settings/ai-rewrite', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',

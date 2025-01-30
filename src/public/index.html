@@ -339,7 +339,7 @@
 				localStorage.setItem('aiRewrite', isEnabled.toString())
 
 				try {
-					const response = await fetch('/api/novel/settings/ai-rewrite', {
+					const response = await fetch('/api/settings/ai-rewrite', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
@@ -501,7 +501,7 @@
 			settingsBtn.addEventListener('click', async () => {
 				settingsModal.classList.remove('hidden')
 				try {
-					const response = await fetch('/api/novel/settings/ai-rewrite')
+					const response = await fetch('/api/settings/ai-rewrite')
 					const settings = await response.json()
 					aiPromptTextarea.value = settings.prompt || ''
 					aiToggle.checked = settings.enabled
@@ -516,7 +516,7 @@
 
 			saveSettingsBtn.addEventListener('click', async () => {
 				try {
-					const response = await fetch('/api/novel/settings/ai-rewrite', {
+					const response = await fetch('/api/settings/ai-rewrite', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',

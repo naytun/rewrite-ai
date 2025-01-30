@@ -3,8 +3,6 @@ import {
 	listChapters,
 	readChapter,
 	listNovels,
-	getAIRewriteSettings,
-	setAIRewriteSettings,
 	bulkGenerateAIContent,
 	regenerateChapter,
 } from './novel.controller'
@@ -37,18 +35,14 @@ router.post('/test', (req, res) => {
 router.get('/novels', listNovels)
 router.get('/novels/:novelId/chapters', listChapters)
 router.get('/novels/:novelId/chapters/:volume/:chapter', readChapter)
+
+// Bulk generation route
 router.post('/novels/:novelId/bulk-generate', bulkGenerateAIContent)
 
-// Chapter regeneration
-router.post(
-	'/novels/:novelId/chapters/:volume/:chapter/regenerate',
-	regenerateChapter
-)
+// Regenerate specific chapter
+router.post('/novels/:novelId/regenerate/:volume/:chapter', regenerateChapter)
 
-// Settings routes
-router.get('/settings/ai-rewrite', getAIRewriteSettings)
-router.post('/settings/ai-rewrite', setAIRewriteSettings)
-
+// AI content check endpoint
 router.get(
 	'/novels/:novelId/chapters/:volume/:chapter/ai-exists',
 	async (req: Request, res: Response) => {
