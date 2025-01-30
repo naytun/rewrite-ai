@@ -507,6 +507,15 @@
 				const isEnabled = aiToggle.checked
 
 				try {
+					// First check if AI content exists for this chapter
+					const novelId = '{{novel_id}}'
+					const volume = '{{current_volume}}'
+					const chapter = '{{current_chapter}}'
+					const aiContentResponse = await fetch(
+						`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}/ai-exists`
+					)
+					const { exists } = await aiContentResponse.json()
+
 					// Send toggle state to backend
 					const response = await fetch('/api/novel/settings/ai-rewrite', {
 						method: 'POST',
@@ -531,6 +540,11 @@
 					if (isEnabled) {
 						compareButton.classList.add('show')
 						regenerateButton.classList.add('show')
+						// Only reload if AI content doesn't exist
+						if (!exists) {
+							showLoading()
+							window.location.reload()
+						}
 					} else {
 						compareButton.classList.remove('show', 'active')
 						regenerateButton.classList.remove('show')
@@ -538,12 +552,7 @@
 						const currentUrl = new URL(window.location.href)
 						currentUrl.searchParams.delete('compare')
 						window.location.href = currentUrl.toString()
-						return
 					}
-
-					// Show loading and reload page to get new content
-					showLoading()
-					window.location.reload()
 				} catch (error) {
 					console.error('Failed to save AI preference:', error)
 					// Revert the toggle if the API call fails
