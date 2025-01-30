@@ -14,8 +14,10 @@ import * as fs from 'node:fs/promises'
 
 const generateNavigationButtons = (
 	navigation: ChapterNavigation,
-	novelId: string
+	novelId: string,
+	useAI: boolean = false
 ): string => {
+	const aiParam = useAI ? '?useAI=true' : ''
 	return `
 		${
 			navigation.prev
@@ -25,7 +27,7 @@ const generateNavigationButtons = (
 						navigation.prev.volume
 				  )}/${encodeURIComponent(
 						navigation.prev.chapter
-				  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+				  )}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						navigation.prev.volume
 				  )}', '${encodeURIComponent(
 						navigation.prev.chapter
@@ -43,7 +45,7 @@ const generateNavigationButtons = (
 						navigation.next.volume
 				  )}/${encodeURIComponent(
 						navigation.next.chapter
-				  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+				  )}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						navigation.next.volume
 				  )}', '${encodeURIComponent(navigation.next.chapter)}')" >Next →</a>`
 				: '<span class="nav-button disabled">Next →</span>'
@@ -53,8 +55,10 @@ const generateNavigationButtons = (
 const generateChapterListHtml = (
 	chapters: Chapter[],
 	currentChapter: Chapter,
-	novelId: string
+	novelId: string,
+	useAI: boolean = false
 ): string => {
+	const aiParam = useAI ? '?useAI=true' : ''
 	return chapters
 		.map((chapter) => {
 			const isCurrentChapter =
@@ -67,7 +71,7 @@ const generateChapterListHtml = (
 						novelId
 					)}/chapters/${encodeURIComponent(
 				chapter.volume
-			)}/${encodeURIComponent(chapter.chapter)}"
+			)}/${encodeURIComponent(chapter.chapter)}${aiParam}"
 					class="chapter-link ${chapterClass}"
 					onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						chapter.volume
@@ -83,7 +87,8 @@ const generateChapterHtml = async (
 	chapterData: any,
 	navigation: ChapterNavigation,
 	allChapters: Chapter[],
-	novelId: string
+	novelId: string,
+	useAI: boolean = false
 ): Promise<string> => {
 	try {
 		// Read the template file
@@ -91,19 +96,23 @@ const generateChapterHtml = async (
 		let template = await fs.readFile(templatePath, 'utf-8')
 
 		// Generate navigation buttons HTML
-		const navButtons = generateNavigationButtons(navigation, novelId)
+		const navButtons = generateNavigationButtons(navigation, novelId, useAI)
 
 		// Generate chapter list HTML
 		const chapterListHtml = generateChapterListHtml(
 			allChapters,
 			navigation.current,
-			novelId
+			novelId,
+			useAI
 		)
 
 		// Replace placeholders in template
 		template = template
 			.replace(/{{novel_title}}/g, chapterData.novel_title || '')
-			.replace(/{{chapter_title}}/g, `Chapter ${chapterData.chapter || ''}`)
+			.replace(
+				/{{chapter_title}}/g,
+				`Chapter ${Number(chapterData.chapter) || ''}`
+			)
 			.replace(/{{volume}}/g, navigation.current.volume || '')
 			.replace(/{{chapter_body}}/g, chapterData.body || '')
 			.replace(/{{navigation_buttons}}/g, navButtons)
@@ -170,6 +179,8 @@ export const listChapters = async (
 	try {
 		const { novelId } = req.params
 		const { title, chapters } = await getChapters(novelId)
+		const aiSettings = await getAISettings()
+		const aiEnabled = aiSettings.enabled
 
 		// Group chapters by volume
 		const volumeGroups = chapters.reduce<Record<string, Chapter[]>>(
@@ -296,7 +307,7 @@ export const listChapters = async (
 										)}', '${encodeURIComponent(
 											chapter.volume
 										)}', '${encodeURIComponent(chapter.chapter)}')">
-										<h3 class="font-semibold">Chapter ${chapter.chapter}</h3>
+										<h3 class="font-semibold">Chapter ${Number(chapter.chapter)}</h3>
 									</div>
 								`
 									)
@@ -318,14 +329,34 @@ export const listChapters = async (
 						document.getElementById('loading').classList.add('active');
 					}
 
-					function openChapter(novelId, volume, chapter) {
+					async function openChapter(novelId, volume, chapter) {
 						showLoading();
 						// Save the last opened chapter
 						localStorage.setItem(\`lastChapter_\${novelId}\`, chapter);
 						localStorage.setItem(\`lastVolume_\${novelId}\`, volume);
 						
-						// Navigate to the chapter
-						window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\`;
+						try {
+							// Get AI settings
+							const response = await fetch('/api/settings/ai-rewrite', {
+								headers: {
+									'Accept': 'application/json'
+								}
+							});
+							
+							if (response.ok) {
+								const { enabled } = await response.json();
+								// Navigate to the chapter with AI parameter if enabled
+								const aiParam = enabled ? '?useAI=true' : '';
+								window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\${aiParam}\`;
+							} else {
+								// Fallback to no AI if settings can't be fetched
+								window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\`;
+							}
+						} catch (error) {
+							console.error('Error checking AI settings:', error);
+							// Fallback to no AI if there's an error
+							window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\`;
+						}
 					}
 
 					// Highlight the last opened chapter if any
@@ -349,6 +380,7 @@ export const listChapters = async (
 			</body>
 			</html>
 		`
+
 		res.send(html)
 	} catch (error) {
 		res.status(500).send('Error loading chapters')
@@ -363,6 +395,7 @@ export const readChapter = async (
 		const { novelId, volume, chapter } = req.params
 		// Convert compare parameter to boolean properly
 		const compare = req.query.compare === 'true'
+		const useAI = req.query.useAI === 'true'
 
 		// Add cache control headers
 		res.setHeader(
@@ -375,8 +408,9 @@ export const readChapter = async (
 
 		// Get current AI settings
 		const aiSettings = await getAISettings()
-		const useAI = aiSettings.enabled
+		const aiEnabled = aiSettings.enabled
 		console.log('Reading chapter with settings:', {
+			aiEnabled,
 			useAI,
 			compare,
 			volume,
@@ -388,7 +422,7 @@ export const readChapter = async (
 			novelId,
 			volume,
 			chapter,
-			useAI,
+			useAI && aiEnabled,
 			compare
 		)
 		if (!chapterData) {
@@ -396,23 +430,28 @@ export const readChapter = async (
 			throw new Error('Failed to get chapter content')
 		}
 
+		console.log('Chapter data received:', {
+			hasBody: !!chapterData.body,
+			noAIContent: !!chapterData.noAIContent,
+			useAI,
+			aiEnabled,
+		})
+
 		// Handle AI content visibility:
-		// 1. If AI is enabled and content exists - show AI content (showNoAIContent = false)
-		// 2. If AI is enabled but no content exists - show no content message (showNoAIContent = true)
-		// 3. If AI is disabled - show original content (showNoAIContent = false)
-		if (useAI) {
-			// Check if we have the noAIContent flag from the service
+		if (useAI && aiEnabled) {
+			console.log('AI mode is active, checking content...')
 			if (chapterData.noAIContent) {
+				console.log('No AI content available, showing message')
 				chapterData.showNoAIContent = true
 				delete chapterData.noAIContent
-				// Make sure to keep the original content in chapterBody for when AI is disabled
-				chapterData.originalBody = chapterData.body
+				// Hide the original content when showing "No AI Content" message
+				chapterData.body = ''
 			} else {
-				// AI content exists, show it
+				console.log('AI content available, showing content')
 				chapterData.showNoAIContent = false
 			}
 		} else {
-			// AI is disabled, show original content
+			console.log('AI mode is not active, showing original content')
 			chapterData.showNoAIContent = false
 			// If we had saved the original body, restore it
 			if (chapterData.originalBody) {
@@ -421,27 +460,31 @@ export const readChapter = async (
 			}
 		}
 
+		console.log('Final chapter data state:', {
+			showNoAIContent: chapterData.showNoAIContent,
+			hasBody: !!chapterData.body,
+		})
+
 		// Clean up chapter content
 		if (chapterData.body) {
 			chapterData.body = chapterData.body
-				.replace(/<h[1-6]>.*?<\/h[1-6]>\s*/gi, '') // Remove h1-h6 tags
-				.replace(/<p>Chapter\s+\d+[:\s].*?<\/p>\s*/gi, '') // Remove chapter title paragraph
+				.replace(/<h[1-6]>.*?<\/h[1-6]>\s*/gi, '')
+				.replace(/<p>Chapter\s+\d+[:\s].*?<\/p>\s*/gi, '')
 				.replace(
 					/<p>[\s\n]*(?:Translator|TL|Translation|Translated by)[^<]*<\/p>\s*/gi,
 					''
-				) // Remove translator lines
+				)
 				.replace(
 					/<p>[\s\n]*(?:Editor|ED|Edited|Edited by|Editor:|ED:)[^<]*<\/p>\s*/gi,
 					''
-				) // Remove editor lines
-				.replace(/<p>[\s\n]*(?:PR|Proofread|Proofreader)[^<]*<\/p>\s*/gi, '') // Remove proofreader lines
-				.replace(/<p>[\s\n]*(?:QC|Quality Check)[^<]*<\/p>\s*/gi, '') // Remove QC lines
-				.replace(/<p>[\s\n]*(?:Note|N\/A|TN)[^<]*<\/p>\s*/gi, '') // Remove note lines
-				.replace(/<p>[\s\n]*(?:Raw|Source)[^<]*<\/p>\s*/gi, '') // Remove source lines
-				.replace(/<p>\s*\*+\s*<\/p>\s*/gi, '') // Remove divider lines
-				.replace(/<p>\s*-+\s*<\/p>\s*/gi, '') // Remove dash dividers
-				.replace(/(<p>\s*<\/p>\s*){2,}/gi, '<p></p>') // Collapse multiple empty paragraphs
-				// Additional cleanup for any remaining editor/translator lines
+				)
+				.replace(/<p>[\s\n]*(?:PR|Proofread|Proofreader)[^<]*<\/p>\s*/gi, '')
+				.replace(/<p>[\s\n]*(?:QC|Quality Check)[^<]*<\/p>\s*/gi, '')
+				.replace(/<p>[\s\n]*(?:Note|N\/A|TN)[^<]*<\/p>\s*/gi, '')
+				.replace(/<p>[\s\n]*(?:Raw|Source)[^<]*<\/p>\s*/gi, '')
+				.replace(/<p>\s*\*+\s*<\/p>\s*/gi, '')
+				.replace(/<p>\s*-+\s*<\/p>\s*/gi, '')
+				.replace(/(<p>\s*<\/p>\s*){2,}/gi, '<p></p>')
 				.replace(
 					/<p>[^<]*(?:Editor|ED|Edited by|Translator|TL):.*?<\/p>\s*/gi,
 					''
@@ -450,14 +493,13 @@ export const readChapter = async (
 					/<p>[^<]*(?:Editor|ED|Edited by|Translator|TL)\s*[:-].*?<\/p>\s*/gi,
 					''
 				)
-				// Handle editor lines with strong tags
 				.replace(
 					/<p><strong>(?:Editor|ED|Edited by|Translator|TL):?<\/strong>.*?<\/p>\s*/gi,
 					''
 				)
 		}
-		console.log('Chapter data cleaned and processed')
 
+		// Get chapters for navigation
 		const { chapters } = await getChapters(novelId)
 		console.log('Got chapters list, total chapters:', chapters.length)
 
@@ -482,32 +524,27 @@ export const readChapter = async (
 					? allChapters[currentIndex + 1]
 					: undefined,
 		}
-		console.log('Navigation data prepared')
 
-		// Generate and return HTML for reading
+		// Generate and send HTML
 		const html = await generateChapterHtml(
 			{
 				...chapterData,
-				chapter: chapter, // Add chapter number for title
+				chapter: chapter,
 			},
 			navigation,
 			allChapters,
-			novelId
+			novelId,
+			useAI && aiEnabled
 		)
-		console.log('HTML generated, length:', html.length)
 
-		// Send the response immediately
 		res.send(html)
-		console.log('Response sent successfully')
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error('Error in readChapter:', error)
+		const errorMessage =
+			error instanceof Error ? error.message : 'Unknown error'
 		res
 			.status(500)
-			.send(
-				`<html><body><h1>Error</h1><p>${
-					error.message || 'Unknown error'
-				}</p></body></html>`
-			)
+			.send(`<html><body><h1>Error</h1><p>${errorMessage}</p></body></html>`)
 	}
 }
 
@@ -628,4 +665,44 @@ const getNovelMetadata = async (novelId: string): Promise<any> => {
 	const metaPath = path.join(novelPath, 'meta.json')
 	const metaContent = await fs.readFile(metaPath, 'utf-8')
 	return JSON.parse(metaContent)
+}
+
+export const checkAIContentExists = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	try {
+		const { novelId, volume, chapter } = req.params
+		const { useAI } = req.query
+		console.log('Checking AI content existence:', { chapter, useAI })
+
+		const novelPath = await getNovelPath(novelId)
+		console.log('Novel path:', novelPath)
+
+		const aiFilePath = path.join(
+			novelPath,
+			'json',
+			volume,
+			useAI ? `${chapter}-ai.json` : `${chapter}.json`
+		)
+		console.log('File path:', aiFilePath)
+
+		try {
+			await fs.access(aiFilePath)
+			if (useAI) {
+				const aiContent = await fs.readFile(aiFilePath, 'utf-8')
+				const aiData = JSON.parse(aiContent)
+				// Validate AI data structure
+				const exists = !!(aiData && aiData.body && aiData.isAIGenerated)
+				res.json({ exists })
+			} else {
+				res.json({ exists: true })
+			}
+		} catch (error) {
+			res.json({ exists: false })
+		}
+	} catch (error) {
+		console.error('Error checking AI content existence:', error)
+		res.status(500).json({ error: 'Failed to check AI content existence' })
+	}
 }
