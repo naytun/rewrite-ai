@@ -371,7 +371,34 @@
 				<h1 class="text-3xl font-bold">{{chapter_title}}</h1>
 			</div>
 
-			{{chapter_body}}
+			<div
+				id="noAIContent"
+				class="{{#if showNoAIContent}}block{{else}}hidden{{/if}} text-center py-12"
+			>
+				<div class="mb-8">
+					<i class="fas fa-robot text-6xl text-gray-400 mb-4 block"></i>
+					<h2 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-2">
+						No AI Generated Content
+					</h2>
+					<p class="text-gray-500 dark:text-gray-400">
+						This chapter doesn't have AI generated content yet.
+					</p>
+				</div>
+				<button
+					onclick="regenerateChapter()"
+					class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors flex items-center mx-auto"
+				>
+					<i class="fas fa-sync-alt mr-2"></i>
+					Generate AI Content
+				</button>
+			</div>
+
+			<div
+				id="chapterBody"
+				class="{{#if showNoAIContent}}hidden{{else}}block{{/if}}"
+			>
+				{{chapter_body}}
+			</div>
 		</div>
 
 		<div class="navigation">{{navigation_buttons}}</div>
@@ -526,6 +553,8 @@
 				const aiToggle = document.getElementById('aiToggle')
 				const compareButton = document.getElementById('compareButton')
 				const regenerateButton = document.getElementById('regenerateButton')
+				const noAIContent = document.getElementById('noAIContent')
+				const chapterBody = document.getElementById('chapterBody')
 				const isEnabled = aiToggle.checked
 
 				try {
@@ -574,20 +603,25 @@
 						compareButton.classList.add('show')
 						regenerateButton.classList.add('show')
 
-						// Only reload if AI content doesn't exist
+						// Only show AI content if it exists
 						if (!exists) {
-							showLoading()
-							window.location.reload()
+							// Show the no AI content message
+							noAIContent.classList.remove('hidden')
+							chapterBody.classList.add('hidden')
 						} else {
 							// If AI content exists, check if we were in compare mode before
 							const urlParams = new URLSearchParams(window.location.search)
 							const wasCompareMode = urlParams.get('compare') === 'true'
+
+							// Construct the new URL with AI state
+							const currentUrl = new URL(window.location.href)
 							if (wasCompareMode) {
-								compareButton.classList.add('active')
-								document
-									.querySelector('.chapter-content')
-									.classList.add('compare-mode')
+								currentUrl.searchParams.set('compare', 'true')
 							}
+
+							// Reload to show AI content
+							showLoading()
+							window.location.href = currentUrl.toString()
 						}
 					} else {
 						compareButton.classList.remove('show', 'active')
@@ -595,6 +629,8 @@
 						document
 							.querySelector('.chapter-content')
 							.classList.remove('compare-mode')
+						noAIContent.classList.add('hidden')
+						chapterBody.classList.remove('hidden')
 						// Remove compare parameter if AI is disabled
 						const currentUrl = new URL(window.location.href)
 						currentUrl.searchParams.delete('compare')
@@ -602,7 +638,7 @@
 
 						// Reload the page to show original content
 						showLoading()
-						window.location.reload()
+						window.location.href = currentUrl.toString()
 					}
 				} catch (error) {
 					console.error('Failed to save AI preference:', error)

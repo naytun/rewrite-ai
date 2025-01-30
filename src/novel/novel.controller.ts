@@ -396,6 +396,31 @@ export const readChapter = async (
 			throw new Error('Failed to get chapter content')
 		}
 
+		// Handle AI content visibility:
+		// 1. If AI is enabled and content exists - show AI content (showNoAIContent = false)
+		// 2. If AI is enabled but no content exists - show no content message (showNoAIContent = true)
+		// 3. If AI is disabled - show original content (showNoAIContent = false)
+		if (useAI) {
+			// Check if we have the noAIContent flag from the service
+			if (chapterData.noAIContent) {
+				chapterData.showNoAIContent = true
+				delete chapterData.noAIContent
+				// Make sure to keep the original content in chapterBody for when AI is disabled
+				chapterData.originalBody = chapterData.body
+			} else {
+				// AI content exists, show it
+				chapterData.showNoAIContent = false
+			}
+		} else {
+			// AI is disabled, show original content
+			chapterData.showNoAIContent = false
+			// If we had saved the original body, restore it
+			if (chapterData.originalBody) {
+				chapterData.body = chapterData.originalBody
+				delete chapterData.originalBody
+			}
+		}
+
 		// Clean up chapter content
 		if (chapterData.body) {
 			chapterData.body = chapterData.body
