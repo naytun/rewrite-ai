@@ -417,8 +417,8 @@
 										novel.authors ? novel.authors.join(', ') : 'Unknown'
 									}</p>
 									<a href="#" class="last-chapter-link" data-novel-id="${novel.id}">
-										<p class="text-gray-800 dark:text-gray-500 text-xs mt-1 hover:text-blue-600 dark:hover:text-blue-400">
-											Chapter ${
+										<p class="text-gray-800 dark:text-gray-400 text-xs mt-1 hover:text-blue-600 dark:hover:text-blue-400">
+											Chapter -- ${
 												Number(
 													localStorage.getItem(`lastChapter_${novel.id}`)
 												) || 'Not started'
