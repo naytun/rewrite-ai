@@ -20,8 +20,13 @@ router.post('/ai-rewrite', async (req, res) => {
 			res.status(400).json({ error: 'Invalid enabled value' })
 			return
 		}
-		await saveAISettings({ enabled, prompt: prompt || '' })
-		res.json({ enabled, prompt })
+
+		// Get current settings to preserve prompt if not provided
+		const currentSettings = await getAISettings()
+		const newPrompt = prompt === undefined ? currentSettings.prompt : prompt
+
+		await saveAISettings({ enabled, prompt: newPrompt })
+		res.json({ enabled, prompt: newPrompt })
 	} catch (error) {
 		console.error('Error saving AI settings:', error)
 		res.status(500).json({ error: 'Failed to save AI settings' })

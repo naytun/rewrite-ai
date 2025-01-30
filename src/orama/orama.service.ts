@@ -42,7 +42,10 @@ export const askAI = async ({
 
 		// Get AI settings to use the prompt
 		const settings = await getAISettings()
-		const prompt = settings.prompt || 'Rewrite the following passage:'
+		const prompt =
+			!settings.prompt || settings.prompt.length < 10
+				? AI_INSTRUCTIONS.REWRITE_CHAPTER
+				: settings.prompt
 
 		const session = await oramaClient.createAnswerSession({
 			userContext: prompt,
