@@ -439,6 +439,7 @@
 				const darkModeToggle = document.getElementById('darkModeToggle')
 				const compareButton = document.getElementById('compareButton')
 				const regenerateButton = document.getElementById('regenerateButton')
+				const chapterBody = document.getElementById('chapterBody')
 
 				// Initialize dark mode
 				const isDarkMode = localStorage.getItem('darkMode') === 'true'
@@ -495,17 +496,97 @@
 						const volume = '{{current_volume}}'
 						const chapter = '{{current_chapter}}'
 						const aiContentResponse = await fetch(
-							`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}/ai-exists`
+							`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}/ai-exists`,
+							{
+								headers: {
+									Accept: 'application/json',
+									'Content-Type': 'application/json',
+								},
+							}
 						)
 
 						if (aiContentResponse.ok) {
 							const { exists } = await aiContentResponse.json()
-							if (exists && isCompareMode) {
-								compareButton.classList.add('active')
+							if (exists) {
+								// If AI content exists, fetch it
+								const chapterResponse = await fetch(
+									`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}?useAI=true`,
+									{
+										headers: {
+											Accept: 'application/json',
+											'Content-Type': 'application/json',
+										},
+									}
+								)
+
+								if (chapterResponse.ok) {
+									const chapterData = await chapterResponse.json()
+									if (chapterData && chapterData.body) {
+										chapterBody.innerHTML = chapterData.body
+										chapterBody.style.display = 'block'
+										const existingNoAIContent =
+											document.getElementById('noAIContent')
+										if (existingNoAIContent) {
+											existingNoAIContent.remove()
+										}
+									}
+								}
+
+								if (isCompareMode) {
+									compareButton.classList.add('active')
+									document
+										.querySelector('.chapter-content')
+										.classList.add('compare-mode')
+								}
+							} else {
+								// Hide original content and show "No AI Content" message
+								if (chapterBody) {
+									chapterBody.style.display = 'none'
+								}
+
+								// Remove any existing noAIContent div
+								const existingNoAIContent =
+									document.getElementById('noAIContent')
+								if (existingNoAIContent) {
+									existingNoAIContent.remove()
+								}
+
+								// Show "No AI Content" message
+								const noAIContentDiv = document.createElement('div')
+								noAIContentDiv.id = 'noAIContent'
+								noAIContentDiv.className = 'text-center py-12'
+								noAIContentDiv.innerHTML = `
+									<div class="mb-8">
+										<i class="fas fa-robot text-6xl text-gray-400 mb-4 block"></i>
+										<h2 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-2">
+											No AI Generated Content
+										</h2>
+										<p class="text-gray-500 dark:text-gray-400">
+											This chapter doesn't have AI generated content yet.
+										</p>
+									</div>
+									<button
+										onclick="regenerateChapter()"
+										class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors flex items-center mx-auto"
+									>
+										<i class="fas fa-sync-alt mr-2"></i>
+										Generate AI Content
+									</button>
+								`
 								document
 									.querySelector('.chapter-content')
-									.classList.add('compare-mode')
+									.insertBefore(noAIContentDiv, chapterBody)
 							}
+						}
+					} else {
+						// If AI is disabled, ensure original content is visible
+						if (chapterBody) {
+							chapterBody.style.display = 'block'
+						}
+						// Remove any existing noAIContent div
+						const existingNoAIContent = document.getElementById('noAIContent')
+						if (existingNoAIContent) {
+							existingNoAIContent.remove()
 						}
 					}
 				} catch (error) {
@@ -577,8 +658,102 @@
 					// Save AI state to localStorage with consistent key
 					localStorage.setItem('aiRewrite', isEnabled.toString())
 
-					// Reload the page to show updated content
-					window.location.reload()
+					if (isEnabled) {
+						// Check if AI content exists for this chapter
+						const novelId = '{{novel_id}}'
+						const volume = '{{current_volume}}'
+						const chapter = '{{current_chapter}}'
+						const aiContentResponse = await fetch(
+							`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}/ai-exists`,
+							{
+								headers: {
+									Accept: 'application/json',
+									'Content-Type': 'application/json',
+								},
+							}
+						)
+
+						if (aiContentResponse.ok) {
+							const { exists } = await aiContentResponse.json()
+							if (exists) {
+								// If AI content exists, fetch it
+								const chapterResponse = await fetch(
+									`/api/novel/novels/${novelId}/chapters/${volume}/${chapter}?useAI=true`,
+									{
+										headers: {
+											Accept: 'application/json',
+											'Content-Type': 'application/json',
+										},
+									}
+								)
+
+								if (chapterResponse.ok) {
+									const chapterData = await chapterResponse.json()
+									if (chapterData && chapterData.body) {
+										chapterBody.innerHTML = chapterData.body
+										chapterBody.style.display = 'block'
+										const existingNoAIContent =
+											document.getElementById('noAIContent')
+										if (existingNoAIContent) {
+											existingNoAIContent.remove()
+										}
+									}
+								}
+							} else {
+								// Hide original content and show "No AI Content" message
+								if (chapterBody) {
+									chapterBody.style.display = 'none'
+								}
+
+								// Remove any existing noAIContent div
+								const existingNoAIContent =
+									document.getElementById('noAIContent')
+								if (existingNoAIContent) {
+									existingNoAIContent.remove()
+								}
+
+								// Show "No AI Content" message
+								const noAIContentDiv = document.createElement('div')
+								noAIContentDiv.id = 'noAIContent'
+								noAIContentDiv.className = 'text-center py-12'
+								noAIContentDiv.innerHTML = `
+									<div class="mb-8">
+										<i class="fas fa-robot text-6xl text-gray-400 mb-4 block"></i>
+										<h2 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-2">
+											No AI Generated Content
+										</h2>
+										<p class="text-gray-500 dark:text-gray-400">
+											This chapter doesn't have AI generated content yet.
+										</p>
+									</div>
+									<button
+										onclick="regenerateChapter()"
+										class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors flex items-center mx-auto"
+									>
+										<i class="fas fa-sync-alt mr-2"></i>
+										Generate AI Content
+									</button>
+								`
+								document
+									.querySelector('.chapter-content')
+									.insertBefore(noAIContentDiv, chapterBody)
+							}
+						}
+					} else {
+						// If AI is disabled, show original content
+						if (chapterBody) {
+							chapterBody.style.display = 'block'
+						}
+						// Remove any existing noAIContent div
+						const existingNoAIContent = document.getElementById('noAIContent')
+						if (existingNoAIContent) {
+							existingNoAIContent.remove()
+						}
+					}
+
+					// Update button visibility
+					compareButton.classList.toggle('show', isEnabled)
+					regenerateButton.classList.toggle('show', isEnabled)
 				} catch (error) {
 					console.error('Error in toggleAI:', error)
 					alert(`Failed to toggle AI content: ${error.message}`)

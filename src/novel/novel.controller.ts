@@ -632,3 +632,43 @@ const getNovelMetadata = async (novelId: string): Promise<any> => {
 	const metaContent = await fs.readFile(metaPath, 'utf-8')
 	return JSON.parse(metaContent)
 }
+
+export const checkAIContentExists = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	try {
+		const { novelId, volume, chapter } = req.params
+		const { useAI } = req.query
+		console.log('Checking AI content existence:', { chapter, useAI })
+
+		const novelPath = await getNovelPath(novelId)
+		console.log('Novel path:', novelPath)
+
+		const aiFilePath = path.join(
+			novelPath,
+			'json',
+			volume,
+			useAI ? `${chapter}-ai.json` : `${chapter}.json`
+		)
+		console.log('File path:', aiFilePath)
+
+		try {
+			await fs.access(aiFilePath)
+			if (useAI) {
+				const aiContent = await fs.readFile(aiFilePath, 'utf-8')
+				const aiData = JSON.parse(aiContent)
+				// Validate AI data structure
+				const exists = !!(aiData && aiData.body && aiData.isAIGenerated)
+				res.json({ exists })
+			} else {
+				res.json({ exists: true })
+			}
+		} catch (error) {
+			res.json({ exists: false })
+		}
+	} catch (error) {
+		console.error('Error checking AI content existence:', error)
+		res.status(500).json({ error: 'Failed to check AI content existence' })
+	}
+}

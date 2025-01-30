@@ -5,11 +5,8 @@ import {
 	listNovels,
 	bulkGenerateAIContent,
 	regenerateChapter,
+	checkAIContentExists,
 } from './novel.controller'
-import { getNovelPath } from './novel.service'
-import path from 'path'
-import fs from 'fs'
-import { Request, Response } from 'express'
 
 const router = Router()
 
@@ -35,34 +32,18 @@ router.post('/test', (req, res) => {
 router.get('/novels', listNovels)
 router.get('/novels/:novelId/chapters', listChapters)
 router.get('/novels/:novelId/chapters/:volume/:chapter', readChapter)
+router.get(
+	'/novels/:novelId/chapters/:volume/:chapter/ai-exists',
+	checkAIContentExists
+)
 
 // Bulk generation route
 router.post('/novels/:novelId/bulk-generate', bulkGenerateAIContent)
 
 // Regenerate specific chapter
-router.post('/novels/:novelId/regenerate/:volume/:chapter', regenerateChapter)
-
-// AI content check endpoint
-router.get(
-	'/novels/:novelId/chapters/:volume/:chapter/ai-exists',
-	async (req: Request, res: Response) => {
-		try {
-			const { novelId, volume, chapter } = req.params
-			const novelPath = await getNovelPath(novelId)
-			const aiFilePath = path.join(
-				novelPath,
-				'json',
-				volume,
-				`${chapter}-ai.json`
-			)
-
-			const exists = fs.existsSync(aiFilePath)
-			res.json({ exists })
-		} catch (error) {
-			console.error('Error checking AI content:', error)
-			res.status(500).json({ error: 'Failed to check AI content' })
-		}
-	}
+router.post(
+	'/novels/:novelId/chapters/:volume/:chapter/regenerate',
+	regenerateChapter
 )
 
 export default router
