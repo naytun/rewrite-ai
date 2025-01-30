@@ -11,9 +11,10 @@ WORKDIR /app
 
 # Set production environment
 ENV NODE_ENV="production"
+ENV PORT=3000
 
 # Create necessary directories with correct permissions
-RUN mkdir -p /app/Lightnovels/novelfull-com/Novel-01/json && \
+RUN mkdir -p /app/Lightnovels && \
     chown -R node:node /app
 
 # Throw-away build stage to reduce size of final image
@@ -43,13 +44,24 @@ RUN npm prune --omit=dev
 FROM base
 
 # Copy built application
-COPY --from=build /app /app
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/package.json /app/package.json
 
-# Ensure node user owns the app directory
+# Copy Lightnovels directory
+COPY Lightnovels /app/Lightnovels
+
+# Ensure node user owns the app directory and all contents
 RUN chown -R node:node /app
 
 # Use non-root user
 USER node
+
+# Required environment variables
+ENV ORAMA_API_KEY=""
+ENV ORAMA_ENDPOINT=""
+ENV OPENAI_API_KEY=""
+ENV ANTHROPIC_API_KEY=""
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
