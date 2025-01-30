@@ -3,8 +3,6 @@ import {
 	listChapters,
 	readChapter,
 	listNovels,
-	getAIRewriteSettings,
-	setAIRewriteSettings,
 	bulkGenerateAIContent,
 	regenerateChapter,
 } from './novel.controller'
@@ -15,10 +13,6 @@ const router = Router()
 router.get('/novels', listNovels)
 router.get('/novels/:novelId/chapters', listChapters)
 router.get('/novels/:novelId/chapters/:volume/:chapter', readChapter)
-
-// AI settings routes
-router.get('/ai-settings', getAIRewriteSettings)
-router.post('/ai-settings', setAIRewriteSettings)
 
 // Bulk generation route
 router.post('/novels/:novelId/bulk-generate', bulkGenerateAIContent)
@@ -37,8 +31,6 @@ export {
 	listChapters,
 	readChapter,
 	listNovels,
-	getAIRewriteSettings,
-	setAIRewriteSettings,
 	bulkGenerateAIContent,
 	regenerateChapter,
 } from './novel.controller'

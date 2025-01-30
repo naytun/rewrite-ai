@@ -1,5 +1,5 @@
-import path from 'path'
-import { promises as fs } from 'fs'
+import * as path from 'path'
+import * as fs from 'node:fs/promises'
 
 import { askAI } from '../orama/orama.service'
 import { getAISettings } from '../settings/settings.service'
@@ -288,8 +288,11 @@ export const readChapter = async (
 			throw new Error(`Failed to read chapter ${chapter} in volume ${volume}`)
 		}
 
+		// Get current AI settings
+		const aiSettings = await getAISettings()
+
 		// If AI is not enabled, return original content
-		if (!useAI) {
+		if (!useAI || !aiSettings.enabled) {
 			return chapterData
 		}
 
@@ -374,7 +377,7 @@ export const readChapter = async (
 
 		return chapterData
 	} catch (error) {
-		console.error('Error reading chapter:', error)
+		console.error('Error in readChapter:', error)
 		throw error
 	}
 }

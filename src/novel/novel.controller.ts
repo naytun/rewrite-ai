@@ -7,320 +7,110 @@ import {
 	getNovelPath,
 	preloadAIContent,
 } from './novel.service'
+import { getAISettings } from '../settings/settings.service'
 import type { Chapter, ChapterNavigation } from '../types/novel'
-import fs from 'fs'
-import path from 'path'
+import * as path from 'path'
+import * as fs from 'node:fs/promises'
 
-// Global state store with persistence
-export const globalState = {
-	_aiRewrite: false,
-	_aiPrompt: '',
-	get aiRewrite() {
-		return this._aiRewrite
-	},
-	get aiPrompt() {
-		return this._aiPrompt
-	},
-	set aiRewrite(value: boolean) {
-		console.log('Setting AI rewrite to:', value)
-		this._aiRewrite = value
-		this.persistSettings()
-	},
-	set aiPrompt(value: string) {
-		this._aiPrompt = value
-		this.persistSettings()
-	},
-	persistSettings() {
-		try {
-			const settingsPath = path.join(process.cwd(), '.settings')
-			if (!fs.existsSync(settingsPath)) {
-				fs.mkdirSync(settingsPath, { recursive: true })
-			}
-			const settings = {
-				enabled: this._aiRewrite,
-				prompt: this._aiPrompt,
-			}
-			console.log('Persisting settings:', settings)
-			fs.writeFileSync(
-				path.join(settingsPath, 'ai-rewrite.json'),
-				JSON.stringify(settings, null, 2),
-				'utf8'
-			)
-		} catch (error) {
-			console.error('Failed to persist AI settings:', error)
-		}
-	},
-	loadSettings() {
-		try {
-			const settingsPath = path.join(process.cwd(), '.settings')
-			const settingsFile = path.join(settingsPath, 'ai-rewrite.json')
-			if (fs.existsSync(settingsFile)) {
-				const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'))
-				this._aiRewrite = settings.enabled
-				this._aiPrompt = settings.prompt || ''
-			} else {
-				console.log('No saved AI settings found, using defaults:', {
-					enabled: this._aiRewrite,
-					prompt: this._aiPrompt,
-				})
-			}
-		} catch (error) {
-			console.error('Failed to load AI settings:', error)
-		}
-	},
-}
-
-// Initialize settings
-globalState.loadSettings()
-
-const generateChapterListHtml = (
-	title: string,
-	chapters: Chapter[],
+const generateNavigationButtons = (
+	navigation: ChapterNavigation,
 	novelId: string
 ): string => {
-	// Group chapters by volume
-	const volumeGroups = chapters.reduce<Record<string, Chapter[]>>(
-		(acc, chapter) => {
-			if (!acc[chapter.volume]) {
-				acc[chapter.volume] = []
-			}
-			acc[chapter.volume].push(chapter)
-			return acc
-		},
-		{}
-	)
-
-	const html = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${title} - Chapters</title>
-            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-            <style>
-                .chapter-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                    gap: 1rem;
-                    padding: 1rem;
-                }
-                .chapter-item {
-                    background-color: white;
-                    padding: 1rem;
-                    border-radius: 0.5rem;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                    transition: transform 0.2s;
-                    cursor: pointer;
-                }
-                .chapter-item:hover {
-                    transform: translateY(-2px);
-                }
-                .chapter-item.last-read {
-                    background-color: #93c5fd;
-                }
-                html.dark .chapter-item.last-read {
-                    background-color: #1e40af;
-                }
-                .volume-title {
-                    font-size: 1.5rem;
-                    font-weight: 600;
-                    margin: 2rem 0 1rem;
-                    padding-bottom: 0.5rem;
-                    border-bottom: 2px solid #e5e7eb;
-                }
-                .loading {
-                    display: none;
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0, 0, 0, 0.7);
-                    z-index: 1000;
-                    justify-content: center;
-                    align-items: center;
-                }
-                .loading.active {
-                    display: flex;
-                }
-                .spinner {
-                    width: 50px;
-                    height: 50px;
-                    border: 5px solid #f3f3f3;
-                    border-top: 5px solid #3b82f6;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                }
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-                .back-button {
-                    display: inline-block;
-                    color: #3b82f6;
-                    text-decoration: none;
-                    padding: 0.5rem 1rem;
-                    margin-bottom: 1rem;
-                    border-radius: 0.5rem;
-                    transition: all 0.2s;
-                    font-size: 1.5rem;
-                }
-                .back-button:hover {
-                    background: #e5e7eb;
-                }
-                html.dark body { background-color: #1a1a1a; color: #ffffff; }
-                html.dark .chapter-item { background-color: #2d2d2d; }
-                html.dark .text-gray-600 { color: #d1d1d1; }
-                html.dark .volume-title { border-bottom-color: #4b5563; }
-                html.dark .back-button { color: #60a5fa; }
-                html.dark .back-button:hover { background: #374151; }
-            </style>
-        </head>
-        <body class="bg-gray-100">
-            <div id="loading" class="loading">
-                <div class="spinner"></div>
-            </div>
-
-            <div class="container mx-auto px-4 py-8">
-                <a href="/" class="back-button" onclick="showLoading()">← Back to Library</a>
-                <h1 class="text-3xl font-bold mb-8 text-center">${title}</h1>
-                ${Object.entries(volumeGroups)
-									.sort(([volA], [volB]) => volA.localeCompare(volB))
-									.map(
-										([volume, chapters]) => `
-                    <div>
-                        <h2 class="volume-title">${volume}</h2>
-                        <div class="chapter-grid">
-                            ${chapters
-															.sort(
-																(a, b) =>
-																	parseInt(a.chapter) - parseInt(b.chapter)
-															)
-															.map(
-																(chapter) => `
-                                <div class="chapter-item" data-volume="${
-																	chapter.volume
-																}" data-chapter="${
-																	chapter.chapter
-																}" onclick="openChapter('${encodeURIComponent(
-																	novelId
-																)}', '${encodeURIComponent(
-																	chapter.volume
-																)}', '${encodeURIComponent(chapter.chapter)}')">
-                                    <h3 class="font-semibold">Chapter ${
-																			chapter.chapter
-																		}</h3>
-                                </div>
-                            `
-															)
-															.join('')}
-                        </div>
-                    </div>
-                `
-									)
-									.join('')}
-            </div>
-
-            <script>
-                // Check for dark mode preference
-                if (localStorage.getItem('darkMode') === 'true') {
-                    document.documentElement.classList.add('dark');
-                }
-
-                function showLoading() {
-                    document.getElementById('loading').classList.add('active');
-                }
-
-                function openChapter(novelId, volume, chapter) {
-                    showLoading();
-                    // Save the last opened chapter
-                    localStorage.setItem(\`lastChapter_\${novelId}\`, chapter);
-                    localStorage.setItem(\`lastVolume_\${novelId}\`, volume);
-                    
-                    // Navigate to the chapter
-                    window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\`;
-                }
-
-                // Highlight the last opened chapter if any
-                document.addEventListener('DOMContentLoaded', () => {
-                    const novelId = '${novelId}';
-                    const lastChapter = localStorage.getItem(\`lastChapter_\${novelId}\`);
-                    const lastVolume = localStorage.getItem(\`lastVolume_\${novelId}\`);
-                    
-                    if (lastChapter && lastVolume) {
-                        const chapterItems = document.querySelectorAll('.chapter-item');
-                        chapterItems.forEach(item => {
-                            if (item.dataset.chapter === lastChapter && 
-                                item.dataset.volume === lastVolume) {
-                                item.classList.add('last-read');
-                                item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }
-                        });
-                    }
-                });
-            </script>
-        </body>
-        </html>
-    `
-	return html
+	return `
+		${
+			navigation.prev
+				? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
+						novelId
+				  )}/chapters/${encodeURIComponent(
+						navigation.prev.volume
+				  )}/${encodeURIComponent(
+						navigation.prev.chapter
+				  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+						navigation.prev.volume
+				  )}', '${encodeURIComponent(
+						navigation.prev.chapter
+				  )}')" >← Previous</a>`
+				: '<span class="nav-button disabled">← Previous</span>'
+		}
+		<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
+			novelId
+		)}/chapters" onclick="showLoading()">Chapter List</a>
+		${
+			navigation.next
+				? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
+						novelId
+				  )}/chapters/${encodeURIComponent(
+						navigation.next.volume
+				  )}/${encodeURIComponent(
+						navigation.next.chapter
+				  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+						navigation.next.volume
+				  )}', '${encodeURIComponent(navigation.next.chapter)}')" >Next →</a>`
+				: '<span class="nav-button disabled">Next →</span>'
+		}`
 }
 
-const generateChapterHtml = (
+const generateChapterListHtml = (
+	chapters: Chapter[],
+	currentChapter: Chapter,
+	novelId: string
+): string => {
+	return chapters
+		.map((chapter) => {
+			const isCurrentChapter =
+				chapter.volume === currentChapter.volume &&
+				chapter.chapter === currentChapter.chapter
+			const chapterClass = isCurrentChapter ? 'current-chapter' : ''
+			return `
+				<a 
+					href="/api/novel/novels/${encodeURIComponent(
+						novelId
+					)}/chapters/${encodeURIComponent(
+				chapter.volume
+			)}/${encodeURIComponent(chapter.chapter)}"
+					class="chapter-link ${chapterClass}"
+					onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+						chapter.volume
+					)}', '${encodeURIComponent(chapter.chapter)}')"
+				>
+					${chapter.volume} - Chapter ${chapter.chapter}
+				</a>`
+		})
+		.join('\n')
+}
+
+const generateChapterHtml = async (
 	chapterData: any,
 	navigation: ChapterNavigation,
-	chapters: Chapter[],
-	currentNovelId: string
-): string => {
+	allChapters: Chapter[],
+	novelId: string
+): Promise<string> => {
 	try {
 		// Read the template file
 		const templatePath = path.join(__dirname, 'templates', 'chapter.html')
-		let template = fs.readFileSync(templatePath, 'utf-8')
+		let template = await fs.readFile(templatePath, 'utf-8')
 
 		// Generate navigation buttons HTML
-		const navButtons = `
-			${
-				navigation.prev
-					? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
-							currentNovelId
-					  )}/chapters/${encodeURIComponent(
-							navigation.prev.volume
-					  )}/${encodeURIComponent(
-							navigation.prev.chapter
-					  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
-							navigation.prev.volume
-					  )}', '${encodeURIComponent(
-							navigation.prev.chapter
-					  )}')" >← Previous</a>`
-					: '<span class="nav-button disabled">← Previous</span>'
-			}
-			<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
-				currentNovelId
-			)}/chapters" onclick="showLoading()">Chapter List</a>
-			${
-				navigation.next
-					? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
-							currentNovelId
-					  )}/chapters/${encodeURIComponent(
-							navigation.next.volume
-					  )}/${encodeURIComponent(
-							navigation.next.chapter
-					  )}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
-							navigation.next.volume
-					  )}', '${encodeURIComponent(navigation.next.chapter)}')" >Next →</a>`
-					: '<span class="nav-button disabled">Next →</span>'
-			}`
+		const navButtons = generateNavigationButtons(navigation, novelId)
 
-		// Replace template variables
+		// Generate chapter list HTML
+		const chapterListHtml = generateChapterListHtml(
+			allChapters,
+			navigation.current,
+			novelId
+		)
+
+		// Replace placeholders in template
 		template = template
 			.replace(/{{novel_title}}/g, chapterData.novel_title || '')
-			.replace(/{{chapter_title}}/g, chapterData.title)
-			.replace(/{{volume}}/g, navigation.current.volume)
-			.replace(/{{chapter_body}}/g, chapterData.body)
+			.replace(/{{chapter_title}}/g, `Chapter ${chapterData.chapter || ''}`)
+			.replace(/{{volume}}/g, navigation.current.volume || '')
+			.replace(/{{chapter_body}}/g, chapterData.body || '')
 			.replace(/{{navigation_buttons}}/g, navButtons)
-			.replace(/{{novel_id}}/g, currentNovelId)
-			.replace(/{{current_volume}}/g, navigation.current.volume)
-			.replace(/{{current_chapter}}/g, navigation.current.chapter)
+			.replace(/{{chapter_list}}/g, chapterListHtml)
+			.replace(/{{novel_id}}/g, novelId)
+			.replace(/{{current_volume}}/g, navigation.current.volume || '')
+			.replace(/{{current_chapter}}/g, navigation.current.chapter || '')
 			.replace(/{{prev_volume}}/g, navigation.prev?.volume || '')
 			.replace(/{{prev_chapter}}/g, navigation.prev?.chapter || '')
 			.replace(/{{next_volume}}/g, navigation.next?.volume || '')
@@ -380,7 +170,185 @@ export const listChapters = async (
 	try {
 		const { novelId } = req.params
 		const { title, chapters } = await getChapters(novelId)
-		const html = generateChapterListHtml(title, chapters, novelId)
+
+		// Group chapters by volume
+		const volumeGroups = chapters.reduce<Record<string, Chapter[]>>(
+			(acc, chapter) => {
+				if (!acc[chapter.volume]) {
+					acc[chapter.volume] = []
+				}
+				acc[chapter.volume].push(chapter)
+				return acc
+			},
+			{}
+		)
+
+		const html = `
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>${title} - Chapters</title>
+				<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+				<style>
+					.chapter-grid {
+						display: grid;
+						grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+						gap: 1rem;
+						padding: 1rem;
+					}
+					.chapter-item {
+						background-color: white;
+						padding: 1rem;
+						border-radius: 0.5rem;
+						box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+						transition: transform 0.2s;
+						cursor: pointer;
+					}
+					.chapter-item:hover {
+						transform: translateY(-2px);
+					}
+					.chapter-item.last-read {
+						background-color: #93c5fd;
+					}
+					html.dark .chapter-item.last-read {
+						background-color: #1e40af;
+					}
+					.volume-title {
+						font-size: 1.5rem;
+						font-weight: 600;
+						margin: 2rem 0 1rem;
+						padding-bottom: 0.5rem;
+						border-bottom: 2px solid #e5e7eb;
+					}
+					.loading {
+						display: none;
+						position: fixed;
+						top: 0;
+						left: 0;
+						width: 100%;
+						height: 100%;
+						background: rgba(0, 0, 0, 0.7);
+						z-index: 1000;
+						justify-content: center;
+						align-items: center;
+					}
+					.loading.active {
+						display: flex;
+					}
+					.spinner {
+						width: 50px;
+						height: 50px;
+						border: 5px solid #f3f3f3;
+						border-top: 5px solid #3b82f6;
+						border-radius: 50%;
+						animation: spin 1s linear infinite;
+					}
+					@keyframes spin {
+						0% { transform: rotate(0deg); }
+						100% { transform: rotate(360deg); }
+					}
+					.back-button {
+						display: inline-block;
+						color: #3b82f6;
+						text-decoration: none;
+						padding: 0.5rem 1rem;
+						margin-bottom: 1rem;
+						border-radius: 0.5rem;
+						transition: all 0.2s;
+						font-size: 1.5rem;
+					}
+					.back-button:hover {
+						background: #e5e7eb;
+					}
+					html.dark body { background-color: #1a1a1a; color: #ffffff; }
+					html.dark .chapter-item { background-color: #2d2d2d; }
+					html.dark .text-gray-600 { color: #d1d1d1; }
+					html.dark .volume-title { border-bottom-color: #4b5563; }
+					html.dark .back-button { color: #60a5fa; }
+					html.dark .back-button:hover { background: #374151; }
+				</style>
+			</head>
+			<body class="bg-gray-100">
+				<div id="loading" class="loading">
+					<div class="spinner"></div>
+				</div>
+
+				<div class="container mx-auto px-4 py-8">
+					<a href="/" class="back-button" onclick="showLoading()">← Back to Library</a>
+					<h1 class="text-3xl font-bold mb-8 text-center">${title}</h1>
+					${Object.entries(volumeGroups)
+						.sort(([volA], [volB]) => volA.localeCompare(volB))
+						.map(
+							([volume, chapters]) => `
+						<div>
+							<h2 class="volume-title">${volume}</h2>
+							<div class="chapter-grid">
+								${chapters
+									.sort((a, b) => parseInt(a.chapter) - parseInt(b.chapter))
+									.map(
+										(chapter) => `
+									<div class="chapter-item" data-volume="${chapter.volume}" data-chapter="${
+											chapter.chapter
+										}" onclick="openChapter('${encodeURIComponent(
+											novelId
+										)}', '${encodeURIComponent(
+											chapter.volume
+										)}', '${encodeURIComponent(chapter.chapter)}')">
+										<h3 class="font-semibold">Chapter ${chapter.chapter}</h3>
+									</div>
+								`
+									)
+									.join('')}
+							</div>
+						</div>
+					`
+						)
+						.join('')}
+				</div>
+
+				<script>
+					// Check for dark mode preference
+					if (localStorage.getItem('darkMode') === 'true') {
+						document.documentElement.classList.add('dark');
+					}
+
+					function showLoading() {
+						document.getElementById('loading').classList.add('active');
+					}
+
+					function openChapter(novelId, volume, chapter) {
+						showLoading();
+						// Save the last opened chapter
+						localStorage.setItem(\`lastChapter_\${novelId}\`, chapter);
+						localStorage.setItem(\`lastVolume_\${novelId}\`, volume);
+						
+						// Navigate to the chapter
+						window.location.href = \`/api/novel/novels/\${novelId}/chapters/\${volume}/\${chapter}\`;
+					}
+
+					// Highlight the last opened chapter if any
+					document.addEventListener('DOMContentLoaded', () => {
+						const novelId = '${novelId}';
+						const lastChapter = localStorage.getItem(\`lastChapter_\${novelId}\`);
+						const lastVolume = localStorage.getItem(\`lastVolume_\${novelId}\`);
+						
+						if (lastChapter && lastVolume) {
+							const chapterItems = document.querySelectorAll('.chapter-item');
+							chapterItems.forEach(item => {
+								if (item.dataset.chapter === lastChapter && 
+									item.dataset.volume === lastVolume) {
+									item.classList.add('last-read');
+									item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+								}
+							});
+						}
+					});
+				</script>
+			</body>
+			</html>
+		`
 		res.send(html)
 	} catch (error) {
 		res.status(500).send('Error loading chapters')
@@ -405,8 +373,9 @@ export const readChapter = async (
 		res.setHeader('Expires', '0')
 		res.setHeader('Content-Type', 'text/html; charset=utf-8')
 
-		// Use global state for AI preference
-		const useAI = globalState.aiRewrite
+		// Get current AI settings
+		const aiSettings = await getAISettings()
+		const useAI = aiSettings.enabled
 		console.log('Reading chapter with settings:', {
 			useAI,
 			compare,
@@ -420,13 +389,49 @@ export const readChapter = async (
 			volume,
 			chapter,
 			useAI,
-			compare // Pass the compare parameter to getChapterContent
+			compare
 		)
 		if (!chapterData) {
 			console.error('No chapter data returned')
 			throw new Error('Failed to get chapter content')
 		}
-		console.log('Chapter data retrieved successfully')
+
+		// Clean up chapter content
+		if (chapterData.body) {
+			chapterData.body = chapterData.body
+				.replace(/<h[1-6]>.*?<\/h[1-6]>\s*/gi, '') // Remove h1-h6 tags
+				.replace(/<p>Chapter\s+\d+[:\s].*?<\/p>\s*/gi, '') // Remove chapter title paragraph
+				.replace(
+					/<p>[\s\n]*(?:Translator|TL|Translation|Translated by)[^<]*<\/p>\s*/gi,
+					''
+				) // Remove translator lines
+				.replace(
+					/<p>[\s\n]*(?:Editor|ED|Edited|Edited by|Editor:|ED:)[^<]*<\/p>\s*/gi,
+					''
+				) // Remove editor lines
+				.replace(/<p>[\s\n]*(?:PR|Proofread|Proofreader)[^<]*<\/p>\s*/gi, '') // Remove proofreader lines
+				.replace(/<p>[\s\n]*(?:QC|Quality Check)[^<]*<\/p>\s*/gi, '') // Remove QC lines
+				.replace(/<p>[\s\n]*(?:Note|N\/A|TN)[^<]*<\/p>\s*/gi, '') // Remove note lines
+				.replace(/<p>[\s\n]*(?:Raw|Source)[^<]*<\/p>\s*/gi, '') // Remove source lines
+				.replace(/<p>\s*\*+\s*<\/p>\s*/gi, '') // Remove divider lines
+				.replace(/<p>\s*-+\s*<\/p>\s*/gi, '') // Remove dash dividers
+				.replace(/(<p>\s*<\/p>\s*){2,}/gi, '<p></p>') // Collapse multiple empty paragraphs
+				// Additional cleanup for any remaining editor/translator lines
+				.replace(
+					/<p>[^<]*(?:Editor|ED|Edited by|Translator|TL):.*?<\/p>\s*/gi,
+					''
+				)
+				.replace(
+					/<p>[^<]*(?:Editor|ED|Edited by|Translator|TL)\s*[:-].*?<\/p>\s*/gi,
+					''
+				)
+				// Handle editor lines with strong tags
+				.replace(
+					/<p><strong>(?:Editor|ED|Edited by|Translator|TL):?<\/strong>.*?<\/p>\s*/gi,
+					''
+				)
+		}
+		console.log('Chapter data cleaned and processed')
 
 		const { chapters } = await getChapters(novelId)
 		console.log('Got chapters list, total chapters:', chapters.length)
@@ -455,8 +460,11 @@ export const readChapter = async (
 		console.log('Navigation data prepared')
 
 		// Generate and return HTML for reading
-		const html = generateChapterHtml(
-			chapterData,
+		const html = await generateChapterHtml(
+			{
+				...chapterData,
+				chapter: chapter, // Add chapter number for title
+			},
 			navigation,
 			allChapters,
 			novelId
@@ -466,21 +474,15 @@ export const readChapter = async (
 		// Send the response immediately
 		res.send(html)
 		console.log('Response sent successfully')
-
-		// Start preloading next chapter's AI content asynchronously if AI is enabled
-		if (useAI && navigation.next) {
-			console.log('Starting async preload of next chapter...')
-			preloadAIContent(
-				novelId,
-				navigation.next.volume,
-				navigation.next.chapter
-			).catch((error: any) => {
-				console.error('Background preload of next chapter failed:', error)
-			})
-		}
-	} catch (error) {
-		console.error('Error reading chapter:', error)
-		res.status(500).send('Error loading chapter')
+	} catch (error: any) {
+		console.error('Error in readChapter:', error)
+		res
+			.status(500)
+			.send(
+				`<html><body><h1>Error</h1><p>${
+					error.message || 'Unknown error'
+				}</p></body></html>`
+			)
 	}
 }
 
@@ -491,58 +493,6 @@ export const listNovels = async (req: Request, res: Response) => {
 	} catch (error) {
 		console.error('Error listing novels:', error)
 		res.status(500).json({ error: 'Failed to list novels' })
-	}
-}
-
-export const getAIRewriteSettings = async (req: Request, res: Response) => {
-	try {
-		console.log('Getting AI settings:', {
-			enabled: globalState.aiRewrite,
-			prompt: globalState.aiPrompt,
-		})
-		res.json({
-			enabled: globalState.aiRewrite,
-			prompt: globalState.aiPrompt,
-		})
-	} catch (error) {
-		console.error('Error getting AI settings:', error)
-		res.status(500).json({ error: 'Failed to get AI settings' })
-	}
-}
-
-export const setAIRewriteSettings = async (
-	req: Request,
-	res: Response
-): Promise<void> => {
-	try {
-		const { enabled, prompt } = req.body
-		console.log('Setting AI settings:', { enabled, prompt })
-
-		if (typeof enabled !== 'boolean') {
-			console.error('Invalid enabled value:', enabled)
-			res.status(400).json({ error: 'Invalid enabled value' })
-			return
-		}
-
-		// Set the state
-		globalState.aiRewrite = enabled
-		if (prompt !== undefined) {
-			globalState.aiPrompt = prompt
-		}
-
-		// Verify the state was set
-		console.log('AI settings updated:', {
-			enabled: globalState.aiRewrite,
-			prompt: globalState.aiPrompt,
-		})
-
-		res.json({
-			enabled: globalState.aiRewrite,
-			prompt: globalState.aiPrompt,
-		})
-	} catch (error) {
-		console.error('Error setting AI settings:', error)
-		res.status(500).json({ error: 'Failed to save AI settings' })
 	}
 }
 
@@ -572,34 +522,16 @@ export const regenerateChapter = async (
 	res: Response
 ): Promise<void> => {
 	try {
-		console.log('Regenerate endpoint hit with params:', req.params)
 		const { novelId, volume, chapter } = req.params
-		console.log('Starting chapter regeneration:', { novelId, volume, chapter })
 
-		// Get the chapter content
-		let chapterData
 		try {
-			console.log('Attempting to get chapter content...')
-			chapterData = await getChapterContent(
-				novelId,
-				volume,
-				chapter,
-				true,
-				false
-			)
-			console.log('Successfully retrieved original chapter content')
-		} catch (error: any) {
-			console.error('Error getting original chapter content:', error)
-			res.status(500).json({
-				error: 'Failed to get original chapter content',
-				details: error.message || 'Unknown error',
-			})
-			return
-		}
+			// Get current AI settings
+			const aiSettings = await getAISettings()
+			if (!aiSettings.enabled) {
+				throw new Error('AI rewrite is not enabled')
+			}
 
-		// Delete the existing AI file to force regeneration
-		try {
-			console.log('Getting novel path...')
+			// Get the novel path
 			const novelPath = await getNovelPath(novelId)
 			const aiFilePath = path.join(
 				novelPath,
@@ -607,32 +539,22 @@ export const regenerateChapter = async (
 				volume,
 				`${chapter}-ai.json`
 			)
-			console.log('AI file path:', aiFilePath)
 
+			// Delete existing AI file if it exists
 			try {
-				console.log('Attempting to delete existing AI file...')
-				await fs.promises.unlink(aiFilePath)
-				console.log('Successfully deleted existing AI file')
-			} catch (error: any) {
-				// Ignore if file doesn't exist
-				console.log('No existing AI file to delete or error:', error.message)
+				await fs.unlink(aiFilePath)
+				console.log('Deleted existing AI file')
+			} catch (error) {
+				console.log('No existing AI file to delete')
 			}
 
-			// Regenerate the AI content
-			console.log('Starting AI content regeneration...')
-			const regeneratedData = await getChapterContent(
-				novelId,
-				volume,
-				chapter,
-				true,
-				false
-			)
+			// Generate new AI content
+			await preloadAIContent(novelId, volume, chapter)
+			console.log('Generated new AI content')
 
-			if (!regeneratedData) {
-				console.error('No data returned from regeneration')
-				throw new Error('Failed to generate new AI content')
-			}
-			console.log('Successfully generated new AI content')
+			// Read the regenerated content
+			const aiContent = await fs.readFile(aiFilePath, 'utf-8')
+			const regeneratedData = JSON.parse(aiContent)
 
 			// Preload the next chapter
 			try {
@@ -654,7 +576,6 @@ export const regenerateChapter = async (
 					console.log('No next chapter to preload')
 				}
 			} catch (error: any) {
-				// Don't fail the whole operation if preloading next chapter fails
 				console.error('Error preloading next chapter:', error)
 			}
 
@@ -674,4 +595,12 @@ export const regenerateChapter = async (
 			details: error.message || 'Unknown error',
 		})
 	}
+}
+
+// Helper function to get novel metadata
+const getNovelMetadata = async (novelId: string): Promise<any> => {
+	const novelPath = await getNovelPath(novelId)
+	const metaPath = path.join(novelPath, 'meta.json')
+	const metaContent = await fs.readFile(metaPath, 'utf-8')
+	return JSON.parse(metaContent)
 }
