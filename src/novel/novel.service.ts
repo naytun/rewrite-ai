@@ -304,33 +304,27 @@ export const readChapter = async (
 
 			// Validate AI data structure
 			if (!aiData || !aiData.body || !aiData.isAIGenerated) {
-				console.log('Invalid AI data format, will generate new content')
+				console.log('Invalid AI data format')
 				aiData = null
 			}
 		} catch (error: any) {
-			console.log(
-				'No AI content found, will generate new content:',
-				error.message
-			)
+			console.log('No AI content found:', error.message)
 		}
 
-		// If no valid AI content exists, generate it
+		// If no valid AI content exists, return original content with a flag
 		if (!aiData) {
-			console.log('Generating new AI content...')
-			try {
-				await preloadAIContent(novelId, volume, chapter)
-				// Read the newly generated content
-				const aiContent = await fs.readFile(aiFilePath, 'utf-8')
-				aiData = JSON.parse(aiContent)
-			} catch (error) {
-				console.error('Failed to generate AI content:', error)
-				// If generation fails, return original content
-				return chapterData
+			console.log(
+				'No valid AI content found, returning original with noAIContent flag'
+			)
+			return {
+				...chapterData,
+				noAIContent: true,
 			}
 		}
 
 		// At this point we should have valid AI content
 		if (aiData && aiData.body) {
+			console.log('Valid AI content found, using AI content')
 			if (compare) {
 				// Split both contents into paragraphs
 				const splitParagraphs = (html: string): string[] => {
