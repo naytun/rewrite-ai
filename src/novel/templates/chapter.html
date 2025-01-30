@@ -529,6 +529,14 @@
 				const isEnabled = aiToggle.checked
 
 				try {
+					// First get the current settings to preserve the prompt
+					const settingsResponse = await fetch('/api/settings/ai-rewrite', {
+						headers: {
+							Accept: 'application/json',
+						},
+					})
+					const currentSettings = await settingsResponse.json()
+
 					// First check if AI content exists for this chapter
 					const novelId = '{{novel_id}}'
 					const volume = '{{current_volume}}'
@@ -538,14 +546,17 @@
 					)
 					const { exists } = await aiContentResponse.json()
 
-					// Send toggle state to backend
+					// Send toggle state to backend while preserving the prompt
 					const response = await fetch('/api/settings/ai-rewrite', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 							Accept: 'application/json',
 						},
-						body: JSON.stringify({ enabled: isEnabled }),
+						body: JSON.stringify({
+							enabled: isEnabled,
+							prompt: currentSettings.prompt, // Preserve the existing prompt
+						}),
 					})
 
 					if (!response.ok) {
