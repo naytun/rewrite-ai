@@ -861,6 +861,9 @@
 					) {
 						chatDialog.classList.remove('active')
 						chatInput.value = ''
+					} else {
+						// If clicking inside chat dialog, focus the input
+						chatInput.focus()
 					}
 				}
 			})
@@ -868,12 +871,21 @@
 			chatButton.addEventListener('click', (e) => {
 				e.stopPropagation() // Prevent the document click handler from firing
 				chatDialog.classList.add('active')
-				chatInput.focus()
+				// Small delay to ensure input is ready
+				setTimeout(() => chatInput.focus(), 0)
 			})
 
 			chatClose.addEventListener('click', () => {
 				chatDialog.classList.remove('active')
 				chatInput.value = ''
+			})
+
+			// Ensure input stays focused when clicking anywhere in the chat dialog
+			chatDialog.addEventListener('click', (e) => {
+				e.stopPropagation()
+				if (!e.target.matches('.chat-input')) {
+					chatInput.focus()
+				}
 			})
 
 			async function sendMessage() {
