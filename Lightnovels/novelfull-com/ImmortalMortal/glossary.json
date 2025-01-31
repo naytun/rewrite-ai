@@ -1,105 +1,785 @@
 {
   "terms": [
     {
+      "term": "An Jing Academy",
+      "description": "An educational institution where students learn about mana cultivation and other subjects. It is where Lou Yueshuang studies.",
+      "type": "location"
+    },
+    {
+      "term": "Bai Ye",
+      "description": "An Immortal Emperor who was previously an enemy of Mo Wuji but later sought to ally with him against the Great Sword Path. He is known for his skills in the Dao of Prophecy.",
+      "type": "person"
+    },
+    {
+      "term": "Billion Years Immortal Wood Marrow",
+      "description": "A peak grade item that is extremely valuable and can be used for various purposes in cultivation. It is found in the Yunxian Immortal Valley.",
+      "type": "item"
+    },
+    {
+      "term": "Black Transformation Pill",
+      "description": "A pill that blackens the spirit roots and primordial spirit of a cultivator, rendering them unable to cultivate. It is used by captors to control their prisoners and force them into labor.",
+      "type": "item"
+    },
+    {
+      "term": "Cang Wenbin",
+      "description": "An outer disciple of the Fire Sword Summit, known for his arrogance and bullying behavior. He previously attempted to intimidate Mo Wuji and was involved in the incident that led to Fei Bingzhu's troubles.",
+      "type": "person"
+    },
+    {
+      "term": "Cape of Peace",
+      "description": "A location where fighting is prohibited, allowing cultivators to rest and recuperate. It is a neutral ground for many factions.",
+      "type": "location"
+    },
+    {
+      "term": "Channel Opening Stage Level 4",
+      "description": "A cultivation stage that Mo Wuji has reached, giving him confidence in his pill refining abilities.",
+      "type": "other"
+    },
+    {
+      "term": "Colourless Leeches",
+      "description": "A type of demonic bug found in the Mining Area of Death. They are known for their ability to invade and woodify a cultivator's spirit channels.",
+      "type": "other"
+    },
+    {
+      "term": "Cosmos Wall",
+      "description": "A significant phenomenon in the story that opens periodically, allowing cultivators to access vast resources and treasures. It is a source of conflict and competition among various races.",
+      "type": "other"
+    },
+    {
+      "term": "Dao Discussion Platform",
+      "description": "A platform where cultivators can settle disputes through combat. The victor claims the spoils of the loser, making it a place of high stakes and intense battles.",
+      "type": "location"
+    },
+    {
+      "term": "Dao Lord Wu You",
+      "description": "The former Dao Lord of the Half Immortal Domain, known for his strength and ability to defeat a Heavenly Immortal. His legacy and actions have a significant impact on the current events in the story.",
+      "type": "person"
+    },
+    {
+      "term": "Dao Monarch Darkness",
+      "description": "An alias for Ku Xinren, one of the three Rogue Sages. He is known for his cultivation of the Laws of Darkness and his connection to the Time Plate.",
+      "type": "person"
+    },
+    {
+      "term": "Di Baisheng",
+      "description": "Another Tier 5 Pill King from the Pill Dao Immortal Alliance who accompanies Geng Ji. He is also involved in the confrontation with Mo Wuji.",
+      "type": "person"
+    },
+    {
+      "term": "Draining Immortal King Pill",
+      "description": "A high-grade pill that increases the chances of a Grand Luo Immortal advancing to the Immortal King Stage. It is highly sought after and valuable in the cultivation world.",
+      "type": "item"
+    },
+    {
+      "term": "Earthly Immortal Stage",
+      "description": "A cultivation level that Mo Wuji has reached, indicating a significant increase in power and abilities. It is a crucial stage for cultivators aiming to ascend to the Immortal Realm.",
+      "type": "other"
+    },
+    {
+      "term": "Emperor Dao Fruit",
+      "description": "A rare and valuable item that can help cultivators advance their cultivation. It is highly sought after and is considered a treasure.",
+      "type": "item"
+    },
+    {
+      "term": "Energy Condensing Pill",
+      "description": "A Tier 1 Mortal Pill that helps cultivators at the Channel Opening Stage increase their cultivation speed. It is one of the pills that Mo Wuji refines.",
+      "type": "item"
+    },
+    {
+      "term": "Ephemeral Life Pill",
+      "description": "A Tier 2 Mortal Pill that can recover life energy and prevent it from dispersing. It is crucial for Yan Qianyin's survival after her encounter with the Life Sucking Beast.",
+      "type": "item"
+    },
+    {
+      "term": "Fallen Tune Sword",
+      "description": "A legendary sword that was once owned by Mo Luoqu, a founder of the Formless Blade Sect. Its two halves are located at the Hanging Sword Cliff and the Formless Blade Mountain.",
+      "type": "item"
+    },
+    {
+      "term": "Falling Dust Immortal Fruit",
+      "description": "A rare Tier 2 immortal fruit that can help Heavenly Immortal Stage cultivators advance to the Golden Immortal Stage. It is highly sought after in the auction.",
+      "type": "item"
+    },
+    {
+      "term": "Fei Bingzhu",
+      "description": "A service disciple who works in the Spiritual Herbs Warehouse and is a friend of Mo Wuji. He provides valuable information and assistance to Mo Wuji throughout the story.",
+      "type": "person"
+    },
+    {
+      "term": "First Cultivator Merchant House",
+      "description": "An organization that operates within the Corner of Yong Ying, known for its trade and auctions. It plays a significant role in the story as it interacts with Mo Wuji and his companions.",
+      "type": "organization"
+    },
+    {
+      "term": "Five Elements Desolate Domain",
+      "description": "A location where a competition is to be held, which Yan Qianyin plans to attend.",
+      "type": "location"
+    },
+    {
+      "term": "Formless Blade Mountain",
+      "description": "A significant location within the Formless Blade Sect that has not been opened for a thousand years. It is believed to contain valuable resources and treasures for pill refiners.",
+      "type": "location"
+    },
+    {
+      "term": "Formless Blade Sect",
+      "description": "A sect in the story that Mo Wuji becomes affiliated with as a guest pill refiner. It is known for its rich history and the opening of the Formless Blade Mountain.",
+      "type": "organization"
+    },
+    {
+      "term": "Four Marks of Tian Ji",
+      "description": "A set of four unique items that are essential for accessing the fate of Tian Ji. Each mark corresponds to a different aspect of the fate extraction process and is crucial for any cultivator seeking to harness the power of fate.",
+      "type": "item"
+    },
+    {
+      "term": "Gai Ao",
+      "description": "The Heavenly Emperor of Six Paths Immortal Domain, known for his strength and authority. He is protective of his daughter and has a vested interest in Mo Wuji.",
+      "type": "person"
+    },
+    {
+      "term": "Gai Feilan",
+      "description": "The daughter of Gai Ao, she is a talented cultivator and has a keen interest in Mo Wuji. She is one of the few characters who sees Mo Wuji's potential.",
+      "type": "person"
+    },
+    {
+      "term": "Geng Ji",
+      "description": "A Tier 5 Pill King from the Pill Dao Immortal Alliance. He attempts to pressure Mo Wuji into giving up his jade tokens but is ultimately thwarted.",
+      "type": "person"
+    },
+    {
+      "term": "God Burial Cave",
+      "description": "A significant location in the story, the God Burial Cave is known for its connection to powerful treasures and the potential for great danger. It serves as a backdrop for various events and character interactions.",
+      "type": "location"
+    },
+    {
+      "term": "God Domain",
+      "description": "A vast realm where powerful cultivators reside, characterized by the presence of God Kings and the potential for immense cultivation resources. It is a place where the laws of Heaven and Earth are more complete compared to the Immortal World.",
+      "type": "location"
+    },
+    {
+      "term": "God Domain Nest",
+      "description": "A special area within the God Domain that incubates treasures and resources for cultivators. It is known for its dangers and the potential for great rewards, but also for the risks involved in seeking those rewards.",
+      "type": "location"
+    },
+    {
+      "term": "God King",
+      "description": "The highest rank of cultivators in the God Domain, above the Heavenly God Stage. God Kings are powerful beings who have reached the pinnacle of cultivation and command great respect.",
+      "type": "person"
+    },
+    {
+      "term": "God Lattice",
+      "description": "A form of cultivation resource that is essential for advancing to higher stages of cultivation in the God Domain. It is associated with the spiritual roots of cultivators and is crucial for their growth.",
+      "type": "item"
+    },
+    {
+      "term": "Gods Tower",
+      "description": "A legendary tower that opens periodically, containing treasures and opportunities for cultivators. It is a central location for many events in the story.",
+      "type": "location"
+    },
+    {
+      "term": "Gold Forming Pill",
+      "description": "A Tier 4 pill that allows a cultivator to advance from the Transcending Mortality Stage to the Yuan Dan Stage. It is highly sought after for its rarity and effectiveness.",
+      "type": "item"
+    },
+    {
+      "term": "Gold Horn Violet Dragon",
+      "description": "A rare and powerful dragon species known for its unique bloodline and abilities. The Gold Horn Violet Dragon is capable of immense power and is revered in the cultivation world.",
+      "type": "person"
+    },
+    {
+      "term": "Golden Fetal",
+      "description": "Another Tier 3 spiritual herb required for the Spirit Strengthening Pill. Mo Wuji needs to acquire this herb to successfully concoct the pill.",
+      "type": "item"
+    },
+    {
+      "term": "Golden Immortal",
+      "description": "A high level of cultivation that surpasses the Heavenly Immortal Stage. Golden Immortals are powerful beings that play a significant role in the power dynamics of the Immortal World.",
+      "type": "other"
+    },
+    {
+      "term": "Grand Alchemy Competition",
+      "description": "A prestigious competition held in Yong Ying Immortal Domain where pill refiners compete for slots to enter the Yunxian Immortal Valley. It is a central event in the story.",
+      "type": "other"
+    },
+    {
+      "term": "Grand Emperor Lun Cai",
+      "description": "An Immortal Emperor known for his tyrannical behavior and strong temper. He is a powerful figure in the Immortal World and is feared by many.",
+      "type": "person"
+    },
+    {
+      "term": "Grand Zhi Immortal",
+      "description": "A rank of cultivation that is above the Grand Luo Immortal stage but below the Immortal King stage. It represents a significant level of power and ability.",
+      "type": "other"
+    },
+    {
+      "term": "Granny Linglong",
+      "description": "A powerful pill refiner from the Heaven Seeking Palace, known for her skills and knowledge in alchemy. She has a close relationship with Mo Wuji and has helped him in the past.",
+      "type": "person"
+    },
+    {
+      "term": "Great Kun Buddhist Lamp",
+      "description": "A core treasure of the Meditation Nunnery, which is sought after by various factions, including the Great Kun Buddhist Sect. It is believed to have significant power and importance in the cultivation world.",
+      "type": "item"
+    },
+    {
+      "term": "Great Sage",
+      "description": "A title given to powerful beings who have reached the Sage Stage. They are considered to be among the most formidable entities in the universe.",
+      "type": "other"
+    },
+    {
+      "term": "Great Sword Path",
+      "description": "A powerful sect in the Immortal World known for its sword cultivation. The Great Sword Path has a reputation for being ruthless and has clashed with Mo Wuji and his allies.",
+      "type": "organization"
+    },
+    {
+      "term": "Half Immortal Domain",
+      "description": "A realm where cultivators reside, known for its unique laws and the presence of acute wood energy. It serves as a prison for many cultivators and is the setting for much of the story.",
+      "type": "location"
+    },
+    {
+      "term": "Half Moon Halberd Blade",
+      "description": "A powerful weapon that Mo Wuji acquires during the auction. It is a fragment of a Grade 9 immortal equipment, which Mo Wuji intends to refine and use in battle.",
+      "type": "item"
+    },
+    {
+      "term": "Half Moon Weighted Halberd",
+      "description": "A magic weapon wielded by Mo Wuji, known for its formidable power. It is used in combat and is a symbol of Mo Wuji's strength as a cultivator.",
+      "type": "item"
+    },
+    {
+      "term": "Hall of Affairs",
+      "description": "A location within the sect where spiritual herbs and resources are managed and exchanged. Mo Wuji intends to visit this hall to procure the necessary herbs for his pill refinement.",
+      "type": "location"
+    },
+    {
+      "term": "Han Long",
+      "description": "A female cultivator from the Jade Lady Sect who seeks to advance to the Immortal King Stage. She is grateful to Mo Wuji for helping her and is willing to assist him in return.",
+      "type": "person"
+    },
+    {
+      "term": "Han Qingru",
+      "description": "A supporting character and the manor lord of the Hundred Flowers Manor, Han Qingru is a talented cultivator who has condensed her immortal lattice. She has a close relationship with Mo Wuji and is determined to help him.",
+      "type": "person"
+    },
+    {
+      "term": "Hanging Sword Cliff",
+      "description": "A cliff within the Formless Blade Sect where the other half of the Fallen Tune Sword is located. It is known for its dangerous gravitational pull and is a place of legend.",
+      "type": "location"
+    },
+    {
+      "term": "Heart Questioning Pill",
+      "description": "A Tier 7 antidote immortal pill that can counteract certain poisons. It is a valuable item for cultivators who may encounter toxic environments.",
+      "type": "item"
+    },
+    {
+      "term": "Heaven Seeking Palace",
+      "description": "A prominent organization in the story that serves as a cultivation holy land. It is known for its powerful disciples and significant influence in the Five Great Empires.",
+      "type": "organization"
+    },
+    {
+      "term": "Heaven's Beyond Corridor",
+      "description": "A significant location in the story, the Heaven's Beyond Corridor serves as a passageway where various races converge to seek cultivation resources. It is known for its dangers and the constant battles that occur within.",
+      "type": "location"
+    },
+    {
+      "term": "Heavenly Immortal",
+      "description": "A level of cultivation that is below Golden Immortal. It is a significant stage for many characters in the story, including Mo Wuji and his companions.",
+      "type": "other"
+    },
+    {
+      "term": "Heavenly Mortal Sect",
+      "description": "A sect in the God Domain that has recently been rebuilt after suffering significant losses. It is characterized by its emphasis on unity and the potential for growth, especially with the emergence of a God King.",
+      "type": "organization"
+    },
+    {
+      "term": "Heavenly Wood Cane",
+      "description": "A powerful magic treasure belonging to Meng Tianyu, capable of manipulating acute wood energy. It was previously taken by Mo Wuji during their confrontation.",
+      "type": "item"
+    },
+    {
+      "term": "Heavenscraping Mountain",
+      "description": "A powerful sect in the Immortal World that is known for its strength and influence. It is one of the factions that Mo Wuji must contend with.",
+      "type": "organization"
+    },
+    {
+      "term": "Hidden Dragon Pool",
+      "description": "A secret location where dragon race geniuses cultivate. It is said to contain a path to the Immortal World and is protected by powerful arrays.",
+      "type": "location"
+    },
+    {
+      "term": "Hundred Channels Leafless Fruit",
+      "description": "A Tier 8 immortal fruit that can be used to concoct the Immortal Channel Nirvana Pill. It is a valuable item that can heal the spirit channels of Immortal Kings.",
+      "type": "item"
+    },
+    {
+      "term": "Icy Soul Grass",
+      "description": "A Tier 3 spiritual herb used in the concoction of the Spirit Strengthening Pill. It is one of the essential ingredients that Mo Wuji needs to gather for his pill refinement.",
+      "type": "item"
+    },
+    {
+      "term": "Immortal Chasm",
+      "description": "A vast and dangerous chasm that separates the Half Immortal Domain from the Immortal Realm. It is filled with various dangers and is a key location in the story.",
+      "type": "location"
+    },
+    {
+      "term": "Immortal King",
+      "description": "A high rank of cultivation in the Immortal World, representing a powerful and respected figure. Immortal Kings have significant influence and abilities.",
+      "type": "other"
+    },
+    {
+      "term": "Immortal Sealing Array",
+      "description": "A powerful array that traps cultivators within it, preventing them from escaping. It is a significant obstacle that Mo Wuji must navigate.",
+      "type": "other"
+    },
+    {
+      "term": "Immortal Seeking Staircase",
+      "description": "A staircase that allows cultivators to ascend to the Immortal World. It is a significant plot point as Mo Wuji and his companions aim to use it to escape to the Immortal World.",
+      "type": "location"
+    },
+    {
+      "term": "Immortal-Traversing Ship",
+      "description": "A battleship forged by Master Pu Zi, designed to traverse the Immortal Chasm and reach the Immortal Realm. It is equipped with various cannons and defensive arrays.",
+      "type": "item"
+    },
+    {
+      "term": "Jia Qi",
+      "description": "A supporting character who works with Mo Wuji and Master Pu Zi. She is knowledgeable about the Half Immortal Domain and has been digging for blackstones.",
+      "type": "person"
+    },
+    {
+      "term": "Jin Yu",
+      "description": "An envoy of the Very High Heavens who oversees the gathering of sect heads and powerful cultivators. He is responsible for maintaining order and discussing important matters within the Immortal World.",
+      "type": "person"
+    },
+    {
+      "term": "Ku Cai",
+      "description": "A disciple of the Heavenly Mortal Sect, Ku Cai possesses dark spiritual roots and is a character who seeks to cultivate and improve her abilities. She is portrayed as someone who is vulnerable yet determined to find her place in the world.",
+      "type": "person"
+    },
+    {
+      "term": "Ku Ya",
+      "description": "A supporting character who is also a cultivator from the Half Immortal Domain. She has a strong connection with Mo Wuji and helps him during their journey.",
+      "type": "person"
+    },
+    {
+      "term": "Kui Fengyun",
+      "description": "The Heavenly Emperor of Yong Ying Immortal Domain, who presides over the Grand Alchemy Competition. He is a powerful figure who aims to promote the status of various immortal cities.",
+      "type": "person"
+    },
+    {
+      "term": "Kun Wu Sword",
+      "description": "A legendary sword that is known for its immense power and ability to cut through almost anything. It is a significant weapon in Mo Wuji's arsenal and plays a crucial role in his journey.",
+      "type": "item"
+    },
+    {
+      "term": "Kun Yun",
+      "description": "A character who is one of the three Rogue Sages and a former ally of Mo Wuji. He possesses a Tao Tie Pot and has a complicated relationship with the other characters in the story.",
+      "type": "person"
+    },
+    {
+      "term": "Lao Cai",
+      "description": "The manager of the He Lian Merchant House in Ying Bian City, Lao Cai is a powerful Golden Immortal who seeks to control the Hundred Flowers Manor and covets Han Qingru.",
+      "type": "person"
+    },
+    {
+      "term": "Leafless Fog Rattan",
+      "description": "A Tier 3 spiritual herb required for the Spirit Strengthening Pill according to the Wordless Pill manual.",
+      "type": "item"
+    },
+    {
+      "term": "Lian Yingxian",
+      "description": "A character who was married to Yu Jingshan's brother. She is a kind-hearted woman who has faced many hardships and is now a late Grand Luo Immortal.",
+      "type": "person"
+    },
+    {
+      "term": "Life Sucking Beast",
+      "description": "A demonic beast known for its ability to drain life force from living beings. It poses a significant threat to cultivators and is a central element in Yan Qianyin's quest.",
+      "type": "other"
+    },
+    {
+      "term": "Little Freedom Flower",
+      "description": "A Tier 3 spiritual herb required for the Spirit Strengthening Pill according to the Wordless Pill manual.",
+      "type": "item"
+    },
+    {
+      "term": "Lord Axe",
+      "description": "A notorious figure in the underground market of the Half Immortal Domain. He is known for his arrogance and has a strong desire for power.",
+      "type": "person"
+    },
+    {
+      "term": "Lost Sky Ruins",
+      "description": "A location in the story that is known for its treasures and dangers. It is a battlefield where cultivators seek to find valuable items, including the Sky Channel Flower.",
+      "type": "location"
+    },
+    {
+      "term": "Lotus Sword Summit",
+      "description": "The location where Mo Wuji is currently situated, which is part of the sect he is associated with. It is significant as it is where he conducts his pill refining activities.",
+      "type": "location"
+    },
+    {
+      "term": "Lou Chuanhe",
+      "description": "A character from Zhen Xing who is a Star Lord and a friend of Mo Wuji. He has been heavily injured by Meng Tianyu and is grateful for Mo Wuji's help.",
+      "type": "person"
+    },
+    {
+      "term": "Lou Si",
+      "description": "A supporting character who has been through hardships in the Heaven's Beyond Corridor. She is a cultivator who has been forced to navigate the dangers of the area and has a connection with Mo Wuji.",
+      "type": "person"
+    },
+    {
+      "term": "Mana Cultivation Hall",
+      "description": "A hall within An Jing Academy where students undergo assessments for mana cultivation. It is the setting for Lou Yueshuang's advanced class assessment.",
+      "type": "location"
+    },
+    {
+      "term": "Master Pu Zi",
+      "description": "A peerless smith in the Half Immortal Domain who has a deep understanding of smithing and array dao. He was involved in the forging of a battleship and is a key ally to Mo Wuji.",
+      "type": "person"
+    },
+    {
+      "term": "Medicine King Summit",
+      "description": "The organization or group that Yan Qianyin is associated with.",
+      "type": "organization"
+    },
+    {
+      "term": "Meng Tianyu",
+      "description": "The head of the Immortal Seeking Union, known for his ruthless tactics and ability to manipulate acute wood energy. He has a personal vendetta against Mo Wuji.",
+      "type": "person"
+    },
+    {
+      "term": "Mifei Pill-Smith Pavilion",
+      "description": "An organization that operates within the Heaven's Beyond City Square, known for selling pills and magic treasures. It has a reputation for being powerful and influential, but has recently faced challenges from Mo Wuji's Mortal Pill House.",
+      "type": "organization"
+    },
+    {
+      "term": "Mining Area of Death",
+      "description": "A dangerous mining area within the Half Immortal Domain, filled with Colourless Leeches and other threats. It is known for its rich deposits of blackstone.",
+      "type": "location"
+    },
+    {
+      "term": "Mirage Mountain",
+      "description": "The number one sect in the Hai Yi Continent, known for its powerful Rogue Immortals and its connection to the Immortal World. It has a reputation for being ruthless and is involved in the blood sacrifice of its disciples.",
+      "type": "organization"
+    },
+    {
       "term": "Mo Wuji",
-      "description": "The protagonist of the story, who is on a journey to cultivate and gain power. He is known for his determination and innovative cultivation techniques.",
+      "description": "The protagonist of the story, Mo Wuji is a talented cultivator who has advanced through various stages of cultivation and is known for his skills in pill refining and array mastery. He is determined to establish his own sect, Ping Fan, and seeks to avenge his friends.",
       "type": "person"
     },
     {
-      "term": "Cen Shuyin",
-      "description": "A cultivator who practices dual-cultivation techniques, including the Typhoon Formula and Wind Escape Technique. She is a close ally of Mo Wuji.",
+      "term": "Mortal Dao",
+      "description": "A unique cultivation path that Mo Wuji follows, focusing on the principles of mortality and the natural world. It allows him to cultivate without the constraints typically faced by other cultivators.",
+      "type": "technique"
+    },
+    {
+      "term": "Ni Ju",
+      "description": "A disciple of Qi Junyi from the Lightning Sect. He is involved in the pursuit of Su Xi and Yuan Yi.",
       "type": "person"
     },
     {
-      "term": "Typhoon Formula",
-      "description": "A powerful cultivation technique that Cen Shuyin practices, which enhances her wind elemental abilities.",
-      "type": "technique"
-    },
-    {
-      "term": "Wind Escape Technique",
-      "description": "A technique that allows the user to move with the wind, leaving no trace. Mo Wuji gains insights into this technique, making it unique to him.",
-      "type": "technique"
-    },
-    {
-      "term": "Escaping Wind",
-      "description": "A wind-type treasure that Mo Wuji uses to gain enlightenment on the Wind Escape Technique. It is a rare and valuable item.",
-      "type": "item"
-    },
-    {
-      "term": "True Lake Stage",
-      "description": "A level in cultivation that Mo Wuji and Cen Shuyin have reached, indicating a significant advancement in their powers.",
+      "term": "Nihility God Stage",
+      "description": "A cultivation stage where cultivators can form the true primordial spirit and use spiritual will.",
       "type": "other"
     },
     {
-      "term": "Thorny Wind Gate",
-      "description": "A dangerous location known for its violent winds and wind-type beasts. It serves as a training ground for Mo Wuji to hone his Wind Escape Technique.",
+      "term": "Pang Jie",
+      "description": "The ancestor of the Heavenly Mortal Sect and a newly ascended God King. Pang Jie is a pivotal figure in the sect's revival and is respected by the disciples for his strength and leadership.",
+      "type": "person"
+    },
+    {
+      "term": "Peace Resthouse",
+      "description": "A place within the Cape of Peace where no fighting is allowed. It serves as a refuge for cultivators and is known for its high fees.",
       "type": "location"
     },
     {
-      "term": "Howling Wind Beasts",
-      "description": "Wind-type beasts that inhabit the Thorny Wind Gate, posing a threat to cultivators like Mo Wuji and Cen Shuyin.",
-      "type": "other"
-    },
-    {
-      "term": "Zhen Mo Continent",
-      "description": "A continent mentioned in the story, known for having rare communication beads forged by Worldly Immortal smiths.",
-      "type": "location"
-    },
-    {
-      "term": "Worldly Immortal",
-      "description": "A high-level cultivator with the ability to forge rare items like communication beads. They possess a deep understanding of the space dao.",
-      "type": "other"
-    },
-    {
-      "term": "Communication Bead",
-      "description": "A rare item used for communication, forged by Worldly Immortal smiths. It is highly sought after in the cultivation world.",
+      "term": "Phecda Clay",
+      "description": "A valuable material that is sought after for its unique properties and potential uses in cultivation. It is considered a supreme treasure of fortune.",
       "type": "item"
     },
     {
-      "term": "Reverse Circulation Technique",
-      "description": "A cultivation method used by Mo Wuji to absorb energy and gain insights into the Wind Dao.",
+      "term": "Pill Dao Immortal Alliance",
+      "description": "An influential organization in the novel that governs pill refiners and their practices. It plays a significant role in the alchemy competition.",
+      "type": "organization"
+    },
+    {
+      "term": "Pill Pagoda",
+      "description": "An organization within the Heaven Seeking Palace that focuses on pill refining. It is known for its high standards and the expertise of its members.",
+      "type": "organization"
+    },
+    {
+      "term": "Ping Fan",
+      "description": "Ping Fan is the sect established by Mo Wuji, aiming to create a place where all beings, regardless of their status, are treated equally. It is characterized by its rich immortal energy and a focus on cultivating both mortals and immortals.",
+      "type": "organization"
+    },
+    {
+      "term": "Pu Qian",
+      "description": "A rogue cultivator and one of Mo Wuji's friends. He is strong and has a good sense of loyalty, willing to fight alongside Mo Wuji.",
+      "type": "person"
+    },
+    {
+      "term": "Qi Junyi",
+      "description": "An elder of the Lightning Sect and a powerful Immortal Reverent. He is involved in the conflict with Mo Wuji and is known for his ruthless nature.",
+      "type": "person"
+    },
+    {
+      "term": "Qi Shu City",
+      "description": "The provincial capital of Kai Nam Province, Qi Shu City is a medium-sized city that serves as a central location for various events, including the Three Star Exam. It is known for its rich history and cultural significance.",
+      "type": "location"
+    },
+    {
+      "term": "Red Karmic Fire Lotus",
+      "description": "A legendary treasure known for its immense power and ability to enhance cultivation. It is highly sought after by cultivators and is said to be capable of aiding in significant breakthroughs.",
+      "type": "item"
+    },
+    {
+      "term": "Revolving Star Passage Technique",
+      "description": "A technique that Mo Wuji discovers hidden within the Fallen Tune Sword. It is a cultivation technique that allows for the manipulation of spiritual energy.",
       "type": "technique"
     },
     {
-      "term": "Elemental Energy Lake",
-      "description": "A reservoir of elemental energy within a cultivator's body, indicating their power level. Cen Shuyin has both wind and ice elemental energy lakes.",
+      "term": "Round-whisked Wind Fruit",
+      "description": "A Tier 3 spiritual herb collected by Mo Wuji from the Formless Blade Mountain.",
+      "type": "item"
+    },
+    {
+      "term": "Sage Dao Talisman",
+      "description": "A powerful talisman belonging to the Talisman Race, the Sage Dao Talisman is said to contain numerous peak-grade talismans and is crucial for the survival of the Talisman Race. It is a key item that Mo Wuji seeks to refine.",
+      "type": "item"
+    },
+    {
+      "term": "Sage Nun",
+      "description": "A powerful figure in the story, the Sage Nun is one of the 8 Sages and is known for her wisdom and strength. She has a significant influence over the events in the God World.",
+      "type": "person"
+    },
+    {
+      "term": "Sang Yiping",
+      "description": "Mo Wuji's acquaintance and a member of the Tian Ji Sect. She is determined to help Mo Wuji in rebuilding the sect.",
+      "type": "person"
+    },
+    {
+      "term": "Scholar's Heart",
+      "description": "A unique fire technique used by Mo Wuji, capable of burning through various materials and providing protection against Colourless Leeches. It is a key part of his combat abilities.",
+      "type": "technique"
+    },
+    {
+      "term": "Seaside Trade Union",
+      "description": "A powerful organization in the Immortal World that engages in trade and commerce. It is known for its ruthless tactics and has a reputation for imprisoning those who offend it.",
+      "type": "organization"
+    },
+    {
+      "term": "Seven Styles Lightning Sky",
+      "description": "A lightning affinity technique that Mo Wuji developed. It allows the user to absorb lightning essence and is crucial for his cultivation.",
+      "type": "technique"
+    },
+    {
+      "term": "Shuai Guo",
+      "description": "A pet bird of Mo Wuji, who possesses the bloodline of a Bloodthirsty Black Mosquito. Shuai Guo is characterized by its humorous personality and its ability to absorb blood.",
+      "type": "person"
+    },
+    {
+      "term": "Sky Channel Flower",
+      "description": "A rare spiritual herb that is essential for opening the 100th spirit channel. It is sought after by cultivators for its unique properties.",
+      "type": "item"
+    },
+    {
+      "term": "Sky Sea",
+      "description": "The largest sea in the Five Great Empires, known for its vastness and the dangers it holds. It is the setting for many adventures and conflicts.",
+      "type": "location"
+    },
+    {
+      "term": "Solitary Dark Pill",
+      "description": "An antidote pill that is effective against nerve poisons. It is a valuable item that Mo Wuji acquires during his journey.",
+      "type": "item"
+    },
+    {
+      "term": "Soul Cleansing Dao Fruit",
+      "description": "A valuable fruit that can cleanse a cultivator's spiritual roots. It is highly sought after for its ability to restore one's cultivation potential.",
+      "type": "item"
+    },
+    {
+      "term": "Soul Condensing Immortal Pond",
+      "description": "A significant location within the Six Paths Ruins where souls can be condensed and revived. It is linked to the Underworld and is crucial for Mo Wuji's quest to save Cen Shuyin.",
+      "type": "location"
+    },
+    {
+      "term": "Soul Margin Grass",
+      "description": "A Tier 6 immortal herb that can be used to brew tea or wine to strengthen a cultivator's soul. It is mentioned in the context of Shi Gulan's illness.",
+      "type": "item"
+    },
+    {
+      "term": "Spirit Splitting Whip",
+      "description": "A powerful weapon used by the bisexual Immortal Reverent Ji Qi. It has the ability to attack and damage the primordial spirit of its opponents.",
+      "type": "item"
+    },
+    {
+      "term": "Spirit Strengthening Pill",
+      "description": "A Tier 3 spiritual pill that is capable of increasing the soul force of the spiritual will of low-level cultivators. It is essential for those who wish to strengthen their spiritual will and improve their cultivation abilities.",
+      "type": "item"
+    },
+    {
+      "term": "Su Xi",
+      "description": "A disciple of the Meditation Nunnery and Yuan Yi's apprentice. After her master’s death, she becomes reliant on Mo Wuji for protection and guidance.",
+      "type": "person"
+    },
+    {
+      "term": "Sword Prison",
+      "description": "A notorious prison within the Great Sword Path where prisoners are subjected to extreme torture by sword qi. It is said that no one has ever survived after being imprisoned there.",
+      "type": "location"
+    },
+    {
+      "term": "Sword Qi River",
+      "description": "A river located near the Vine Mountain of Safety, filled with dangerous sword qi. The water from this river is said to have healing properties for those who can withstand its toxicity.",
+      "type": "location"
+    },
+    {
+      "term": "Tan Liang",
+      "description": "A Tier 4 Pill King who is a friend of Wen Lianxi's family. He is supportive and has a good character, often helping the Water Ying Immortal City.",
+      "type": "person"
+    },
+    {
+      "term": "Tao Tie Valley",
+      "description": "A location that serves as a link between the Immortal World and the God World. It is known for its dangers and the presence of powerful beings.",
+      "type": "location"
+    },
+    {
+      "term": "Three Star Exam",
+      "description": "An examination conducted by the Joint Space Navigation Federation that tests the abilities of students aspiring to go to Planet Diyuan. It consists of a theory portion and a practical portion, with a high level of difficulty.",
       "type": "other"
     },
     {
-      "term": "Channel Opening",
-      "description": "An initial stage in cultivation that Cen Shuyin advances from while practicing the Typhoon Formula.",
+      "term": "Tian Ji",
+      "description": "An ancient existence associated with the extraction of fate from the Immortal World. The term refers to a primordial fate that can be harnessed for immense power and is linked to the Four Marks of Tian Ji.",
       "type": "other"
     },
     {
-      "term": "Spirit Building",
-      "description": "A stage in cultivation that follows Channel Opening, which Cen Shuyin reaches with the Typhoon Formula.",
-      "type": "other"
+      "term": "Tong Ye",
+      "description": "A supporting character who is a friend of Mo Wuji and also a cultivator from the Half Immortal Domain. He has advanced to the Heavenly Immortal Stage and is loyal to Mo Wuji.",
+      "type": "person"
     },
     {
-      "term": "Transcending Mortality",
-      "description": "A stage in cultivation that Cen Shuyin achieves, marking her progress in the Typhoon Formula.",
-      "type": "other"
+      "term": "True Emperor Pill",
+      "description": "A powerful Tier 9 immortal pill that allows an Immortal Reverent to step into the Immortal Emperor Stage. It is highly sought after and considered a significant treasure for those looking to advance their cultivation.",
+      "type": "item"
     },
     {
-      "term": "Yuan Dan",
-      "description": "A cultivation stage that Cen Shuyin reaches, indicating her advancement in the Typhoon Formula.",
-      "type": "other"
+      "term": "Underworld Heart Flower",
+      "description": "A rare Tier 9 immortal herb used to condense souls and revive them. It is crucial for Mo Wuji's goal of saving Cen Shuyin.",
+      "type": "item"
     },
     {
-      "term": "Escaping Mortality",
-      "description": "A stage in cultivation that is part of the Human Realm, which cultivators strive to surpass.",
-      "type": "other"
+      "term": "Venomous Stinger",
+      "description": "The nickname of the leader of the Black Tailed Bees, a gang of horse bandits. He is known for his cruelty and is a target of revenge for Mo Wuji's allies.",
+      "type": "person"
     },
     {
-      "term": "Meridian Expansion",
-      "description": "A stage in cultivation where spirit channels are opened and expanded, crucial for cultivators with spiritual roots.",
-      "type": "other"
+      "term": "Vine Mountain of Safety",
+      "description": "A safe haven within the Sword Prison where the sword qi is weaker. It is a place where cultivators can find temporary refuge from the dangers of the Sword Prison.",
+      "type": "location"
     },
     {
-      "term": "Spirit Channels",
-      "description": "Pathways within a cultivator's body that allow the flow of spiritual energy, essential for cultivation.",
-      "type": "other"
+      "term": "Wei Zidao",
+      "description": "A Grand Emperor and one of Mo Wuji's allies. He plays a significant role in the establishment and protection of Ping Fan.",
+      "type": "person"
+    },
+    {
+      "term": "Wen Lianxi",
+      "description": "A character who is the daughter of the castellan of Water Ying Immortal City. She is a kind-hearted individual who seeks to help her mother and is grateful to Mo Wuji for his assistance.",
+      "type": "person"
+    },
+    {
+      "term": "Wordless Pill manual",
+      "description": "A manual that contains various pill formulas, including those for Tier 3 pills. It serves as an important resource for Mo Wuji in his quest to become a better pill refiner.",
+      "type": "item"
+    },
+    {
+      "term": "Wuchangwushuang",
+      "description": "A notorious group of horse bandits known for their ruthlessness and strength. They are responsible for many atrocities in the region.",
+      "type": "organization"
+    },
+    {
+      "term": "Xi Nianmo",
+      "description": "The daughter of the previous Manor Lord of the Lightning Sword Manor, Xi Nianmo is a strong-willed character who is determined to reclaim her position and avenge her family's honor. She is also portrayed as having a close relationship with Mo Wuji.",
+      "type": "person"
+    },
+    {
+      "term": "Xia Clan",
+      "description": "A powerful family known for their control over the body tempering fluid and their influence in the Space Navigation Federation. The Xia Clan has a long history and is considered one of the top families on Earth.",
+      "type": "organization"
+    },
+    {
+      "term": "Xing Wu University",
+      "description": "A prestigious university located in Qi Shu City, known for its focus on cultivating talented individuals. It is one of the top twenty schools in the country and serves as a hub for aspiring cultivators.",
+      "type": "location"
+    },
+    {
+      "term": "Yan Qianling",
+      "description": "Wen Lianxi's mother, who has been ill for many years. She is protective of her daughter and shows concern for her well-being.",
+      "type": "person"
+    },
+    {
+      "term": "Yan Qianyin",
+      "description": "A character who plays a significant role in Mo Wuji's journey, Yan Qianyin provides him with spiritual herbs and a fragmentary pill formula to aid in his development as a pill refiner. She is also a skilled cultivator with her own ambitions.",
+      "type": "person"
+    },
+    {
+      "term": "Yin Tomb Beach",
+      "description": "A location where a significant battle took place between the Hundred Sect Alliance and the alien cultivators. It is known for its dark history and the presence of powerful entities.",
+      "type": "location"
+    },
+    {
+      "term": "Yin Yang Fish",
+      "description": "A diagram used in arrays, representing the balance of yin and yang. It is often used in various techniques and formations within the cultivation world.",
+      "type": "item"
+    },
+    {
+      "term": "Ying Bian City",
+      "description": "A significant location in the story, Ying Bian City is the largest city in the Corner of Yong Ying and serves as a hub for trade and power. It is governed by powerful cultivators and is a place where many conflicts arise.",
+      "type": "location"
+    },
+    {
+      "term": "Yong Ying Immortal Domain",
+      "description": "An important region in the novel where the Grand Alchemy Competition takes place. It is known for its powerful figures and the Yunxian Immortal Valley.",
+      "type": "location"
+    },
+    {
+      "term": "Yu Cheng",
+      "description": "The grandfather of Yu Jingfeng and the guardian of Lian Yingxian. He has a strong moral character and cares deeply for his family.",
+      "type": "person"
+    },
+    {
+      "term": "Yu Jingfeng",
+      "description": "Yu Cheng's grandson and Lian Yingxian's brother-in-law. He is a fisherman who aspires to cultivate and is deeply loyal to his family.",
+      "type": "person"
+    },
+    {
+      "term": "Yuan Yi",
+      "description": "The master of Su Xi and a powerful figure from the Meditation Nunnery. She is known for her strength and her connection to the Great Kun Buddhist Lamp.",
+      "type": "person"
+    },
+    {
+      "term": "Yue Gui Immortal Resthouse",
+      "description": "A prominent resthouse in Yong Ying Immortal Domain where many cultivators gather. It serves as a temporary accommodation for Mo Wuji and others.",
+      "type": "location"
+    },
+    {
+      "term": "Yunxian Immortal Valley",
+      "description": "A mystical valley that is known for its abundance of high-tier immortal herbs. It is a coveted location for cultivators seeking rare resources.",
+      "type": "location"
+    },
+    {
+      "term": "Zhi Desolate Pill",
+      "description": "A Tier 5 immortal pill that is used to condense spiritual will and enhance the primordial spirit. It is a key item for certain cultivators.",
+      "type": "item"
+    },
+    {
+      "term": "Zhuang Yan",
+      "description": "A character who is part of Mo Wuji's group and has a kind personality. She is a rogue cultivator and has been saved by Mo Wuji.",
+      "type": "person"
+    },
+    {
+      "term": "Zhuo Pingan",
+      "description": "An Immortal King and ally of Mo Wuji. He is a significant figure in the Immortal World and is sought after for his strength and wisdom.",
+      "type": "person"
     }
   ],
-  "lastUpdated": "2025-01-31T22:48:34.828Z"
+  "lastUpdated": "2025-01-31T23:28:13.179Z"
 }
