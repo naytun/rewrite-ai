@@ -191,23 +191,98 @@
 			/* Desktop specific styles */
 			@media (min-width: 1280px) {
 				#novels {
-					grid-template-columns: repeat(6, 1fr) !important;
-					gap: 1.5rem !important;
-					width: 98% !important;
+					grid-template-columns: repeat(5, 1fr) !important;
+					gap: 2rem !important;
+					width: 95% !important;
 				}
 
 				#novels > div {
-					width: 85% !important;
-					height: 380px !important;
+					width: 90% !important;
+					height: 450px !important;
 				}
 
 				#novels > div .h-[280px] {
-					height: 260px !important;
+					height: 300px !important;
 				}
 
 				#novels > div img {
-					height: 260px !important;
+					height: 300px !important;
 				}
+			}
+
+			/* Glossary modal styles */
+			#glossaryModal {
+				overflow: hidden;
+			}
+
+			#glossaryModal > div {
+				max-height: 50vh !important;
+				height: auto !important;
+			}
+
+			#glossaryContent {
+				max-height: calc(50vh - 4rem) !important;
+				overflow-y: auto;
+				scrollbar-width: thin;
+				scrollbar-color: #888 #f1f1f1;
+			}
+
+			#glossaryContent::-webkit-scrollbar {
+				width: 8px;
+			}
+
+			#glossaryContent::-webkit-scrollbar-track {
+				background: #f1f1f1;
+				border-radius: 4px;
+			}
+
+			#glossaryContent::-webkit-scrollbar-thumb {
+				background: #888;
+				border-radius: 4px;
+			}
+
+			#glossaryContent::-webkit-scrollbar-thumb:hover {
+				background: #555;
+			}
+
+			html.dark #glossaryContent {
+				scrollbar-color: #4a5568 #2d3748;
+			}
+
+			html.dark #glossaryContent::-webkit-scrollbar-track {
+				background: #2d3748;
+			}
+
+			html.dark #glossaryContent::-webkit-scrollbar-thumb {
+				background: #4a5568;
+			}
+
+			html.dark #glossaryContent::-webkit-scrollbar-thumb:hover {
+				background: #718096;
+			}
+
+			/* Glossary content styles */
+			#glossaryContent .mb-6:last-child {
+				margin-bottom: 0;
+			}
+
+			#glossaryContent .grid {
+				gap: 1rem;
+			}
+
+			#glossaryContent .p-2 {
+				transition: all 0.2s ease-in-out;
+			}
+
+			#glossaryContent .p-2:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+					0 2px 4px -1px rgba(0, 0, 0, 0.06);
+			}
+
+			html.dark #glossaryContent .p-2:hover {
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+					0 2px 4px -1px rgba(0, 0, 0, 0.18);
 			}
 		</style>
 	</head>
@@ -353,6 +428,56 @@
 			</div>
 		</div>
 
+		<!-- Add Glossary Modal -->
+		<div
+			id="glossaryModal"
+			class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4 overflow-hidden"
+		>
+			<div
+				class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl max-h-[50vh] flex flex-col relative"
+			>
+				<!-- Header -->
+				<div
+					class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center shrink-0"
+				>
+					<h2 class="text-xl font-bold dark:text-white">Glossary</h2>
+					<div class="flex gap-2">
+						<button
+							id="generateGlossaryBtn"
+							class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
+						>
+							<span>Generate</span>
+							<i class="fas fa-spinner fa-spin hidden"></i>
+						</button>
+						<button
+							onclick="closeGlossaryModal()"
+							class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+						>
+							<svg
+								class="w-6 h-6"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M6 18L18 6M6 6l12 12"
+								/>
+							</svg>
+						</button>
+					</div>
+				</div>
+				<!-- Scrollable Content -->
+				<div id="glossaryContent" class="flex-1 overflow-y-auto p-4 min-h-0">
+					<div class="text-center text-gray-500 dark:text-gray-400">
+						Loading glossary...
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<script>
 			// Dark mode and AI mode functionality
 			const darkModeToggle = document.getElementById('darkModeToggle')
@@ -439,7 +564,7 @@
 					novels.forEach((novel) => {
 						const card = document.createElement('div')
 						card.className =
-							'overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer w-[75%] mx-auto flex flex-col h-[400px]'
+							'overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer w-[75%] mx-auto flex flex-col h-[450px]'
 
 						card.onclick = null
 
@@ -451,8 +576,8 @@
 										onerror="this.src='/placeholder.jpg'">
 								</a>
 							</div>
-							<div class="p-3 h-[120px] flex flex-col flex-shrink-0 bg-transparent">
-								<h2 class="text-lg font-semibold mb-2 line-clamp-2 flex-grow">
+							<div class="p-3 h-[170px] flex flex-col flex-shrink-0 bg-transparent">
+								<h2 class="text-lg font-semibold mb-2 line-clamp-3 flex-grow">
 									<a href="/api/novel/novels/${
 										novel.id
 									}/chapters" class="hover:text-blue-600 dark:hover:text-blue-400">
@@ -463,21 +588,28 @@
 									<p class="text-gray-600 text-xs">Author: ${
 										novel.authors ? novel.authors.join(', ') : 'Unknown'
 									}</p>
-									<a href="#" class="last-chapter-link" data-novel-id="${novel.id}">
-										<p class="text-gray-500 dark:text-gray-200 text-xs mt-1 hover:text-blue-600 dark:hover:text-blue-400">
-											Chapter ${
-												Number(
-													localStorage.getItem(`lastChapter_${novel.id}`)
-												) || 'Not started'
-											}
-											<svg class="w-4 h-4 inline-block ml-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-												<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
-											</svg>
-										</p>
-									</a>
+									<div class="flex justify-between items-center mt-1">
+										<a href="#" class="last-chapter-link" data-novel-id="${novel.id}">
+											<p class="text-gray-500 dark:text-gray-200 text-xs hover:text-blue-600 dark:hover:text-blue-400">
+												Chapter ${
+													Number(
+														localStorage.getItem(`lastChapter_${novel.id}`)
+													) || 'Not started'
+												}
+												<svg class="w-4 h-4 inline-block ml-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+													<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+												</svg>
+											</p>
+										</a>
+										<button 
+											class="text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+											onclick="openGlossaryModal('${novel.id}')"
+										>
+											Glossary
+										</button>
+									</div>
 								</div>
-							</div>
-						`
+							</div>`
 
 						// Add click handler for last chapter links
 						const lastChapterLinks = card.querySelectorAll('.last-chapter-link')
@@ -657,6 +789,199 @@
 					content.classList.add('compare-mode')
 				}
 			})
+
+			// Add these new functions for glossary functionality
+			let currentNovelId = null
+
+			function openGlossaryModal(novelId) {
+				currentNovelId = novelId
+				const modal = document.getElementById('glossaryModal')
+				modal.classList.remove('hidden')
+				modal.classList.add('flex') // Add flex display when showing
+				loadGlossary(novelId)
+
+				// Set up generate button click handler
+				const generateBtn = document.getElementById('generateGlossaryBtn')
+				generateBtn.onclick = () => generateGlossary(novelId)
+			}
+
+			function closeGlossaryModal() {
+				const modal = document.getElementById('glossaryModal')
+				modal.classList.add('hidden')
+				modal.classList.remove('flex') // Remove flex display when hiding
+				currentNovelId = null
+			}
+
+			async function loadGlossary(novelId) {
+				const contentDiv = document.getElementById('glossaryContent')
+				contentDiv.innerHTML =
+					'<div class="text-center text-gray-500 dark:text-gray-400 py-4">Loading glossary...</div>'
+
+				try {
+					console.log('Frontend: Loading glossary for novel:', novelId)
+					const response = await fetch(`/api/novel/novels/${novelId}/glossary`)
+					console.log(
+						'Frontend: Glossary load response status:',
+						response.status
+					)
+
+					if (!response.ok) {
+						throw new Error(`Failed to load glossary: ${response.status}`)
+					}
+
+					const glossary = await response.json()
+					console.log(
+						'Frontend: Glossary loaded, terms count:',
+						glossary?.terms?.length || 0
+					)
+					displayGlossary(glossary)
+				} catch (error) {
+					console.error('Frontend: Error loading glossary:', error)
+					contentDiv.innerHTML =
+						'<div class="text-center text-red-500 py-4">Failed to load glossary. The glossary might not exist yet.</div>'
+				}
+			}
+
+			function displayGlossary(glossary) {
+				const contentDiv = document.getElementById('glossaryContent')
+				contentDiv.innerHTML = ''
+
+				if (!glossary || !glossary.terms || glossary.terms.length === 0) {
+					contentDiv.innerHTML =
+						'<div class="text-center text-gray-500 dark:text-gray-400 py-4">No glossary terms available.</div>'
+					return
+				}
+
+				// Sort terms alphabetically
+				const sortedTerms = glossary.terms.sort((a, b) =>
+					a.term.localeCompare(b.term)
+				)
+
+				// Group terms by type
+				const groupedTerms = sortedTerms.reduce((acc, term) => {
+					const type = term.type || 'other'
+					if (!acc[type]) acc[type] = []
+					acc[type].push(term)
+					return acc
+				}, {})
+
+				// Create sections for each type
+				const typeOrder = [
+					'person',
+					'location',
+					'organization',
+					'item',
+					'technique',
+					'other',
+				]
+				const typeLabels = {
+					person: 'Characters',
+					location: 'Locations',
+					organization: 'Organizations',
+					item: 'Items',
+					technique: 'Techniques',
+					other: 'Other Terms',
+				}
+
+				typeOrder.forEach((type) => {
+					if (groupedTerms[type] && groupedTerms[type].length > 0) {
+						const section = document.createElement('div')
+						section.className = 'mb-6'
+						section.innerHTML = `
+							<h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">${
+								typeLabels[type]
+							}</h3>
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+								${groupedTerms[type]
+									.map(
+										(term) => `
+									<div class="p-2 bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
+										<div class="font-medium text-gray-800 dark:text-gray-200">${term.term}</div>
+										<div class="text-sm text-gray-600 dark:text-gray-400">${term.description}</div>
+									</div>
+								`
+									)
+									.join('')}
+							</div>
+						`
+						contentDiv.appendChild(section)
+					}
+				})
+
+				// Add last updated info
+				if (glossary.lastUpdated) {
+					const lastUpdated = document.createElement('div')
+					lastUpdated.className =
+						'text-xs text-gray-500 dark:text-gray-400 text-right mt-4'
+					lastUpdated.textContent = `Last updated: ${new Date(
+						glossary.lastUpdated
+					).toLocaleString()}`
+					contentDiv.appendChild(lastUpdated)
+				}
+			}
+
+			async function generateGlossary(novelId) {
+				const generateBtn = document.getElementById('generateGlossaryBtn')
+				const contentDiv = document.getElementById('glossaryContent')
+				const spinner = generateBtn.querySelector('.fa-spinner')
+				const btnText = generateBtn.querySelector('span')
+
+				// Show spinner and disable button before starting
+				generateBtn.disabled = true
+				generateBtn.classList.add('opacity-50')
+				spinner.classList.remove('hidden')
+				btnText.textContent = 'Generating...'
+
+				try {
+					contentDiv.innerHTML =
+						'<div class="text-center text-gray-500 dark:text-gray-400 py-4">Generating glossary...</div>'
+
+					console.log(
+						'Frontend: Starting glossary generation for novel:',
+						novelId
+					)
+					const response = await fetch(
+						`/api/novel/novels/${novelId}/glossary/generate`,
+						{
+							method: 'POST',
+							headers: {
+								Accept: 'application/json',
+								'Content-Type': 'application/json',
+							},
+						}
+					)
+					console.log('Frontend: Generation response status:', response.status)
+
+					if (!response.ok) {
+						const errorData = await response.json()
+						console.error('Frontend: Server error details:', errorData)
+						throw new Error(errorData.details || 'Failed to generate glossary')
+					}
+
+					const result = await response.json()
+					console.log('Frontend: Generation successful, reloading glossary')
+					await loadGlossary(novelId)
+				} catch (error) {
+					console.error('Frontend: Error generating glossary:', error)
+					contentDiv.innerHTML =
+						'<div class="text-center text-red-500 py-4">Failed to generate glossary. Please try again.</div>'
+				} finally {
+					// Reset button state
+					generateBtn.disabled = false
+					generateBtn.classList.remove('opacity-50')
+					spinner.classList.add('hidden')
+					btnText.textContent = 'Generate'
+				}
+			}
+
+			// Close modal when clicking outside
+			document
+				.getElementById('glossaryModal')
+				.addEventListener('click', (e) => {
+					if (e.target === document.getElementById('glossaryModal')) {
+						closeGlossaryModal()
+					}
+				})
 		</script>
 	</body>
 </html>

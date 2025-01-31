@@ -7,21 +7,11 @@ import {
 	regenerateChapter,
 	checkAIContentExists,
 	getAllChaptersContent,
+	getGlossary,
+	generateGlossary,
 } from './novel.controller'
 
 const router = Router()
-
-// Request logging middleware
-router.use((req, res, next) => {
-	console.log('Novel route hit:', {
-		method: req.method,
-		path: req.path,
-		params: req.params,
-		query: req.query,
-		body: req.body,
-	})
-	next()
-})
 
 // Test endpoint
 router.post('/test', (req, res) => {
@@ -29,23 +19,27 @@ router.post('/test', (req, res) => {
 	res.json({ message: 'Test endpoint working' })
 })
 
-// Novel routes
+// Novel listing and chapter routes
 router.get('/novels', listNovels)
 router.get('/novels/:novelId/chapters', listChapters)
 router.get('/novels/:novelId/chapters/:volume/:chapter', readChapter)
+
+// AI-related routes
 router.get(
 	'/novels/:novelId/chapters/:volume/:chapter/ai-exists',
 	checkAIContentExists
 )
-router.get('/novels/:novelId/all-chapters', getAllChaptersContent)
-
-// Bulk generation route
-router.post('/novels/:novelId/bulk-generate', bulkGenerateAIContent)
-
-// Regenerate specific chapter
 router.post(
 	'/novels/:novelId/chapters/:volume/:chapter/regenerate',
 	regenerateChapter
 )
+router.post('/novels/:novelId/bulk-generate', bulkGenerateAIContent)
+
+// Content retrieval routes
+router.get('/novels/:novelId/all-chapters', getAllChaptersContent)
+
+// Glossary routes
+router.get('/novels/:novelId/glossary', getGlossary)
+router.post('/novels/:novelId/glossary/generate', generateGlossary)
 
 export default router

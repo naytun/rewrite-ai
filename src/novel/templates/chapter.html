@@ -552,6 +552,110 @@
 					font-size: 0.9rem;
 				}
 			}
+
+			/* Glossary styles */
+			.glossary-link {
+				display: inline-flex;
+				align-items: center;
+				color: #3b82f6;
+				text-decoration: none;
+				margin-left: 1rem;
+				font-size: 0.9rem;
+				cursor: pointer;
+			}
+
+			.glossary-popup {
+				display: none;
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: 80%;
+				max-width: 600px;
+				max-height: 80vh;
+				background: white;
+				border-radius: 8px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+				z-index: 1002;
+				padding: 1.5rem;
+				overflow-y: auto;
+			}
+
+			.glossary-popup.active {
+				display: block;
+			}
+
+			.glossary-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 1rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 1px solid #e5e7eb;
+			}
+
+			.glossary-title {
+				font-size: 1.25rem;
+				font-weight: 600;
+			}
+
+			.glossary-close {
+				cursor: pointer;
+				padding: 0.5rem;
+			}
+
+			.glossary-content {
+				columns: 2;
+				column-gap: 2rem;
+			}
+
+			.glossary-item {
+				break-inside: avoid;
+				margin-bottom: 0.5rem;
+				cursor: pointer;
+				color: #3b82f6;
+			}
+
+			.glossary-tooltip {
+				display: none;
+				position: absolute;
+				background: #1f2937;
+				color: white;
+				padding: 0.75rem;
+				border-radius: 4px;
+				max-width: 300px;
+				z-index: 1003;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+			}
+
+			.generate-glossary-btn {
+				position: fixed;
+				top: 20px;
+				right: 20px;
+				background: #3b82f6;
+				color: white;
+				padding: 0.5rem 1rem;
+				border-radius: 4px;
+				cursor: pointer;
+				z-index: 1001;
+			}
+
+			html.dark .glossary-popup {
+				background: #2d2d2d;
+				border: 1px solid #4b5563;
+			}
+
+			html.dark .glossary-header {
+				border-bottom-color: #4b5563;
+			}
+
+			html.dark .glossary-tooltip {
+				background: #374151;
+			}
+
+			html.dark .glossary-item {
+				color: #60a5fa;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-200" data-show-no-ai-content="{{showNoAIContent}}">
@@ -584,6 +688,16 @@
 			<div class="text-left mb-8">
 				<div class="novel-title">{{novel_title}} - {{volume}}</div>
 				<h1 class="text-3xl font-bold">{{chapter_title}}</h1>
+				<div class="flex items-center mt-2">
+					<a
+						href="#"
+						class="glossary-link"
+						onclick="openGlossary(); return false;"
+					>
+						<i class="fas fa-book-open mr-1"></i>
+						Glossary
+					</a>
+				</div>
 			</div>
 
 			<div id="noAIContent" style="display: none" class="text-center py-12">
@@ -646,6 +760,22 @@
 				<button class="chat-send">Send</button>
 			</div>
 		</div>
+
+		<button class="generate-glossary-btn" onclick="generateGlossary()">
+			Generate Glossary
+		</button>
+
+		<div class="glossary-popup">
+			<div class="glossary-header">
+				<div class="glossary-title">Glossary</div>
+				<div class="glossary-close" onclick="closeGlossary()">✕</div>
+			</div>
+			<div class="glossary-content" id="glossaryContent">
+				<!-- Glossary items will be inserted here -->
+			</div>
+		</div>
+
+		<div class="glossary-tooltip" id="glossaryTooltip"></div>
 
 		<script>
 			// Check for dark mode preference
@@ -1308,6 +1438,108 @@
 					sendMessage()
 				}
 			})
+
+			// Glossary functions
+			async function loadGlossary() {
+				const novelId = '{{novel_id}}'
+				try {
+					const response = await fetch(`/api/novel/novels/${novelId}/glossary`)
+					if (response.ok) {
+						const glossary = await response.json()
+						displayGlossary(glossary)
+					}
+				} catch (error) {
+					console.error('Error loading glossary:', error)
+				}
+			}
+
+			function displayGlossary(glossary) {
+				const content = document.getElementById('glossaryContent')
+				content.innerHTML = ''
+
+				if (!glossary || !glossary.terms || glossary.terms.length === 0) {
+					content.innerHTML = '<p>No glossary terms available.</p>'
+					return
+				}
+
+				const sortedTerms = glossary.terms.sort((a, b) =>
+					a.term.localeCompare(b.term)
+				)
+
+				sortedTerms.forEach((item) => {
+					const div = document.createElement('div')
+					div.className = 'glossary-item'
+					div.textContent = item.term
+					div.addEventListener('mouseover', (e) =>
+						showTooltip(e, item.description)
+					)
+					div.addEventListener('mouseout', hideTooltip)
+					content.appendChild(div)
+				})
+			}
+
+			function showTooltip(event, description) {
+				const tooltip = document.getElementById('glossaryTooltip')
+				tooltip.textContent = description
+				tooltip.style.display = 'block'
+
+				const rect = event.target.getBoundingClientRect()
+				tooltip.style.left = `${rect.right + 10}px`
+				tooltip.style.top = `${rect.top}px`
+
+				// Adjust position if tooltip goes off screen
+				const tooltipRect = tooltip.getBoundingClientRect()
+				if (tooltipRect.right > window.innerWidth) {
+					tooltip.style.left = `${rect.left - tooltipRect.width - 10}px`
+				}
+			}
+
+			function hideTooltip() {
+				const tooltip = document.getElementById('glossaryTooltip')
+				tooltip.style.display = 'none'
+			}
+
+			function openGlossary() {
+				document.querySelector('.glossary-popup').classList.add('active')
+				loadGlossary()
+			}
+
+			function closeGlossary() {
+				document.querySelector('.glossary-popup').classList.remove('active')
+			}
+
+			async function generateGlossary() {
+				const novelId = '{{novel_id}}'
+				const generateBtn = document.querySelector('.generate-glossary-btn')
+				const originalText = generateBtn.textContent
+
+				try {
+					// Show loading state
+					generateBtn.textContent = 'Generating...'
+					generateBtn.disabled = true
+					generateBtn.style.opacity = '0.7'
+
+					const response = await fetch(
+						`/api/novel/novels/${novelId}/glossary/generate`,
+						{
+							method: 'POST',
+						}
+					)
+					if (response.ok) {
+						loadGlossary()
+					} else {
+						throw new Error('Failed to generate glossary')
+					}
+				} catch (error) {
+					console.error('Error generating glossary:', error)
+					alert('Failed to generate glossary. Please try again.')
+				} finally {
+					// Reset button state
+					generateBtn.textContent = originalText
+					generateBtn.disabled = false
+					generateBtn.style.opacity = '1'
+				}
+			}
 		</script>
 	</body>
 </html>

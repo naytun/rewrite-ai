@@ -6,6 +6,17 @@ import { getAISettings } from '../settings/settings.service'
 
 const basePath = 'Lightnovels'
 
+interface GlossaryTerm {
+	term: string
+	description: string
+	type?: 'person' | 'location' | 'item' | 'technique' | 'organization' | 'other'
+}
+
+interface Glossary {
+	terms: GlossaryTerm[]
+	lastUpdated: string
+}
+
 export const getNovelPath = async (novelId: string): Promise<string> => {
 	const websites = await fs.readdir(path.join(process.cwd(), basePath))
 
@@ -18,8 +29,17 @@ export const getNovelPath = async (novelId: string): Promise<string> => {
 		if (stat.isDirectory()) {
 			const novelFolders = await fs.readdir(websitePath)
 
+			// First try exact match
 			if (novelFolders.includes(novelId)) {
 				return path.join(websitePath, novelId)
+			}
+
+			// If no exact match, try case-insensitive match
+			const matchingFolder = novelFolders.find(
+				(folder) => folder.toLowerCase() === novelId.toLowerCase()
+			)
+			if (matchingFolder) {
+				return path.join(websitePath, matchingFolder)
 			}
 		}
 	}
@@ -482,6 +502,191 @@ export const bulkGenerateAIContent = async (
 		console.log('Bulk generation completed')
 	} catch (error) {
 		console.error('Error in bulk generation:', error)
+		throw error
+	}
+}
+
+export const generateGlossary = async (novelId: string): Promise<Glossary> => {
+	try {
+		const novelPath = await getNovelPath(novelId)
+		const volumes = await fs.readdir(path.join(novelPath, 'json'))
+
+		// Get novel metadata for title
+		const metadata = await getNovelMetadata(novelId)
+		const novelTitle = metadata.novel.title
+
+		// Collect all chapter content
+		let allContent = ''
+		for (const volume of volumes) {
+			const volumePath = path.join(novelPath, 'json', volume)
+			const stat = await fs.stat(volumePath)
+
+			if (stat.isDirectory()) {
+				console.log('Processing volume:', volume)
+				const chapters = await fs.readdir(volumePath)
+				for (const chapter of chapters) {
+					if (chapter.endsWith('.json') && !chapter.endsWith('-ai.json')) {
+						const chapterPath = path.join(volumePath, chapter)
+						try {
+							const content = await fs.readFile(chapterPath, 'utf-8')
+							const chapterData = JSON.parse(content)
+							if (chapterData.body) {
+								// Clean HTML content
+								const cleanContent = chapterData.body
+									.replace(/<\/p>/g, '\n')
+									.replace(/<p>/g, '')
+									.replace(/<br\s*\/?>/g, '\n')
+									.replace(/<[^>]*>/g, '')
+									.trim()
+								allContent += cleanContent + '\n\n'
+							}
+						} catch (error) {
+							console.error('Error processing chapter:', chapterPath, error)
+							continue
+						}
+					}
+				}
+			}
+		}
+
+		if (allContent.length === 0) {
+			throw new Error('No content found in the novel')
+		}
+
+		console.log('Total novel content length:', allContent.length)
+
+		// Process content in chunks
+		const CHUNK_SIZE = 500_000
+		const chunks = []
+		for (let i = 0; i < allContent.length; i += CHUNK_SIZE) {
+			chunks.push(allContent.slice(i, i + CHUNK_SIZE))
+		}
+		console.log(`Split content into ${chunks.length} chunks`)
+
+		// Base prompt template
+		const promptTemplate = `You are a glossary generator for the novel "${novelTitle}". Create a glossary with terms and descriptions from the provided chunk of the novel content.
+
+For each important term you find in THIS CHUNK, create an entry with:
+1. The term name (exactly as it appears in the novel)
+2. A concise description (2-3 sentences max)
+3. The term type (must be one of: person, location, item, technique, organization, or other)
+
+Focus on extracting:
+- Main and supporting characters (type: person)
+- Important locations and their significance (type: location)
+- Special items, weapons, or artifacts (type: item)
+- Special techniques or skills (type: technique)
+- Organizations, groups, or factions (type: organization)
+- Other significant terms specific to the story's world (type: other)
+
+Format your response EXACTLY as a JSON array of objects with these properties:
+[
+  {
+    "term": "Term name",
+    "description": "Brief description",
+    "type": "person/location/item/technique/organization/other"
+  }
+]
+
+Important:
+- Extract ONLY terms that actually appear in THIS CHUNK of content
+- ALWAYS return valid JSON format
+- If you can't find any terms in this chunk, return an empty array []
+- NEVER return an error message or non-JSON response`
+
+		// Process each chunk and collect terms
+		let allTerms: GlossaryTerm[] = []
+		for (let i = 0; i < chunks.length; i++) {
+			console.log(`Processing chunk ${i + 1} of ${chunks.length}`)
+			const chunk = chunks[i]
+
+			try {
+				const aiResponse = await askAI({
+					question: promptTemplate,
+					context: chunk,
+				})
+
+				if (aiResponse.startsWith('[') && aiResponse.endsWith(']')) {
+					const chunkTerms: GlossaryTerm[] = JSON.parse(aiResponse).map(
+						(term: any) => ({
+							term: term.term,
+							description: term.description,
+							type: term.type || 'other',
+						})
+					)
+					allTerms = allTerms.concat(chunkTerms)
+					console.log(
+						`Extracted ${chunkTerms.length} terms from chunk ${i + 1}`
+					)
+				} else {
+					console.error(
+						`Invalid AI response format for chunk ${i + 1}:`,
+						aiResponse?.length
+					)
+				}
+			} catch (error) {
+				console.error(`Error processing chunk ${i + 1}:`, error)
+				// Continue with next chunk even if one fails
+			}
+		}
+
+		// Remove duplicates by term name (case-insensitive)
+		// If duplicates exist, keep the one with the longer description
+		const uniqueTerms = Object.values(
+			allTerms.reduce((acc: { [key: string]: GlossaryTerm }, term) => {
+				const key = term.term.toLowerCase()
+				if (
+					!acc[key] ||
+					acc[key].description.length < term.description.length
+				) {
+					acc[key] = term
+				}
+				return acc
+			}, {})
+		)
+
+		console.log(`Final unique terms count: ${uniqueTerms.length}`)
+
+		if (uniqueTerms.length === 0) {
+			throw new Error('No terms were extracted from the novel content')
+		}
+
+		// Sort terms alphabetically
+		uniqueTerms.sort((a, b) => a.term.localeCompare(b.term))
+
+		// Create glossary object with lastUpdated timestamp
+		const glossary: Glossary = {
+			terms: uniqueTerms,
+			lastUpdated: new Date().toISOString(),
+		}
+
+		// Save the glossary to a file
+		const glossaryPath = path.join(novelPath, 'glossary.json')
+		await fs.writeFile(glossaryPath, JSON.stringify(glossary, null, 2))
+
+		return glossary
+	} catch (error) {
+		console.error('Error generating glossary:', error)
+		throw error
+	}
+}
+
+export const getGlossary = async (
+	novelId: string
+): Promise<Glossary | null> => {
+	try {
+		const novelPath = await getNovelPath(novelId)
+		const glossaryPath = path.join(novelPath, 'glossary.json')
+
+		try {
+			const content = await fs.readFile(glossaryPath, 'utf-8')
+			return JSON.parse(content)
+		} catch (error) {
+			// If file doesn't exist or can't be read, return null
+			return null
+		}
+	} catch (error) {
+		console.error('Error reading glossary:', error)
 		throw error
 	}
 }

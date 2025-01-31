@@ -6,21 +6,23 @@ import {
 	bulkGenerateAIContent,
 	regenerateChapter,
 	getAllChaptersContent,
+	getGlossary,
+	generateGlossary,
 } from './novel.controller'
 
 const router = Router()
 
 // Request logging middleware
-router.use((req, res, next) => {
-	console.log('Novel route hit:', {
-		method: req.method,
-		path: req.path,
-		params: req.params,
-		query: req.query,
-		body: req.body,
-	})
-	next()
-})
+// router.use((req, res, next) => {
+// 	console.log('Novel route hit::', {
+// 		method: req.method,
+// 		path: req.path,
+// 		params: req.params,
+// 		query: req.query,
+// 		body: req.body,
+// 	})
+// 	next()
+// })
 
 // Novel routes
 router.get('/novels', listNovels)
@@ -37,6 +39,10 @@ router.post(
 	regenerateChapter
 )
 
+// Glossary routes
+router.get('/novels/:novelId/glossary', getGlossary)
+router.post('/novels/:novelId/glossary/generate', generateGlossary)
+
 export default router
 
 // Export types
@@ -51,6 +57,8 @@ export {
 	bulkGenerateAIContent,
 	regenerateChapter,
 	getAllChaptersContent,
+	getGlossary,
+	generateGlossary,
 } from './novel.controller'
 
 export {

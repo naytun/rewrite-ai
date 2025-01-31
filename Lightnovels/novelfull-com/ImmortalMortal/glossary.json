@@ -1,0 +1,105 @@
+{
+  "terms": [
+    {
+      "term": "Mo Wuji",
+      "description": "The protagonist of the story, who is on a journey to cultivate and gain power. He is known for his determination and innovative cultivation techniques.",
+      "type": "person"
+    },
+    {
+      "term": "Cen Shuyin",
+      "description": "A cultivator who practices dual-cultivation techniques, including the Typhoon Formula and Wind Escape Technique. She is a close ally of Mo Wuji.",
+      "type": "person"
+    },
+    {
+      "term": "Typhoon Formula",
+      "description": "A powerful cultivation technique that Cen Shuyin practices, which enhances her wind elemental abilities.",
+      "type": "technique"
+    },
+    {
+      "term": "Wind Escape Technique",
+      "description": "A technique that allows the user to move with the wind, leaving no trace. Mo Wuji gains insights into this technique, making it unique to him.",
+      "type": "technique"
+    },
+    {
+      "term": "Escaping Wind",
+      "description": "A wind-type treasure that Mo Wuji uses to gain enlightenment on the Wind Escape Technique. It is a rare and valuable item.",
+      "type": "item"
+    },
+    {
+      "term": "True Lake Stage",
+      "description": "A level in cultivation that Mo Wuji and Cen Shuyin have reached, indicating a significant advancement in their powers.",
+      "type": "other"
+    },
+    {
+      "term": "Thorny Wind Gate",
+      "description": "A dangerous location known for its violent winds and wind-type beasts. It serves as a training ground for Mo Wuji to hone his Wind Escape Technique.",
+      "type": "location"
+    },
+    {
+      "term": "Howling Wind Beasts",
+      "description": "Wind-type beasts that inhabit the Thorny Wind Gate, posing a threat to cultivators like Mo Wuji and Cen Shuyin.",
+      "type": "other"
+    },
+    {
+      "term": "Zhen Mo Continent",
+      "description": "A continent mentioned in the story, known for having rare communication beads forged by Worldly Immortal smiths.",
+      "type": "location"
+    },
+    {
+      "term": "Worldly Immortal",
+      "description": "A high-level cultivator with the ability to forge rare items like communication beads. They possess a deep understanding of the space dao.",
+      "type": "other"
+    },
+    {
+      "term": "Communication Bead",
+      "description": "A rare item used for communication, forged by Worldly Immortal smiths. It is highly sought after in the cultivation world.",
+      "type": "item"
+    },
+    {
+      "term": "Reverse Circulation Technique",
+      "description": "A cultivation method used by Mo Wuji to absorb energy and gain insights into the Wind Dao.",
+      "type": "technique"
+    },
+    {
+      "term": "Elemental Energy Lake",
+      "description": "A reservoir of elemental energy within a cultivator's body, indicating their power level. Cen Shuyin has both wind and ice elemental energy lakes.",
+      "type": "other"
+    },
+    {
+      "term": "Channel Opening",
+      "description": "An initial stage in cultivation that Cen Shuyin advances from while practicing the Typhoon Formula.",
+      "type": "other"
+    },
+    {
+      "term": "Spirit Building",
+      "description": "A stage in cultivation that follows Channel Opening, which Cen Shuyin reaches with the Typhoon Formula.",
+      "type": "other"
+    },
+    {
+      "term": "Transcending Mortality",
+      "description": "A stage in cultivation that Cen Shuyin achieves, marking her progress in the Typhoon Formula.",
+      "type": "other"
+    },
+    {
+      "term": "Yuan Dan",
+      "description": "A cultivation stage that Cen Shuyin reaches, indicating her advancement in the Typhoon Formula.",
+      "type": "other"
+    },
+    {
+      "term": "Escaping Mortality",
+      "description": "A stage in cultivation that is part of the Human Realm, which cultivators strive to surpass.",
+      "type": "other"
+    },
+    {
+      "term": "Meridian Expansion",
+      "description": "A stage in cultivation where spirit channels are opened and expanded, crucial for cultivators with spiritual roots.",
+      "type": "other"
+    },
+    {
+      "term": "Spirit Channels",
+      "description": "Pathways within a cultivator's body that allow the flow of spiritual energy, essential for cultivation.",
+      "type": "other"
+    }
+  ],
+  "lastUpdated": "2025-01-31T22:48:34.828Z"
+}
