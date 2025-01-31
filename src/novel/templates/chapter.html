@@ -156,9 +156,10 @@
 				margin-left: 1rem;
 				margin-right: 1rem;
 			}
-			html.dark .nav-button:hover {
+			.nav-button:hover {
 				background: #2563eb;
-				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+				transform: translateY(-1px);
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 			}
 			html.dark .nav-button.disabled {
 				background: #4b5563;
@@ -325,7 +326,7 @@
 				flex: 1;
 				overflow-y: auto;
 				padding: 16px;
-				font-size: 16px;
+				font-size: 1.6rem;
 			}
 			.chat-input-container {
 				padding: 16px;
@@ -339,7 +340,7 @@
 				border: 1px solid #e5e7eb;
 				border-radius: 20px;
 				outline: none;
-				font-size: 16px;
+				font-size: 1.6rem;
 			}
 			.chat-send {
 				background: #3b82f6;
@@ -349,7 +350,7 @@
 				border-radius: 20px;
 				cursor: pointer;
 				transition: background 0.2s;
-				font-size: 16px;
+				font-size: 1.6rem;
 			}
 			.chat-send:hover {
 				background: #2563eb;
@@ -357,7 +358,7 @@
 			.message {
 				margin-bottom: 16px;
 				max-width: 80%;
-				font-size: 16px;
+				font-size: 1.6rem;
 				line-height: 1.5;
 			}
 			.message.user {
@@ -371,6 +372,24 @@
 				background: #f3f4f6;
 				padding: 8px 12px;
 				border-radius: 12px 12px 12px 0;
+			}
+			.message.ai.welcome-message {
+				background: transparent !important;
+				text-align: center;
+				margin: auto;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				color: #6b7280;
+				padding: 20px;
+				max-width: 90%;
+				box-shadow: none;
+				border: none;
+			}
+			html.dark .message.ai.welcome-message {
+				color: #9ca3af;
+				background: transparent !important;
 			}
 			html.dark .chat-dialog {
 				background: #2d2d2d;
@@ -391,6 +410,14 @@
 					bottom: 120px;
 					right: 5%;
 					left: 5%;
+				}
+			}
+			@media (min-width: 640px) {
+				.chat-messages,
+				.chat-input,
+				.chat-send,
+				.message {
+					font-size: 1.4rem;
 				}
 			}
 		</style>
@@ -479,7 +506,11 @@
 			</div>
 			<div class="chat-messages"></div>
 			<div class="chat-input-container">
-				<input type="text" class="chat-input" placeholder="Ask a question..." />
+				<input
+					type="text"
+					class="chat-input"
+					placeholder="Enter your question about the novel..."
+				/>
 				<button class="chat-send">Send</button>
 			</div>
 		</div>
@@ -877,6 +908,14 @@
 					chatInput.value = ''
 				} else {
 					chatDialog.classList.add('active')
+					// Add welcome message if chat is empty
+					if (chatMessages.children.length === 0) {
+						const welcomeMessage = document.createElement('div')
+						welcomeMessage.className = 'message ai welcome-message'
+						welcomeMessage.textContent =
+							"You can type a character's name to learn more about them, or ask any question about the novel."
+						chatMessages.appendChild(welcomeMessage)
+					}
 					// Small delay to ensure input is ready
 					setTimeout(() => chatInput.focus(), 0)
 				}
@@ -898,6 +937,12 @@
 			async function sendMessage() {
 				const message = chatInput.value.trim()
 				if (!message) return
+
+				// Remove welcome message if it exists
+				const welcomeMessage = chatMessages.querySelector('.welcome-message')
+				if (welcomeMessage) {
+					welcomeMessage.remove()
+				}
 
 				// Add user message to chat
 				const userMessageElement = document.createElement('div')
