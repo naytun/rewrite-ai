@@ -706,3 +706,38 @@ export const checkAIContentExists = async (
 		res.status(500).json({ error: 'Failed to check AI content existence' })
 	}
 }
+
+export const getAllChaptersContent = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	try {
+		const { novelId } = req.params
+		const novelPath = await getNovelPath(novelId)
+		const jsonPath = path.join(novelPath, 'json')
+		const volumes = await fs.readdir(jsonPath)
+
+		const allChapters = []
+
+		for (const volume of volumes) {
+			const volumePath = path.join(jsonPath, volume)
+			const chapters = await fs.readdir(volumePath)
+
+			for (const chapter of chapters) {
+				const chapterPath = path.join(volumePath, chapter)
+				const chapterContent = await fs.readFile(chapterPath, 'utf-8')
+				const chapterData = JSON.parse(chapterContent)
+				allChapters.push({
+					volume,
+					chapter: chapter.replace('.json', ''),
+					...chapterData,
+				})
+			}
+		}
+
+		res.json(allChapters)
+	} catch (error) {
+		console.error('Error getting all chapters:', error)
+		res.status(500).json({ error: 'Failed to get all chapters content' })
+	}
+}
