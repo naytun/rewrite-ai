@@ -641,7 +641,7 @@
 				<input
 					type="text"
 					class="chat-input"
-					placeholder="Enter your question about the novel..."
+					placeholder="Type a character's name to learn about them"
 				/>
 				<button class="chat-send">Send</button>
 			</div>
@@ -1065,7 +1065,7 @@
 							'Content-Type': 'application/json',
 						},
 						body: JSON.stringify({
-							question: `Extract character names as well as major terms from this chapter with brief descriptions. Format as: "Name: Brief description of their role and relation to the story". Separate entries with ||. Content: ${content}`,
+							question: `Extract person names ONLY from this chapter with brief descriptions. Format as: "Name: Brief description of their role and relation to the main character and the whole story". Separate entries with ||. Content: ${content}`,
 						}),
 					})
 
@@ -1223,7 +1223,7 @@
 						const welcomeMessage = document.createElement('div')
 						welcomeMessage.className = 'message ai welcome-message'
 						welcomeMessage.textContent =
-							"You can type a character's name to learn more about them, or ask any question about the novel."
+							"You can type a character's name to learn more about them."
 						chatMessages.appendChild(welcomeMessage)
 					}
 
