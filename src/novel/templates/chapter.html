@@ -420,6 +420,44 @@
 					font-size: 1.4rem;
 				}
 			}
+			.term-bubbles {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+				padding: 16px;
+				justify-content: center;
+			}
+
+			.term-bubble {
+				background: #e5e7eb;
+				padding: 6px 12px;
+				padding-left: 8px;
+				border-radius: 16px;
+				cursor: pointer;
+				transition: background 0.2s;
+				font-size: 1.4rem;
+				display: flex;
+				align-items: center;
+				gap: 6px;
+			}
+
+			.term-bubble i {
+				font-size: 1.2rem;
+				opacity: 0.7;
+			}
+
+			.term-bubble:hover {
+				background: #d1d5db;
+			}
+
+			html.dark .term-bubble {
+				background: #374151;
+				color: #e5e7eb;
+			}
+
+			html.dark .term-bubble:hover {
+				background: #4b5563;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-200" data-show-no-ai-content="{{showNoAIContent}}">
@@ -899,24 +937,158 @@
 				}
 			})
 
-			chatButton.addEventListener('click', (e) => {
-				e.stopPropagation() // Prevent the document click handler from firing
+			// Initialize terms extraction on page load
+			let extractedTerms = []
 
-				// Toggle chat window
+			async function extractTerms() {
+				const chapterBody = document.getElementById('chapterBody')
+				if (!chapterBody) return
+
+				const content = chapterBody.textContent || ''
+
+				try {
+					// First, get character names
+					const characterResponse = await fetch('/api/ai/ask', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							question: `Extract ONLY character names from this chapter. Format as comma-separated list. Content: ${content}`,
+						}),
+					})
+
+					if (!characterResponse.ok)
+						throw new Error('Failed to extract characters')
+
+					const characterData = await characterResponse.json()
+					const characters = characterData.answer
+						.split(',')
+						.map((term) => ({
+							name: term.trim(),
+							type: 'person',
+						}))
+						.filter((term) => term.name.length > 0 && !term.name.includes('.'))
+
+					// Then get other important terms
+					const termsResponse = await fetch('/api/ai/ask', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							question: `Extract important non-character terms (locations, items, techniques, etc) from this chapter. For each term, specify its type in parentheses like this: "term (type)". Separate with commas. Content: ${content}`,
+						}),
+					})
+
+					if (!termsResponse.ok) throw new Error('Failed to extract terms')
+
+					const termsData = await termsResponse.json()
+					const otherTerms = termsData.answer
+						.split(',')
+						.map((term) => {
+							const match = term.trim().match(/(.+?)\s*\((.+?)\)/)
+							if (match) {
+								return {
+									name: match[1].trim(),
+									type: match[2].trim().toLowerCase(),
+								}
+							}
+							return null
+						})
+						.filter((term) => term && term.name.length > 0)
+
+					// Combine and store all terms
+					extractedTerms = [...characters, ...otherTerms]
+					return extractedTerms
+				} catch (error) {
+					console.error('Error extracting terms:', error)
+					return []
+				}
+			}
+
+			function getTermIcon(type) {
+				switch (type.toLowerCase()) {
+					case 'person':
+						return 'fa-user'
+					case 'location':
+					case 'place':
+						return 'fa-location-dot'
+					case 'item':
+					case 'weapon':
+						return 'fa-shield'
+					case 'technique':
+					case 'skill':
+						return 'fa-bolt'
+					case 'organization':
+					case 'group':
+						return 'fa-users'
+					default:
+						return 'fa-circle-info'
+				}
+			}
+
+			function createTermBubbles() {
+				const termBubbles = document.createElement('div')
+				termBubbles.className = 'term-bubbles'
+
+				extractedTerms.forEach((term) => {
+					const bubble = document.createElement('div')
+					bubble.className = 'term-bubble'
+
+					const icon = document.createElement('i')
+					icon.className = `fas ${getTermIcon(term.type)}`
+					bubble.appendChild(icon)
+
+					const text = document.createElement('span')
+					text.textContent = term.name
+					bubble.appendChild(text)
+
+					bubble.addEventListener('click', () => {
+						const welcomeMessage =
+							chatMessages.querySelector('.welcome-message')
+						if (welcomeMessage) {
+							welcomeMessage.remove()
+						}
+
+						chatInput.value = `Tell me about ${term.name} and how they relate to the story`
+						sendMessage()
+					})
+
+					termBubbles.appendChild(bubble)
+				})
+
+				return termBubbles
+			}
+
+			// Extract terms when page loads
+			document.addEventListener('DOMContentLoaded', async () => {
+				await extractTerms()
+			})
+
+			// Modified chat button click handler
+			chatButton.addEventListener('click', async (e) => {
+				e.stopPropagation()
+
 				if (chatDialog.classList.contains('active')) {
 					chatDialog.classList.remove('active')
 					chatInput.value = ''
 				} else {
 					chatDialog.classList.add('active')
-					// Add welcome message if chat is empty
-					if (chatMessages.children.length === 0) {
+
+					// Use the pre-extracted terms
+					if (extractedTerms.length > 0) {
+						chatMessages.innerHTML = ''
+						chatMessages.appendChild(createTermBubbles())
+					} else {
+						// Show default welcome message if no terms
 						const welcomeMessage = document.createElement('div')
 						welcomeMessage.className = 'message ai welcome-message'
 						welcomeMessage.textContent =
 							"You can type a character's name to learn more about them, or ask any question about the novel."
 						chatMessages.appendChild(welcomeMessage)
 					}
-					// Small delay to ensure input is ready
+
 					setTimeout(() => chatInput.focus(), 0)
 				}
 			})
