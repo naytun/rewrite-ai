@@ -556,7 +556,7 @@ export const generateGlossary = async (novelId: string): Promise<Glossary> => {
 		console.log('Total novel content length:', allContent.length)
 
 		// Process content in chunks
-		const CHUNK_SIZE = 100000
+		const CHUNK_SIZE = 500_000
 		const chunks = []
 		for (let i = 0; i < allContent.length; i += CHUNK_SIZE) {
 			chunks.push(allContent.slice(i, i + CHUNK_SIZE))
