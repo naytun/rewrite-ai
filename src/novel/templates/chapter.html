@@ -1024,9 +1024,6 @@
 					) {
 						chatDialog.classList.remove('active')
 						chatInput.value = ''
-					} else {
-						// If clicking inside chat dialog, focus the input
-						chatInput.focus()
 					}
 				}
 			})
@@ -1226,8 +1223,6 @@
 							"You can type a character's name to learn more about them."
 						chatMessages.appendChild(welcomeMessage)
 					}
-
-					setTimeout(() => chatInput.focus(), 0)
 				}
 			})
 
@@ -1237,12 +1232,12 @@
 			})
 
 			// Ensure input stays focused when clicking anywhere in the chat dialog
-			chatDialog.addEventListener('click', (e) => {
-				e.stopPropagation()
-				if (!e.target.matches('.chat-input')) {
-					chatInput.focus()
-				}
-			})
+			// chatDialog.addEventListener('click', (e) => {
+			// 	e.stopPropagation()
+			// 	if (!e.target.matches('.chat-input')) {
+			// 		chatInput.focus()
+			// 	}
+			// })
 
 			async function sendMessage() {
 				const message = chatInput.value.trim()
