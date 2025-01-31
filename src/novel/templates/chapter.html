@@ -325,7 +325,7 @@
 				flex: 1;
 				overflow-y: auto;
 				padding: 16px;
-				font-size: 16px;
+				font-size: 1.6rem;
 			}
 			.chat-input-container {
 				padding: 16px;
@@ -339,7 +339,7 @@
 				border: 1px solid #e5e7eb;
 				border-radius: 20px;
 				outline: none;
-				font-size: 16px;
+				font-size: 1.6rem;
 			}
 			.chat-send {
 				background: #3b82f6;
@@ -349,7 +349,7 @@
 				border-radius: 20px;
 				cursor: pointer;
 				transition: background 0.2s;
-				font-size: 16px;
+				font-size: 1.6rem;
 			}
 			.chat-send:hover {
 				background: #2563eb;
@@ -357,7 +357,7 @@
 			.message {
 				margin-bottom: 16px;
 				max-width: 80%;
-				font-size: 16px;
+				font-size: 1.6rem;
 				line-height: 1.5;
 			}
 			.message.user {
@@ -391,6 +391,14 @@
 					bottom: 120px;
 					right: 5%;
 					left: 5%;
+				}
+			}
+			@media (min-width: 640px) {
+				.chat-messages,
+				.chat-input,
+				.chat-send,
+				.message {
+					font-size: 1.4rem;
 				}
 			}
 		</style>
@@ -479,7 +487,11 @@
 			</div>
 			<div class="chat-messages"></div>
 			<div class="chat-input-container">
-				<input type="text" class="chat-input" placeholder="Ask a question..." />
+				<input
+					type="text"
+					class="chat-input"
+					placeholder="Enter your question about the novel..."
+				/>
 				<button class="chat-send">Send</button>
 			</div>
 		</div>
@@ -877,6 +889,14 @@
 					chatInput.value = ''
 				} else {
 					chatDialog.classList.add('active')
+					// Add welcome message if chat is empty
+					if (chatMessages.children.length === 0) {
+						const welcomeMessage = document.createElement('div')
+						welcomeMessage.className = 'message ai'
+						welcomeMessage.textContent =
+							"You can type a character's name to learn more about them, or ask any question about the chapter."
+						chatMessages.appendChild(welcomeMessage)
+					}
 					// Small delay to ensure input is ready
 					setTimeout(() => chatInput.focus(), 0)
 				}
