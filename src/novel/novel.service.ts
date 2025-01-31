@@ -6,6 +6,17 @@ import { getAISettings } from '../settings/settings.service'
 
 const basePath = 'Lightnovels'
 
+interface GlossaryTerm {
+	term: string
+	description: string
+	type?: 'person' | 'location' | 'item' | 'technique' | 'organization' | 'other'
+}
+
+interface Glossary {
+	terms: GlossaryTerm[]
+	lastUpdated: string
+}
+
 export const getNovelPath = async (novelId: string): Promise<string> => {
 	const websites = await fs.readdir(path.join(process.cwd(), basePath))
 
@@ -18,8 +29,17 @@ export const getNovelPath = async (novelId: string): Promise<string> => {
 		if (stat.isDirectory()) {
 			const novelFolders = await fs.readdir(websitePath)
 
+			// First try exact match
 			if (novelFolders.includes(novelId)) {
 				return path.join(websitePath, novelId)
+			}
+
+			// If no exact match, try case-insensitive match
+			const matchingFolder = novelFolders.find(
+				(folder) => folder.toLowerCase() === novelId.toLowerCase()
+			)
+			if (matchingFolder) {
+				return path.join(websitePath, matchingFolder)
 			}
 		}
 	}
@@ -482,6 +502,130 @@ export const bulkGenerateAIContent = async (
 		console.log('Bulk generation completed')
 	} catch (error) {
 		console.error('Error in bulk generation:', error)
+		throw error
+	}
+}
+
+export const generateGlossary = async (novelId: string): Promise<Glossary> => {
+	try {
+		const novelPath = await getNovelPath(novelId)
+		const volumes = await fs.readdir(path.join(novelPath, 'json'))
+
+		// Collect all chapter content
+		let allContent = ''
+		for (const volume of volumes) {
+			const volumePath = path.join(novelPath, 'json', volume)
+			const stat = await fs.stat(volumePath)
+
+			if (stat.isDirectory()) {
+				console.log('Processing volume:', volume)
+				const chapters = await fs.readdir(volumePath)
+				for (const chapter of chapters) {
+					if (chapter.endsWith('.json') && !chapter.endsWith('-ai.json')) {
+						const chapterPath = path.join(volumePath, chapter)
+						try {
+							const content = await fs.readFile(chapterPath, 'utf-8')
+							const chapterData = JSON.parse(content)
+							if (chapterData.body) {
+								// Clean HTML content
+								const cleanContent = chapterData.body
+									.replace(/<\/p>/g, '\n')
+									.replace(/<p>/g, '')
+									.replace(/<br\s*\/?>/g, '\n')
+									.replace(/<[^>]*>/g, '')
+									.trim()
+								allContent += cleanContent + '\n\n'
+							}
+						} catch (error) {
+							console.error('Error processing chapter:', chapterPath, error)
+							continue
+						}
+					}
+				}
+			}
+		}
+
+		console.log('Novel content length:', allContent.length)
+
+		// Use AI to extract terms and generate descriptions
+		const prompt = `Generate a comprehensive glossary for this novel, "Immortal Mortal", with word list and brief descriptions. For each term, include:
+			1. The term name
+			2. A concise description (2-3 sentences max)
+			3. The type of term, categorized as one of: person, location, item, technique, organization, or other
+
+			Focus on:
+			- Extract characters for each volume
+			- Main and supporting characters with their roles and relationships
+			- Important locations and their significance
+			- Special items, weapons, or artifacts
+			- Organizations, groups, or factions
+			- Other significant terms specific to the story's world
+
+			Format the response as a JSON array of objects with properties: term, description, and type.
+			Example format:
+			[
+			{
+				"term": "Term name",
+				"description": "Brief description of the term",
+				"type": "person/location/item/technique/organization/other"
+			}
+			]
+			Limit to the 50 most important terms that appear in the story.`
+
+		const aiResponse = await askAI({
+			question: prompt,
+			context: allContent.substring(0, 100_000), // Use first 10000 characters for context
+		})
+
+		console.log('AI Response:', aiResponse)
+		let terms: GlossaryTerm[] = []
+
+		try {
+			// Try to parse the AI response as JSON
+			terms = JSON.parse(aiResponse).map((term: any) => ({
+				term: term.term,
+				description: term.description,
+				type: term.type || 'other',
+			}))
+		} catch (error) {
+			console.error('Error parsing AI response:', error)
+			console.error('Raw AI response:', aiResponse)
+			throw new Error('Failed to parse AI response')
+		}
+
+		// Create glossary object with lastUpdated timestamp
+		const glossary: Glossary = {
+			terms,
+			lastUpdated: new Date().toISOString(),
+		}
+
+		// Save the glossary to a file
+		const glossaryPath = path.join(novelPath, 'glossary.json')
+		await fs.writeFile(glossaryPath, JSON.stringify(glossary, null, 2))
+
+		return glossary
+	} catch (error) {
+		console.error('Error generating glossary:', error)
+		throw error
+	}
+}
+
+export const getGlossary = async (
+	novelId: string
+): Promise<Glossary | null> => {
+	try {
+		const novelPath = await getNovelPath(novelId)
+		const glossaryPath = path.join(novelPath, 'glossary.json')
+
+		try {
+			const content = await fs.readFile(glossaryPath, 'utf-8')
+			return JSON.parse(content)
+		} catch (error) {
+			// If file doesn't exist or can't be read, return null
+			return null
+		}
+	} catch (error) {
+		console.error('Error reading glossary:', error)
 		throw error
 	}
 }

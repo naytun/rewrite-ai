@@ -6,6 +6,8 @@ import {
 	bulkGenerateAIContent as generateAIContent,
 	getNovelPath,
 	preloadAIContent,
+	getGlossary as getNovelGlossary,
+	generateGlossary as generateNovelGlossary,
 } from './novel.service'
 import { getAISettings } from '../settings/settings.service'
 import type { Chapter, ChapterNavigation } from '../types/novel'
@@ -739,5 +741,61 @@ export const getAllChaptersContent = async (
 	} catch (error) {
 		console.error('Error getting all chapters:', error)
 		res.status(500).json({ error: 'Failed to get all chapters content' })
+	}
+}
+
+export const getGlossary = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	const { novelId } = req.params
+	console.log('Controller: Getting glossary for novel:', novelId)
+
+	try {
+		const glossary = await getNovelGlossary(novelId)
+		console.log(
+			'Controller: Glossary retrieved:',
+			glossary ? 'found' : 'not found'
+		)
+		res.status(200).json(glossary || { terms: [], lastUpdated: null })
+	} catch (error) {
+		console.error('Controller: Error getting glossary:', error)
+		res.status(500).json({ error: 'Failed to get glossary' })
+	}
+}
+
+export const generateGlossary = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	const { novelId } = req.params
+	console.log('Controller: Starting glossary generation for novel:', novelId)
+
+	try {
+		// Check if novel exists
+		const novelPath = await getNovelPath(novelId)
+		if (!novelPath) {
+			console.error('Controller: Novel not found:', novelId)
+			res.status(404).json({
+				error: 'Novel not found',
+				details: `Novel with ID ${novelId} does not exist`,
+			})
+			return
+		}
+
+		console.log('Controller: Calling generateNovelGlossary service')
+		const glossary = await generateNovelGlossary(novelId)
+		console.log(
+			'Controller: Glossary generated successfully, terms count:',
+			glossary.terms.length
+		)
+		res.json(glossary)
+	} catch (error: any) {
+		console.error('Controller: Error generating glossary:', error)
+		const statusCode = error.message?.includes('Novel not found') ? 404 : 500
+		res.status(statusCode).json({
+			error: 'Failed to generate glossary',
+			details: error instanceof Error ? error.message : 'Unknown error',
+		})
 	}
 }
