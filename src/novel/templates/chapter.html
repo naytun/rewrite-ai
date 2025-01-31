@@ -296,7 +296,7 @@
 				bottom: 170px;
 				right: 20px;
 				width: 700px;
-				height: 500px;
+				height: 450px;
 				background: white;
 				border-radius: 12px;
 				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -387,7 +387,7 @@
 			@media (max-width: 768px) {
 				.chat-dialog {
 					width: 90%;
-					height: 60vh;
+					height: 54vh;
 					bottom: 120px;
 					right: 5%;
 					left: 5%;
@@ -870,9 +870,16 @@
 
 			chatButton.addEventListener('click', (e) => {
 				e.stopPropagation() // Prevent the document click handler from firing
-				chatDialog.classList.add('active')
-				// Small delay to ensure input is ready
-				setTimeout(() => chatInput.focus(), 0)
+
+				// Toggle chat window
+				if (chatDialog.classList.contains('active')) {
+					chatDialog.classList.remove('active')
+					chatInput.value = ''
+				} else {
+					chatDialog.classList.add('active')
+					// Small delay to ensure input is ready
+					setTimeout(() => chatInput.focus(), 0)
+				}
 			})
 
 			chatClose.addEventListener('click', () => {
