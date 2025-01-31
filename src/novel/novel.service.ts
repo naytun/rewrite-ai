@@ -511,6 +511,10 @@ export const generateGlossary = async (novelId: string): Promise<Glossary> => {
 		const novelPath = await getNovelPath(novelId)
 		const volumes = await fs.readdir(path.join(novelPath, 'json'))
 
+		// Get novel metadata for title
+		const metadata = await getNovelMetadata(novelId)
+		const novelTitle = metadata.novel.title
+
 		// Collect all chapter content
 		let allContent = ''
 		for (const volume of volumes) {
@@ -545,57 +549,114 @@ export const generateGlossary = async (novelId: string): Promise<Glossary> => {
 			}
 		}
 
-		console.log('Novel content length:', allContent.length)
-
-		// Use AI to extract terms and generate descriptions
-		const prompt = `Generate a comprehensive glossary for "${novelId}" with word list and brief descriptions. For each term, include:
-			1. The term name
-			2. A concise description (2-3 sentences max)
-			3. The type of term, categorized as one of: person, location, item, technique, organization, or other
-
-			Focus on:
-			- Extract characters for each volume
-			- Main and supporting characters with their roles and relationships
-			- Important locations and their significance
-			- Special items, weapons, or artifacts
-			- Organizations, groups, or factions
-			- Other significant terms specific to the story's world
-
-			Format the response as a JSON array of objects with properties: term, description, and type.
-			Example format:
-			[
-			{
-				"term": "Term name",
-				"description": "Brief description of the term",
-				"type": "person/location/item/technique/organization/other"
-			}
-			]
-			Limit to the 50 most important terms that appear in the story.`
-
-		const aiResponse = await askAI({
-			question: prompt,
-			context: allContent.substring(0, 100_000), // Use first 10000 characters for context
-		})
-
-		console.log('AI Response:', aiResponse)
-		let terms: GlossaryTerm[] = []
-
-		try {
-			// Try to parse the AI response as JSON
-			terms = JSON.parse(aiResponse).map((term: any) => ({
-				term: term.term,
-				description: term.description,
-				type: term.type || 'other',
-			}))
-		} catch (error) {
-			console.error('Error parsing AI response:', error)
-			console.error('Raw AI response:', aiResponse)
-			throw new Error('Failed to parse AI response')
+		if (allContent.length === 0) {
+			throw new Error('No content found in the novel')
 		}
+
+		console.log('Total novel content length:', allContent.length)
+
+		// Process content in chunks
+		const CHUNK_SIZE = 100000
+		const chunks = []
+		for (let i = 0; i < allContent.length; i += CHUNK_SIZE) {
+			chunks.push(allContent.slice(i, i + CHUNK_SIZE))
+		}
+		console.log(`Split content into ${chunks.length} chunks`)
+
+		// Base prompt template
+		const promptTemplate = `You are a glossary generator for the novel "${novelTitle}". Create a glossary with terms and descriptions from the provided chunk of the novel content.
+
+For each important term you find in THIS CHUNK, create an entry with:
+1. The term name (exactly as it appears in the novel)
+2. A concise description (2-3 sentences max)
+3. The term type (must be one of: person, location, item, technique, organization, or other)
+
+Focus on extracting:
+- Main and supporting characters (type: person)
+- Important locations and their significance (type: location)
+- Special items, weapons, or artifacts (type: item)
+- Special techniques or skills (type: technique)
+- Organizations, groups, or factions (type: organization)
+- Other significant terms specific to the story's world (type: other)
+
+Format your response EXACTLY as a JSON array of objects with these properties:
+[
+  {
+    "term": "Term name",
+    "description": "Brief description",
+    "type": "person/location/item/technique/organization/other"
+  }
+]
+
+Important:
+- Extract ONLY terms that actually appear in THIS CHUNK of content
+- ALWAYS return valid JSON format
+- If you can't find any terms in this chunk, return an empty array []
+- NEVER return an error message or non-JSON response`
+
+		// Process each chunk and collect terms
+		let allTerms: GlossaryTerm[] = []
+		for (let i = 0; i < chunks.length; i++) {
+			console.log(`Processing chunk ${i + 1} of ${chunks.length}`)
+			const chunk = chunks[i]
+
+			try {
+				const aiResponse = await askAI({
+					question: promptTemplate,
+					context: chunk,
+				})
+
+				if (aiResponse.startsWith('[') && aiResponse.endsWith(']')) {
+					const chunkTerms: GlossaryTerm[] = JSON.parse(aiResponse).map(
+						(term: any) => ({
+							term: term.term,
+							description: term.description,
+							type: term.type || 'other',
+						})
+					)
+					allTerms = allTerms.concat(chunkTerms)
+					console.log(
+						`Extracted ${chunkTerms.length} terms from chunk ${i + 1}`
+					)
+				} else {
+					console.error(
+						`Invalid AI response format for chunk ${i + 1}:`,
+						aiResponse?.length
+					)
+				}
+			} catch (error) {
+				console.error(`Error processing chunk ${i + 1}:`, error)
+				// Continue with next chunk even if one fails
+			}
+		}
+
+		// Remove duplicates by term name (case-insensitive)
+		// If duplicates exist, keep the one with the longer description
+		const uniqueTerms = Object.values(
+			allTerms.reduce((acc: { [key: string]: GlossaryTerm }, term) => {
+				const key = term.term.toLowerCase()
+				if (
+					!acc[key] ||
+					acc[key].description.length < term.description.length
+				) {
+					acc[key] = term
+				}
+				return acc
+			}, {})
+		)
+
+		console.log(`Final unique terms count: ${uniqueTerms.length}`)
+
+		if (uniqueTerms.length === 0) {
+			throw new Error('No terms were extracted from the novel content')
+		}
+
+		// Sort terms alphabetically
+		uniqueTerms.sort((a, b) => a.term.localeCompare(b.term))
 
 		// Create glossary object with lastUpdated timestamp
 		const glossary: Glossary = {
-			terms,
+			terms: uniqueTerms,
 			lastUpdated: new Date().toISOString(),
 		}
 
