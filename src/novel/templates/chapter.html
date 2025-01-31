@@ -423,22 +423,57 @@
 			.term-bubbles {
 				display: flex;
 				flex-wrap: wrap;
-				gap: 8px;
+				gap: 12px;
 				padding: 16px;
-				justify-content: center;
+				justify-content: flex-start;
+				max-height: 200px;
+				overflow-y: auto;
 			}
 
 			.term-bubble {
 				background: #e5e7eb;
-				padding: 4px 10px;
-				padding-left: 6px;
+				padding: 6px 12px;
+				padding-left: 8px;
 				border-radius: 14px;
 				cursor: pointer;
 				transition: background 0.2s;
 				font-size: 1.2rem;
 				display: flex;
 				align-items: center;
-				gap: 4px;
+				gap: 6px;
+				margin: 2px;
+			}
+
+			/* Add custom scrollbar for term bubbles container */
+			.term-bubbles::-webkit-scrollbar {
+				width: 8px;
+			}
+
+			.term-bubbles::-webkit-scrollbar-track {
+				background: #f1f1f1;
+				border-radius: 4px;
+			}
+
+			.term-bubbles::-webkit-scrollbar-thumb {
+				background: #888;
+				border-radius: 4px;
+			}
+
+			.term-bubbles::-webkit-scrollbar-thumb:hover {
+				background: #666;
+			}
+
+			/* Dark mode scrollbar */
+			html.dark .term-bubbles::-webkit-scrollbar-track {
+				background: #374151;
+			}
+
+			html.dark .term-bubbles::-webkit-scrollbar-thumb {
+				background: #4b5563;
+			}
+
+			html.dark .term-bubbles::-webkit-scrollbar-thumb:hover {
+				background: #6b7280;
 			}
 
 			.term-bubble i {
@@ -1007,18 +1042,30 @@
 				const chapterBody = document.getElementById('chapterBody')
 				if (!chapterBody) return
 
+				// Check if we have cached terms for this chapter
+				const novelId = '{{novel_id}}'
+				const volume = '{{current_volume}}'
+				const chapter = '{{current_chapter}}'
+				const cacheKey = `terms_${novelId}_${volume}_${chapter}`
+				const cachedTerms = localStorage.getItem(cacheKey)
+
+				if (cachedTerms) {
+					extractedTerms = JSON.parse(cachedTerms)
+					return extractedTerms
+				}
+
 				try {
 					isExtracting = true
 					const content = chapterBody.textContent || ''
 
-					// First, get character names
+					// Get character names with descriptions
 					const characterResponse = await fetch('/api/ai/ask', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 						},
 						body: JSON.stringify({
-							question: `Extract ONLY character names from this chapter. Format as comma-separated list. Content: ${content}`,
+							question: `Extract character names as well as major terms from this chapter with brief descriptions. Format as: "Name: Brief description of their role and relation to the story". Separate entries with ||. Content: ${content}`,
 						}),
 					})
 
@@ -1027,21 +1074,28 @@
 
 					const characterData = await characterResponse.json()
 					const characters = characterData.answer
-						.split(',')
-						.map((term) => ({
-							name: term.trim(),
-							type: 'person',
-						}))
-						.filter((term) => term.name.length > 0 && !term.name.includes('.'))
+						.split('||')
+						.map((entry) => {
+							const [name, description] = entry.split(':').map((s) => s.trim())
+							if (name && description) {
+								return {
+									name: name,
+									type: 'person',
+									description: description,
+								}
+							}
+							return null
+						})
+						.filter((term) => term && term.name.length > 0)
 
-					// Then get other important terms
+					// Get other important terms with descriptions
 					const termsResponse = await fetch('/api/ai/ask', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 						},
 						body: JSON.stringify({
-							question: `Extract important non-character terms (locations, items, techniques, etc) from this chapter. For each term, specify its type in parentheses like this: "term (type)". Separate with commas. Content: ${content}`,
+							question: `Extract important non-character terms (locations, items, techniques, etc) from this chapter. For each term include: type in parentheses and description. Format as: "Term (type): Description of its significance". Separate entries with ||. Content: ${content}`,
 						}),
 					})
 
@@ -1049,13 +1103,14 @@
 
 					const termsData = await termsResponse.json()
 					const otherTerms = termsData.answer
-						.split(',')
-						.map((term) => {
-							const match = term.trim().match(/(.+?)\s*\((.+?)\)/)
+						.split('||')
+						.map((entry) => {
+							const match = entry.trim().match(/(.+?)\s*\((.+?)\):\s*(.+)/)
 							if (match) {
 								return {
 									name: match[1].trim(),
 									type: match[2].trim().toLowerCase(),
+									description: match[3].trim(),
 								}
 							}
 							return null
@@ -1064,6 +1119,10 @@
 
 					// Combine and store all terms
 					extractedTerms = [...characters, ...otherTerms]
+
+					// Cache the terms
+					localStorage.setItem(cacheKey, JSON.stringify(extractedTerms))
+
 					return extractedTerms
 				} catch (error) {
 					console.error('Error extracting terms:', error)
@@ -1117,8 +1176,20 @@
 							welcomeMessage.remove()
 						}
 
-						chatInput.value = `Tell me about ${term.name} and how they relate to the story`
-						sendMessage()
+						// Create and add user message
+						const userMessageElement = document.createElement('div')
+						userMessageElement.className = 'message user'
+						userMessageElement.textContent = term.name
+						chatMessages.appendChild(userMessageElement)
+
+						// Create and add AI response with stored description
+						const aiMessageElement = document.createElement('div')
+						aiMessageElement.className = 'message ai'
+						aiMessageElement.textContent = term.description
+						chatMessages.appendChild(aiMessageElement)
+
+						// Scroll to bottom
+						chatMessages.scrollTop = chatMessages.scrollHeight
 					})
 
 					termBubbles.appendChild(bubble)
