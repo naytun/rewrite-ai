@@ -6,6 +6,7 @@ import {
 	bulkGenerateAIContent,
 	regenerateChapter,
 	checkAIContentExists,
+	getAllChaptersContent,
 } from './novel.controller'
 
 const router = Router()
@@ -36,6 +37,7 @@ router.get(
 	'/novels/:novelId/chapters/:volume/:chapter/ai-exists',
 	checkAIContentExists
 )
+router.get('/novels/:novelId/all-chapters', getAllChaptersContent)
 
 // Bulk generation route
 router.post('/novels/:novelId/bulk-generate', bulkGenerateAIContent)
