@@ -430,20 +430,70 @@
 
 			.term-bubble {
 				background: #e5e7eb;
-				padding: 6px 12px;
-				padding-left: 8px;
-				border-radius: 16px;
+				padding: 4px 10px;
+				padding-left: 6px;
+				border-radius: 14px;
 				cursor: pointer;
 				transition: background 0.2s;
-				font-size: 1.4rem;
+				font-size: 1.2rem;
 				display: flex;
 				align-items: center;
-				gap: 6px;
+				gap: 4px;
 			}
 
 			.term-bubble i {
-				font-size: 1.2rem;
-				opacity: 0.7;
+				font-size: 1rem;
+				opacity: 0.9;
+			}
+
+			/* Icon colors for different term types */
+			.term-bubble i.fa-user {
+				color: #3b82f6; /* Blue for persons */
+			}
+
+			.term-bubble i.fa-location-dot {
+				color: #ef4444; /* Red for locations */
+			}
+
+			.term-bubble i.fa-shield {
+				color: #f59e0b; /* Amber for items/weapons */
+			}
+
+			.term-bubble i.fa-bolt {
+				color: #8b5cf6; /* Purple for techniques/skills */
+			}
+
+			.term-bubble i.fa-users {
+				color: #10b981; /* Green for organizations */
+			}
+
+			.term-bubble i.fa-circle-info {
+				color: #6b7280; /* Gray for other terms */
+			}
+
+			/* Dark mode adjustments for icons */
+			html.dark .term-bubble i.fa-user {
+				color: #60a5fa;
+			}
+
+			html.dark .term-bubble i.fa-location-dot {
+				color: #f87171;
+			}
+
+			html.dark .term-bubble i.fa-shield {
+				color: #fbbf24;
+			}
+
+			html.dark .term-bubble i.fa-bolt {
+				color: #a78bfa;
+			}
+
+			html.dark .term-bubble i.fa-users {
+				color: #34d399;
+			}
+
+			html.dark .term-bubble i.fa-circle-info {
+				color: #9ca3af;
 			}
 
 			.term-bubble:hover {
@@ -457,6 +507,15 @@
 
 			html.dark .term-bubble:hover {
 				background: #4b5563;
+			}
+
+			@media (min-width: 640px) {
+				.term-bubble {
+					font-size: 1.1rem;
+				}
+				.term-bubble i {
+					font-size: 0.9rem;
+				}
 			}
 		</style>
 	</head>
@@ -937,16 +996,21 @@
 				}
 			})
 
-			// Initialize terms extraction on page load
+			// Initialize terms extraction
 			let extractedTerms = []
+			let isExtracting = false // Flag to prevent duplicate extraction
 
 			async function extractTerms() {
+				// If already extracting, don't start another extraction
+				if (isExtracting) return
+
 				const chapterBody = document.getElementById('chapterBody')
 				if (!chapterBody) return
 
-				const content = chapterBody.textContent || ''
-
 				try {
+					isExtracting = true
+					const content = chapterBody.textContent || ''
+
 					// First, get character names
 					const characterResponse = await fetch('/api/ai/ask', {
 						method: 'POST',
@@ -1004,6 +1068,8 @@
 				} catch (error) {
 					console.error('Error extracting terms:', error)
 					return []
+				} finally {
+					isExtracting = false
 				}
 			}
 
@@ -1062,12 +1128,13 @@
 			}
 
 			// Extract terms when page loads
-			document.addEventListener('DOMContentLoaded', async () => {
+			window.addEventListener('load', async () => {
 				await extractTerms()
 			})
 
-			// Modified chat button click handler
-			chatButton.addEventListener('click', async (e) => {
+			// Modified chat button click handler - simplified to use stored terms
+			chatButton.addEventListener('click', (e) => {
+				// Removed async since we're not making API calls
 				e.stopPropagation()
 
 				if (chatDialog.classList.contains('active')) {
@@ -1077,11 +1144,11 @@
 					chatDialog.classList.add('active')
 
 					// Use the pre-extracted terms
+					chatMessages.innerHTML = '' // Clear existing messages
 					if (extractedTerms.length > 0) {
-						chatMessages.innerHTML = ''
 						chatMessages.appendChild(createTermBubbles())
 					} else {
-						// Show default welcome message if no terms
+						// Show default welcome message if no terms were extracted
 						const welcomeMessage = document.createElement('div')
 						welcomeMessage.className = 'message ai welcome-message'
 						welcomeMessage.textContent =
