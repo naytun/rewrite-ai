@@ -240,7 +240,7 @@
 				height: 56px;
 				border-radius: 50%;
 				color: white;
-				display: none;
+				display: flex;
 				align-items: center;
 				justify-content: center;
 				cursor: pointer;
@@ -248,94 +248,101 @@
 				transition: all 0.3s ease;
 				z-index: 100;
 			}
-			.floating-button:hover {
+			#chat-button {
+				bottom: 100px;
+				background: #3b82f6;
+			}
+			#chat-button:hover {
+				background: #2563eb;
 				transform: scale(1.1);
 			}
-			.floating-button.show {
+			.chat-dialog {
+				display: none;
+				position: fixed;
+				bottom: 170px;
+				right: 20px;
+				width: 350px;
+				height: 500px;
+				background: white;
+				border-radius: 12px;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+				z-index: 1000;
+				flex-direction: column;
+			}
+			.chat-dialog.active {
 				display: flex;
 			}
-			.floating-button.disabled {
-				background-color: #9ca3af !important;
-				cursor: not-allowed;
-				transform: none;
-			}
-			.floating-button:before {
-				content: attr(data-tooltip);
-				position: absolute;
-				bottom: 120%;
-				right: 50%;
-				transform: translateX(50%);
-				padding: 0.5rem 1rem;
-				background-color: #1f2937;
+			.chat-header {
+				padding: 16px;
+				background: #3b82f6;
 				color: white;
-				border-radius: 0.375rem;
-				font-size: 0.875rem;
-				white-space: nowrap;
-				opacity: 0;
-				visibility: hidden;
-				transition: all 0.2s ease;
-			}
-			/* Only show tooltips on desktop/larger screens */
-			@media (max-width: 1024px) {
-				.floating-button:before {
-					display: none;
-				}
-				.floating-button:hover:before {
-					opacity: 0;
-					visibility: hidden;
-				}
-			}
-			/* Original hover state for desktop */
-			@media (min-width: 1025px) {
-				.floating-button:hover:before {
-					opacity: 1;
-					visibility: visible;
-				}
-			}
-			.compare-button {
-				bottom: 80px;
-				background-color: #3b82f6;
-			}
-			.regenerate-button {
-				bottom: 150px;
-				background-color: #10b981;
-			}
-			html.dark .floating-button:before {
-				background-color: #374151;
-			}
-			html.dark .compare-button {
-				background-color: #3b82f6;
-			}
-			html.dark .regenerate-button {
-				background-color: #059669;
-			}
-			html.dark .compare-button:hover {
-				background-color: #2563eb;
-			}
-			html.dark .regenerate-button:hover {
-				background-color: #047857;
-			}
-			.novel-title {
-				font-size: 1rem;
-				color: #4b5563;
-				margin-bottom: 0.75rem;
+				border-radius: 12px 12px 0 0;
 				font-weight: 500;
-				letter-spacing: 0.025em;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
 			}
-			html.dark .novel-title {
-				color: #9ca3af;
+			.chat-close {
+				cursor: pointer;
+				padding: 4px;
 			}
-			#generateAIBtn {
-				display: none;
+			.chat-messages {
+				flex: 1;
+				overflow-y: auto;
+				padding: 16px;
 			}
-			#generateAIBtn.show {
-				display: inline-block;
+			.chat-input-container {
+				padding: 16px;
+				border-top: 1px solid #e5e7eb;
+				display: flex;
+				gap: 8px;
 			}
-			html.dark #generateAIBtn {
-				background-color: #059669;
+			.chat-input {
+				flex: 1;
+				padding: 8px 12px;
+				border: 1px solid #e5e7eb;
+				border-radius: 20px;
+				outline: none;
 			}
-			html.dark #generateAIBtn:hover {
-				background-color: #047857;
+			.chat-send {
+				background: #3b82f6;
+				color: white;
+				border: none;
+				padding: 8px 16px;
+				border-radius: 20px;
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+			.chat-send:hover {
+				background: #2563eb;
+			}
+			.message {
+				margin-bottom: 12px;
+				max-width: 80%;
+			}
+			.message.user {
+				margin-left: auto;
+				background: #3b82f6;
+				color: white;
+				padding: 8px 12px;
+				border-radius: 12px 12px 0 12px;
+			}
+			.message.ai {
+				background: #f3f4f6;
+				padding: 8px 12px;
+				border-radius: 12px 12px 12px 0;
+			}
+			html.dark .chat-dialog {
+				background: #2d2d2d;
+			}
+			html.dark .chat-input {
+				background: #374151;
+				border-color: #4b5563;
+				color: #e5e7eb;
+			}
+			html.dark .message.ai {
+				background: #374151;
+				color: #e5e7eb;
 			}
 		</style>
 	</head>
@@ -411,6 +418,21 @@
 			data-tooltip="Regenerate AI content"
 		>
 			<i class="fas fa-sync-alt fa-lg"></i>
+		</div>
+
+		<div id="chat-button" class="floating-button">
+			<i class="fas fa-comments"></i>
+		</div>
+		<div class="chat-dialog">
+			<div class="chat-header">
+				<span>AI Chat Assistant</span>
+				<span class="chat-close"><i class="fas fa-times"></i></span>
+			</div>
+			<div class="chat-messages"></div>
+			<div class="chat-input-container">
+				<input type="text" class="chat-input" placeholder="Ask a question..." />
+				<button class="chat-send">Send</button>
+			</div>
 		</div>
 
 		<script>
@@ -771,6 +793,86 @@
 					loadingEl.classList.remove('active')
 				}
 			}
+
+			// Chat functionality
+			const chatButton = document.getElementById('chat-button')
+			const chatDialog = document.querySelector('.chat-dialog')
+			const chatClose = document.querySelector('.chat-close')
+			const chatInput = document.querySelector('.chat-input')
+			const chatSend = document.querySelector('.chat-send')
+			const chatMessages = document.querySelector('.chat-messages')
+
+			chatButton.addEventListener('click', () => {
+				chatDialog.classList.add('active')
+			})
+
+			chatClose.addEventListener('click', () => {
+				chatDialog.classList.remove('active')
+			})
+
+			async function sendMessage() {
+				const message = chatInput.value.trim()
+				if (!message) return
+
+				// Add user message to chat
+				const userMessageElement = document.createElement('div')
+				userMessageElement.className = 'message user'
+				userMessageElement.textContent = message
+				chatMessages.appendChild(userMessageElement)
+
+				// Add loading message
+				const loadingMessage = document.createElement('div')
+				loadingMessage.className = 'message ai'
+				loadingMessage.textContent = 'Searching...'
+				chatMessages.appendChild(loadingMessage)
+
+				// Clear input
+				chatInput.value = ''
+
+				// Scroll to bottom
+				chatMessages.scrollTop = chatMessages.scrollHeight
+
+				try {
+					const response = await fetch('/api/ai/ask', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ question: message }),
+					})
+
+					const data = await response.json()
+
+					// Remove loading message
+					loadingMessage.remove()
+
+					// Add AI response to chat
+					const aiMessageElement = document.createElement('div')
+					aiMessageElement.className = 'message ai'
+					aiMessageElement.textContent = data.answer
+					chatMessages.appendChild(aiMessageElement)
+
+					// Scroll to bottom
+					chatMessages.scrollTop = chatMessages.scrollHeight
+				} catch (error) {
+					console.error('Error:', error)
+					// Remove loading message
+					loadingMessage.remove()
+
+					const errorMessage = document.createElement('div')
+					errorMessage.className = 'message ai'
+					errorMessage.textContent =
+						'Sorry, there was an error processing your request.'
+					chatMessages.appendChild(errorMessage)
+				}
+			}
+
+			chatSend.addEventListener('click', sendMessage)
+			chatInput.addEventListener('keypress', (e) => {
+				if (e.key === 'Enter') {
+					sendMessage()
+				}
+			})
 		</script>
 	</body>
 </html>
