@@ -48,7 +48,7 @@ export const askAI = async ({
 				: settings.prompt
 
 		const session = await oramaClient.createAnswerSession({
-			userContext: prompt,
+			userContext: context || prompt,
 			inferenceType: 'documentation',
 		})
 
