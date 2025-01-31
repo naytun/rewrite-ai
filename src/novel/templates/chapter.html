@@ -802,12 +802,56 @@
 			const chatSend = document.querySelector('.chat-send')
 			const chatMessages = document.querySelector('.chat-messages')
 
-			chatButton.addEventListener('click', () => {
+			chatButton.addEventListener('click', async () => {
 				chatDialog.classList.add('active')
+				chatInput.focus()
+
+				try {
+					// First check if we have clipboard permission
+					const permissionResult = await navigator.permissions.query({
+						name: 'clipboard-read',
+					})
+					console.log('Clipboard permission:', permissionResult.state)
+
+					if (
+						permissionResult.state === 'granted' ||
+						permissionResult.state === 'prompt'
+					) {
+						const text = await navigator.clipboard.readText()
+						console.log('Clipboard content:', text ? 'Found text' : 'No text')
+						if (text) {
+							// Small delay to ensure input is ready
+							setTimeout(() => {
+								chatInput.value = text
+								chatInput.select()
+							}, 100)
+						}
+					}
+				} catch (err) {
+					console.error('Clipboard error:', err)
+					// Try alternative approach for Safari and other browsers
+					try {
+						const text = await new Promise((resolve) => {
+							const pasteHandler = (e) => {
+								document.removeEventListener('paste', pasteHandler)
+								resolve(e.clipboardData?.getData('text') || '')
+							}
+							document.addEventListener('paste', pasteHandler)
+							document.execCommand('paste')
+						})
+						if (text) {
+							chatInput.value = text.toString()
+							chatInput.select()
+						}
+					} catch (fallbackErr) {
+						console.error('Fallback clipboard error:', fallbackErr)
+					}
+				}
 			})
 
 			chatClose.addEventListener('click', () => {
 				chatDialog.classList.remove('active')
+				chatInput.value = ''
 			})
 
 			async function sendMessage() {
