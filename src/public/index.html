@@ -440,6 +440,7 @@
 							class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
 						>
 							<span>Generate</span>
+							<i class="fas fa-spinner fa-spin hidden"></i>
 						</button>
 						<button
 							onclick="closeGlossaryModal()"
@@ -788,16 +789,19 @@
 			function openGlossaryModal(novelId) {
 				currentNovelId = novelId
 				const modal = document.getElementById('glossaryModal')
-				const generateBtn = document.getElementById('generateGlossaryBtn')
 				modal.classList.remove('hidden')
-
-				generateBtn.onclick = () => generateGlossary(novelId)
+				modal.classList.add('flex') // Add flex display when showing
 				loadGlossary(novelId)
+
+				// Set up generate button click handler
+				const generateBtn = document.getElementById('generateGlossaryBtn')
+				generateBtn.onclick = () => generateGlossary(novelId)
 			}
 
 			function closeGlossaryModal() {
 				const modal = document.getElementById('glossaryModal')
 				modal.classList.add('hidden')
+				modal.classList.remove('flex') // Remove flex display when hiding
 				currentNovelId = null
 			}
 
@@ -916,23 +920,12 @@
 				const btnText = generateBtn.querySelector('span')
 
 				// Show spinner and disable button before starting
-				const showSpinner = () => {
-					generateBtn.disabled = true
-					generateBtn.classList.add('opacity-50')
-					spinner.classList.remove('hidden')
-					btnText.textContent = 'Generating...'
-				}
-
-				// Hide spinner and enable button after completion
-				const hideSpinner = () => {
-					generateBtn.disabled = false
-					generateBtn.classList.remove('opacity-50')
-					spinner.classList.add('hidden')
-					btnText.textContent = 'Generate'
-				}
+				generateBtn.disabled = true
+				generateBtn.classList.add('opacity-50')
+				spinner.classList.remove('hidden')
+				btnText.textContent = 'Generating...'
 
 				try {
-					showSpinner()
 					contentDiv.innerHTML =
 						'<div class="text-center text-gray-500 dark:text-gray-400 py-4">Generating glossary...</div>'
 
@@ -966,7 +959,11 @@
 					contentDiv.innerHTML =
 						'<div class="text-center text-red-500 py-4">Failed to generate glossary. Please try again.</div>'
 				} finally {
-					hideSpinner()
+					// Reset button state
+					generateBtn.disabled = false
+					generateBtn.classList.remove('opacity-50')
+					spinner.classList.add('hidden')
+					btnText.textContent = 'Generate'
 				}
 			}
 

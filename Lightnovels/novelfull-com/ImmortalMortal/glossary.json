@@ -2,179 +2,104 @@
   "terms": [
     {
       "term": "Mo Wuji",
-      "description": "The main protagonist of the story, a talented biologist who is reborn in a new world. He seeks to cultivate and regain his strength while navigating the challenges of his new life.",
+      "description": "The protagonist of the story, who is on a journey to cultivate and gain power. He is known for his determination and innovative cultivation techniques.",
       "type": "person"
     },
     {
       "term": "Cen Shuyin",
-      "description": "A supporting character and Mo Wuji's companion, she cultivates the Typhoon Formula and the Wind Escape Technique. She has a close relationship with Mo Wuji and supports him in his journey.",
+      "description": "A cultivator who practices dual-cultivation techniques, including the Typhoon Formula and Wind Escape Technique. She is a close ally of Mo Wuji.",
       "type": "person"
-    },
-    {
-      "term": "Escaping Wind",
-      "description": "A rare wind-type treasure that aids in the cultivation of the Wind Escape Technique. It is a crucial item for Mo Wuji in his quest for enlightenment.",
-      "type": "item"
-    },
-    {
-      "term": "Wind Escape Technique",
-      "description": "A technique that allows the user to move with the wind, leaving no trace behind. It is a key skill that Mo Wuji develops throughout the story.",
-      "type": "technique"
     },
     {
       "term": "Typhoon Formula",
-      "description": "A powerful cultivation technique that Cen Shuyin learns. It enhances her abilities and allows her to harness wind elemental energy.",
+      "description": "A powerful cultivation technique that Cen Shuyin practices, which enhances her wind elemental abilities.",
       "type": "technique"
     },
     {
-      "term": "Thorny Wind Gate",
-      "description": "A dangerous location characterized by violent winds and obstacles. It serves as a training ground for Mo Wuji and Cen Shuyin to hone their wind techniques.",
-      "type": "location"
+      "term": "Wind Escape Technique",
+      "description": "A technique that allows the user to move with the wind, leaving no trace. Mo Wuji gains insights into this technique, making it unique to him.",
+      "type": "technique"
     },
     {
-      "term": "True Lake Stage",
-      "description": "A level of cultivation that signifies a significant breakthrough in a cultivator's abilities. Both Mo Wuji and Cen Shuyin strive to reach higher levels within this stage.",
-      "type": "other"
-    },
-    {
-      "term": "Howling Wind Beasts",
-      "description": "Powerful wind-type beasts that inhabit the Thorny Wind Gate. They pose a significant threat to cultivators who venture into their territory.",
-      "type": "other"
-    },
-    {
-      "term": "Elemental Energy Lake",
-      "description": "A reservoir of elemental energy within a cultivator's body. Cen Shuyin possesses both wind and ice elemental energy lakes due to her dual cultivation.",
-      "type": "other"
-    },
-    {
-      "term": "Yuan Dan Stage",
-      "description": "A stage of cultivation that represents a major advancement in a cultivator's journey. It is a precursor to the True Lake Stage.",
-      "type": "other"
-    },
-    {
-      "term": "Mo Tiancheng",
-      "description": "Mo Wuji's grandfather, a high-level drug refiner and cultivator. His legacy influences Mo Wuji's journey and aspirations.",
-      "type": "person"
-    },
-    {
-      "term": "Escaping Wind Grass",
-      "description": "A special type of grass that aids in the cultivation of wind techniques. It is used by Mo Wuji to gain insights into the Wind Escape Technique.",
+      "term": "Escaping Wind",
+      "description": "A wind-type treasure that Mo Wuji uses to gain enlightenment on the Wind Escape Technique. It is a rare and valuable item.",
       "type": "item"
     },
     {
-      "term": "Wind Dao",
-      "description": "The philosophical and elemental understanding of wind within the story's world. It is essential for mastering wind-based techniques.",
+      "term": "True Lake Stage",
+      "description": "A level in cultivation that Mo Wuji and Cen Shuyin have reached, indicating a significant advancement in their powers.",
+      "type": "other"
+    },
+    {
+      "term": "Thorny Wind Gate",
+      "description": "A dangerous location known for its violent winds and wind-type beasts. It serves as a training ground for Mo Wuji to hone his Wind Escape Technique.",
+      "type": "location"
+    },
+    {
+      "term": "Howling Wind Beasts",
+      "description": "Wind-type beasts that inhabit the Thorny Wind Gate, posing a threat to cultivators like Mo Wuji and Cen Shuyin.",
       "type": "other"
     },
     {
       "term": "Zhen Mo Continent",
-      "description": "A significant location within the story, known for its advanced cultivation techniques and resources. It is mentioned in relation to communication beads.",
+      "description": "A continent mentioned in the story, known for having rare communication beads forged by Worldly Immortal smiths.",
       "type": "location"
     },
     {
+      "term": "Worldly Immortal",
+      "description": "A high-level cultivator with the ability to forge rare items like communication beads. They possess a deep understanding of the space dao.",
+      "type": "other"
+    },
+    {
       "term": "Communication Bead",
-      "description": "A rare item that allows for communication over long distances. It is highly sought after and difficult to obtain.",
+      "description": "A rare item used for communication, forged by Worldly Immortal smiths. It is highly sought after in the cultivation world.",
       "type": "item"
     },
     {
-      "term": "Li Fire Sect",
-      "description": "An organization that specializes in fire-based cultivation techniques. It is mentioned in relation to Cen Shuyin's potential as a disciple.",
-      "type": "organization"
+      "term": "Reverse Circulation Technique",
+      "description": "A cultivation method used by Mo Wuji to absorb energy and gain insights into the Wind Dao.",
+      "type": "technique"
     },
     {
-      "term": "Jing Feilan",
-      "description": "A powerful cultivator who seeks to take Cen Shuyin as her disciple. She possesses significant influence and skills.",
-      "type": "person"
+      "term": "Elemental Energy Lake",
+      "description": "A reservoir of elemental energy within a cultivator's body, indicating their power level. Cen Shuyin has both wind and ice elemental energy lakes.",
+      "type": "other"
+    },
+    {
+      "term": "Channel Opening",
+      "description": "An initial stage in cultivation that Cen Shuyin advances from while practicing the Typhoon Formula.",
+      "type": "other"
     },
     {
       "term": "Spirit Building",
-      "description": "A stage of cultivation that follows the Meridian Expansion stage. It is a critical step in a cultivator's journey.",
+      "description": "A stage in cultivation that follows Channel Opening, which Cen Shuyin reaches with the Typhoon Formula.",
+      "type": "other"
+    },
+    {
+      "term": "Transcending Mortality",
+      "description": "A stage in cultivation that Cen Shuyin achieves, marking her progress in the Typhoon Formula.",
+      "type": "other"
+    },
+    {
+      "term": "Yuan Dan",
+      "description": "A cultivation stage that Cen Shuyin reaches, indicating her advancement in the Typhoon Formula.",
+      "type": "other"
+    },
+    {
+      "term": "Escaping Mortality",
+      "description": "A stage in cultivation that is part of the Human Realm, which cultivators strive to surpass.",
       "type": "other"
     },
     {
       "term": "Meridian Expansion",
-      "description": "The initial stage of cultivation where a cultivator opens their spirit channels. It is essential for progressing in their abilities.",
+      "description": "A stage in cultivation where spirit channels are opened and expanded, crucial for cultivators with spiritual roots.",
       "type": "other"
     },
     {
-      "term": "Escaping Wind Technique",
-      "description": "A technique that allows the user to move swiftly and invisibly with the wind. It is a key focus of Mo Wuji's training.",
-      "type": "technique"
-    },
-    {
-      "term": "Wind Elemental Energy",
-      "description": "The essence of wind that cultivators harness for their techniques. It is crucial for mastering wind-based skills.",
-      "type": "other"
-    },
-    {
-      "term": "Ice Elemental Energy",
-      "description": "The essence of ice that Cen Shuyin cultivates alongside her wind abilities. It enhances her overall power.",
-      "type": "other"
-    },
-    {
-      "term": "Dual Cultivation",
-      "description": "The practice of cultivating two different techniques simultaneously. Cen Shuyin exemplifies this by mastering both wind and ice techniques.",
-      "type": "technique"
-    },
-    {
-      "term": "Wind Whip",
-      "description": "A dangerous manifestation of wind that can strike cultivators. It is a hazard within the Thorny Wind Gate.",
-      "type": "other"
-    },
-    {
-      "term": "Crushed Stones",
-      "description": "Debris carried by the winds within the Thorny Wind Gate. They pose a significant threat to those training in the area.",
-      "type": "other"
-    },
-    {
-      "term": "Elemental Energy",
-      "description": "The energy derived from elemental forces, such as wind and ice. It is essential for cultivation and technique mastery.",
-      "type": "other"
-    },
-    {
-      "term": "Worldly Immortal",
-      "description": "A high level of cultivation that signifies immense power and understanding of the world. It is a goal for many cultivators.",
-      "type": "other"
-    },
-    {
-      "term": "Supreme Smith",
-      "description": "An elite craftsman capable of forging powerful artifacts and items. They are rare and highly respected in the cultivation world.",
-      "type": "person"
-    },
-    {
-      "term": "Culmination",
-      "description": "The peak of a cultivation stage, where a cultivator has mastered their abilities and techniques. It is a significant milestone.",
-      "type": "other"
-    },
-    {
-      "term": "Elemental Affinity",
-      "description": "A natural connection to a specific element, such as wind or ice. It influences a cultivator's abilities and techniques.",
-      "type": "other"
-    },
-    {
-      "term": "Cultivation Technique",
-      "description": "A method or system used by cultivators to enhance their abilities and powers. Techniques vary widely among practitioners.",
-      "type": "technique"
-    },
-    {
-      "term": "Spiritual Energy",
-      "description": "The energy that cultivators absorb and utilize for their techniques. It is essential for growth and advancement.",
-      "type": "other"
-    },
-    {
-      "term": "Meridian",
-      "description": "The channels within a cultivator's body through which spiritual energy flows. They are crucial for cultivation and technique execution.",
-      "type": "other"
-    },
-    {
-      "term": "Elemental Mastery",
-      "description": "The ability to control and manipulate elemental forces. It is a goal for many cultivators seeking to enhance their skills.",
-      "type": "other"
-    },
-    {
-      "term": "Wind Dao",
-      "description": "The philosophical understanding of wind and its principles. It is essential for mastering wind-based techniques.",
+      "term": "Spirit Channels",
+      "description": "Pathways within a cultivator's body that allow the flow of spiritual energy, essential for cultivation.",
       "type": "other"
     }
   ],
-  "lastUpdated": "2025-01-31T22:42:49.348Z"
+  "lastUpdated": "2025-01-31T22:48:34.828Z"
 }

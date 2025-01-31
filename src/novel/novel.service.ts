@@ -548,7 +548,7 @@ export const generateGlossary = async (novelId: string): Promise<Glossary> => {
 		console.log('Novel content length:', allContent.length)
 
 		// Use AI to extract terms and generate descriptions
-		const prompt = `Generate a comprehensive glossary for this novel, "Immortal Mortal", with word list and brief descriptions. For each term, include:
+		const prompt = `Generate a comprehensive glossary for "${novelId}" with word list and brief descriptions. For each term, include:
 			1. The term name
 			2. A concise description (2-3 sentences max)
 			3. The type of term, categorized as one of: person, location, item, technique, organization, or other
