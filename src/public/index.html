@@ -186,12 +186,15 @@
 				max-width: 1200px;
 				margin: 0 auto;
 				padding: 0 1rem;
+				text-align: center;
 			}
 
 			#novels > div {
+				display: inline-block;
+				vertical-align: top;
 				width: 100%;
 				max-width: 300px;
-				margin: 1rem auto;
+				margin: 1rem;
 				background: #fff;
 				border-radius: 8px;
 				-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -203,50 +206,28 @@
 
 			/* Tablet and up styles */
 			@media (min-width: 768px) {
-				#novels {
-					display: -webkit-box;
-					display: -webkit-flex;
-					display: -ms-flexbox;
-					display: flex;
-					-webkit-flex-wrap: wrap;
-					-ms-flex-wrap: wrap;
-					flex-wrap: wrap;
-					-webkit-box-pack: center;
-					-webkit-justify-content: center;
-					-ms-flex-pack: center;
-					justify-content: center;
-					gap: 1rem;
-					width: 95%;
-				}
-
 				#novels > div {
-					-webkit-box-flex: 0;
-					-webkit-flex: 0 0 auto;
-					-ms-flex: 0 0 auto;
-					flex: 0 0 auto;
-					width: calc(50% - 1rem);
-					max-width: 300px;
-					margin: 0.5rem;
+					width: calc(50% - 2rem);
 				}
 			}
 
 			/* iPad mini specific styles */
 			@media (min-width: 768px) and (max-width: 820px) {
 				#novels > div {
-					width: calc(33.333% - 1rem);
+					width: calc(33.333% - 2rem);
 				}
 			}
 
 			/* Desktop styles */
 			@media (min-width: 1024px) {
 				#novels > div {
-					width: calc(25% - 1rem);
+					width: calc(25% - 2rem);
 				}
 			}
 
 			@media (min-width: 1280px) {
 				#novels > div {
-					width: calc(20% - 1rem);
+					width: calc(20% - 2rem);
 				}
 			}
 
@@ -254,8 +235,8 @@
 			.novel-image-container {
 				position: relative;
 				width: 100%;
-				padding-bottom: 133.33%;
-				overflow: hidden;
+				padding-top: 133.33%;
+				background: #f5f5f5;
 			}
 
 			.novel-image-container img {
@@ -264,28 +245,92 @@
 				left: 0;
 				width: 100%;
 				height: 100%;
-				-o-object-fit: cover;
-				object-fit: cover;
-				-webkit-backface-visibility: hidden;
-				backface-visibility: hidden;
 			}
 
 			/* Card content styles */
 			.novel-content {
 				padding: 1rem;
-				-webkit-box-flex: 1;
-				-webkit-flex: 1;
-				-ms-flex: 1;
-				flex: 1;
+			}
+
+			/* Novel card styles */
+			.novel-card {
+				text-align: left;
+				background: #fff;
+				border-radius: 8px;
+				overflow: hidden;
+				-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+
+			.novel-title {
+				font-size: 1.125rem;
+				font-weight: 600;
+				margin-bottom: 0.5rem;
+				overflow: hidden;
+				max-height: 4.5em;
+				line-height: 1.5;
+			}
+
+			.novel-title a {
+				color: inherit;
+				text-decoration: none;
+			}
+
+			.novel-info {
+				margin-top: 1rem;
+			}
+
+			.author {
+				font-size: 0.75rem;
+				color: #666;
+				margin-bottom: 0.5rem;
+			}
+
+			.chapter-info {
 				display: -webkit-box;
 				display: -webkit-flex;
-				display: -ms-flexbox;
 				display: flex;
-				-webkit-box-orient: vertical;
-				-webkit-box-direction: normal;
-				-webkit-flex-direction: column;
-				-ms-flex-direction: column;
-				flex-direction: column;
+				-webkit-box-pack: justify;
+				-webkit-justify-content: space-between;
+				justify-content: space-between;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				margin-top: 0.5rem;
+			}
+
+			.bookmark-icon {
+				width: 1rem;
+				height: 1rem;
+				fill: #f97316;
+				margin-left: 0.25rem;
+				vertical-align: middle;
+				display: inline-block;
+			}
+
+			.glossary-btn {
+				font-size: 0.75rem;
+				padding: 0.25rem 0.5rem;
+				background: #3b82f6;
+				color: white;
+				border: none;
+				border-radius: 0.25rem;
+				cursor: pointer;
+				-webkit-appearance: none;
+			}
+
+			/* Dark mode styles */
+			html.dark .novel-card {
+				background: #2d2d2d;
+				color: #fff;
+			}
+
+			html.dark .author {
+				color: #999;
+			}
+
+			html.dark .novel-title a {
+				color: #fff;
 			}
 
 			/* Fix for older Safari flex issues */
@@ -492,64 +537,6 @@
 
 			.modal-save:hover {
 				background: #2563eb;
-			}
-
-			/* Add these styles for the new novel card structure */
-			.novel-card {
-				background: #fff;
-				border-radius: 8px;
-				overflow: hidden;
-				height: 100%;
-				-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-			}
-			.novel-title {
-				font-size: 1.125rem;
-				font-weight: 600;
-				margin-bottom: 0.5rem;
-				overflow: hidden;
-				display: -webkit-box;
-				-webkit-line-clamp: 3;
-				-webkit-box-orient: vertical;
-			}
-			.novel-title a {
-				color: inherit;
-				text-decoration: none;
-			}
-			.novel-info {
-				margin-top: auto;
-			}
-			.author {
-				font-size: 0.75rem;
-				color: #666;
-			}
-			.chapter-info {
-				display: -webkit-box;
-				display: -webkit-flex;
-				display: flex;
-				-webkit-box-pack: justify;
-				-webkit-justify-content: space-between;
-				justify-content: space-between;
-				-webkit-box-align: center;
-				-webkit-align-items: center;
-				align-items: center;
-				margin-top: 0.5rem;
-			}
-			.bookmark-icon {
-				width: 1rem;
-				height: 1rem;
-				fill: #f97316;
-				margin-left: 0.25rem;
-				vertical-align: middle;
-			}
-			.glossary-btn {
-				font-size: 0.75rem;
-				padding: 0.25rem 0.5rem;
-				background: #3b82f6;
-				color: white;
-				border: none;
-				border-radius: 0.25rem;
-				cursor: pointer;
 			}
 		</style>
 	</head>
@@ -791,52 +778,64 @@
 				var errorEl = document.getElementById('error')
 				var novelsContainer = document.getElementById('novels')
 
+				// Show loading state
+				loadingEl.style.display = 'block'
+				errorEl.style.display = 'none'
+
 				// Clear any existing content
-				while (novelsContainer.firstChild) {
-					novelsContainer.removeChild(novelsContainer.firstChild)
-				}
+				novelsContainer.innerHTML = ''
 
 				var xhr = new XMLHttpRequest()
 				xhr.open('GET', '/api/novel/novels', true)
 				xhr.setRequestHeader('Accept', 'application/json')
 
-				xhr.onload = function () {
-					if (xhr.status === 200) {
-						try {
-							var novels = JSON.parse(xhr.responseText)
-							if (!novels || novels.length === 0) {
-								showError('No novels found')
-								return
-							}
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						loadingEl.style.display = 'none'
 
-							for (var i = 0; i < novels.length; i++) {
-								createNovelCard(novels[i], novelsContainer)
+						if (xhr.status === 200) {
+							try {
+								var response = xhr.responseText
+								var novels = JSON.parse(response)
+
+								if (!novels || !novels.length) {
+									showError('No novels found')
+									return
+								}
+
+								// Create and append all novel cards
+								for (var i = 0; i < novels.length; i++) {
+									var card = createNovelCard(novels[i])
+									if (card) {
+										novelsContainer.appendChild(card)
+									}
+								}
+							} catch (error) {
+								console.error('Error parsing novels:', error)
+								showError('Error loading novels: Invalid data received')
 							}
-						} catch (error) {
-							console.error('Error parsing novels:', error)
-							showError('Error loading novels: ' + error.message)
+						} else {
+							showError(
+								'Error loading novels: Server returned status ' + xhr.status
+							)
 						}
-					} else {
-						showError('Error loading novels: ' + xhr.status)
 					}
-					loadingEl.style.display = 'none'
 				}
 
 				xhr.onerror = function () {
-					showError('Network error while loading novels')
 					loadingEl.style.display = 'none'
+					showError('Network error while loading novels')
 				}
 
-				xhr.send()
+				xhr.send(null)
 			}
 
-			function showError(message) {
-				var errorEl = document.getElementById('error')
-				errorEl.textContent = message
-				errorEl.style.display = 'block'
-			}
+			function createNovelCard(novel) {
+				if (!novel || !novel.id || !novel.title) {
+					console.error('Invalid novel data:', novel)
+					return null
+				}
 
-			function createNovelCard(novel, container) {
 				var card = document.createElement('div')
 				card.className = 'novel-card'
 
@@ -848,16 +847,17 @@
 						? novel.authors.join(', ')
 						: 'Unknown'
 
-				var cardHtml =
+				var imageHtml =
 					'<div class="novel-image-container">' +
-					'<a href="#" class="last-chapter-link" data-novel-id="' +
-					novel.id +
-					'">' +
 					'<img src="' +
 					coverUrl +
-					'" alt="Cover" onerror="this.src=\'/placeholder.jpg\'">' +
-					'</a>' +
-					'</div>' +
+					'" alt="' +
+					novel.title +
+					' cover" ' +
+					'onerror="this.onerror=null; this.src=\'/placeholder.jpg\';">' +
+					'</div>'
+
+				var contentHtml =
 					'<div class="novel-content">' +
 					'<h2 class="novel-title">' +
 					'<a href="/api/novel/novels/' +
@@ -877,27 +877,35 @@
 					'<span>Chapter ' +
 					lastChapter +
 					'</span>' +
-					'<svg viewBox="0 0 20 20" class="bookmark-icon"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>' +
+					'<svg class="bookmark-icon" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>' +
 					'</a>' +
-					'<button onclick="openGlossaryModal(\'' +
+					'<button type="button" class="glossary-btn" onclick="openGlossaryModal(\'' +
 					novel.id +
-					'\')" class="glossary-btn">Glossary</button>' +
+					'\')">Glossary</button>' +
 					'</div>' +
 					'</div>' +
 					'</div>'
 
-				card.innerHTML = cardHtml
+				card.innerHTML = imageHtml + contentHtml
 
-				// Add click handlers
-				var links = card.getElementsByClassName('last-chapter-link')
-				for (var i = 0; i < links.length; i++) {
-					links[i].onclick = function (e) {
+				// Add click handler for last chapter link
+				var lastChapterLinks = card.getElementsByClassName('last-chapter-link')
+				for (var i = 0; i < lastChapterLinks.length; i++) {
+					lastChapterLinks[i].onclick = function (e) {
 						e.preventDefault()
 						handleLastChapterClick(this.getAttribute('data-novel-id'))
 					}
 				}
 
-				container.appendChild(card)
+				return card
+			}
+
+			function showError(message) {
+				var errorEl = document.getElementById('error')
+				if (errorEl) {
+					errorEl.textContent = message || 'An error occurred'
+					errorEl.style.display = 'block'
+				}
 			}
 
 			// Separate function for handling last chapter click
