@@ -12,6 +12,18 @@
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
 			rel="stylesheet"
 		/>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/@orama/wc-components@latest/dist/orama-ui/orama-ui.css"
+		/>
+		<script
+			type="module"
+			src="https://cdn.jsdelivr.net/npm/@orama/wc-components@latest/dist/orama-ui/orama-ui.esm.js"
+		></script>
+		<script
+			nomodule
+			src="https://cdn.jsdelivr.net/npm/@orama/wc-components@latest/dist/cjs/orama-ui.cjs.js"
+		></script>
 		<style>
 			.chapter-content {
 				max-width: 800px;
@@ -656,6 +668,19 @@
 			html.dark .glossary-item {
 				color: #60a5fa;
 			}
+
+			/* Add styles for Orama search components */
+			#orama-ui {
+				position: fixed;
+				top: 20px;
+				right: 20px;
+				z-index: 1000;
+			}
+			html.dark orama-search-button,
+			html.dark orama-search-box {
+				--orama-colors-background: #2d2d2d;
+				--orama-colors-foreground: #e5e7eb;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-200" data-show-no-ai-content="{{showNoAIContent}}">
@@ -749,6 +774,11 @@
 				/>
 				<button class="chat-send">Send</button>
 			</div>
+		</div>
+
+		<div id="orama-ui">
+			<orama-search-button>Search...</orama-search-button>
+			<orama-search-box></orama-search-box>
 		</div>
 
 		<script>
@@ -1412,6 +1442,52 @@
 					sendMessage()
 				}
 			})
+
+			// Configure Orama search components
+			const searchBoxConfig = {
+				resultsMap: {
+					title: 'title',
+					description: 'description',
+				},
+				colorScheme: 'system',
+				themeConfig: {},
+			}
+
+			Object.assign(document.querySelector('orama-search-box'), {
+				...searchBoxConfig,
+				open: false,
+				index: {
+					endpoint: 'https://cloud.orama.run/v1/indexes/immortal-mortal-rtrdlw',
+					api_key: 'mmwTogG0DpPO6e1EHLzuVQEKHtqdOR9e',
+				},
+			})
+
+			// Handle dark mode for Orama components
+			const updateOramaTheme = () => {
+				const isDark = document.documentElement.classList.contains('dark')
+				document
+					.querySelector('orama-search-box')
+					.setAttribute('color-scheme', isDark ? 'dark' : 'light')
+				document
+					.querySelector('orama-search-button')
+					.setAttribute('color-scheme', isDark ? 'dark' : 'light')
+			}
+
+			// Update theme when dark mode changes
+			const observer = new MutationObserver((mutations) => {
+				mutations.forEach((mutation) => {
+					if (mutation.attributeName === 'class') {
+						updateOramaTheme()
+					}
+				})
+			})
+
+			observer.observe(document.documentElement, {
+				attributes: true,
+			})
+
+			// Initial theme setup
+			updateOramaTheme()
 		</script>
 	</body>
 </html>
