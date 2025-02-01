@@ -184,6 +184,15 @@
 			.novel-title a {
 				color: inherit;
 				text-decoration: none;
+				transition: color 0.2s ease;
+			}
+
+			.novel-title a:hover {
+				color: #3b82f6;
+			}
+
+			html.dark .novel-title a:hover {
+				color: #60a5fa;
 			}
 
 			.novel-author {
@@ -201,8 +210,17 @@
 			.novel-chapter a {
 				color: inherit;
 				text-decoration: none;
+				transition: all 0.2s ease;
 				display: block;
 				margin-bottom: 8px;
+			}
+
+			.novel-chapter a:hover {
+				color: #3b82f6;
+			}
+
+			html.dark .novel-chapter a:hover {
+				color: #60a5fa;
 			}
 
 			.bookmark-icon {
@@ -212,6 +230,21 @@
 				margin-left: 4px;
 				vertical-align: middle;
 				fill: #f97316;
+			}
+
+			.novel-image a {
+				display: block;
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+				cursor: pointer;
+			}
+
+			.novel-image a:hover img {
+				opacity: 0.8;
+				transition: opacity 0.2s ease;
 			}
 
 			/* Loading and error states */
@@ -497,6 +530,159 @@
 			html.dark .glossary-error {
 				color: #ef4444;
 			}
+
+			/* Add hover styles for clickable elements */
+			.novel-title a {
+				color: inherit;
+				text-decoration: none;
+				transition: color 0.2s ease;
+			}
+
+			.novel-title a:hover {
+				color: #3b82f6;
+			}
+
+			html.dark .novel-title a:hover {
+				color: #60a5fa;
+			}
+
+			.novel-chapter a {
+				color: inherit;
+				text-decoration: none;
+				transition: all 0.2s ease;
+				display: block;
+				margin-bottom: 8px;
+			}
+
+			.novel-chapter a:hover {
+				color: #3b82f6;
+			}
+
+			html.dark .novel-chapter a:hover {
+				color: #60a5fa;
+			}
+
+			.novel-image a {
+				display: block;
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+				cursor: pointer;
+			}
+
+			.novel-image a:hover img {
+				opacity: 0.8;
+				transition: opacity 0.2s ease;
+			}
+
+			.glossary-btn {
+				display: block;
+				width: 100%;
+				padding: 6px;
+				background: #3b82f6;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				font-size: 12px;
+				cursor: pointer;
+				text-align: center;
+				-webkit-appearance: none;
+				margin-top: 8px;
+				transition: background-color 0.2s ease;
+			}
+
+			.glossary-btn:hover {
+				background-color: #2563eb;
+			}
+
+			.settings-btn {
+				display: inline-block;
+				padding: 8px 16px;
+				background-color: #3b82f6;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				cursor: pointer;
+				vertical-align: middle;
+				transition: background-color 0.2s ease;
+			}
+
+			.settings-btn:hover {
+				background-color: #2563eb;
+			}
+
+			.toggle-switch {
+				position: relative;
+				display: inline-block;
+				width: 48px;
+				height: 24px;
+				vertical-align: middle;
+				cursor: pointer;
+			}
+
+			.toggle-slider {
+				transition: background-color 0.2s ease;
+			}
+
+			.toggle-slider:before {
+				transition: transform 0.2s ease;
+			}
+
+			.toggle-label {
+				cursor: pointer;
+				transition: opacity 0.2s ease;
+			}
+
+			.toggle-label:hover {
+				opacity: 0.8;
+			}
+
+			/* Modal close button hover */
+			.modal-close {
+				transition: color 0.2s ease;
+			}
+
+			.modal-close:hover {
+				color: #1f2937;
+			}
+
+			html.dark .modal-close:hover {
+				color: #ffffff;
+			}
+
+			/* Modal save button hover */
+			.modal-save {
+				transition: background-color 0.2s ease;
+			}
+
+			.modal-save:hover {
+				background-color: #2563eb;
+			}
+
+			/* Glossary term hover effect */
+			.glossary-term {
+				transition: transform 0.2s ease, box-shadow 0.2s ease;
+			}
+
+			.glossary-term:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+			}
+
+			html.dark .glossary-term:hover {
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+			}
+
+			/* Bookmark icon hover effect */
+			.bookmark-icon {
+				transition: transform 0.2s ease;
+			}
+
+			.novel-chapter a:hover .bookmark-icon {
+				transform: scale(1.1);
+			}
 		</style>
 	</head>
 	<body>
@@ -686,11 +872,15 @@
 						? novel.authors.join(', ')
 						: 'Unknown'
 
-				card.innerHTML =
+				var cardHtml =
 					'<div class="novel-image">' +
+					'<a href="#" class="last-chapter-link" data-novel-id="' +
+					novel.id +
+					'">' +
 					'<img src="' +
 					coverUrl +
 					'" alt="Cover" onerror="this.src=\'/placeholder.jpg\'">' +
+					'</a>' +
 					'</div>' +
 					'<div class="novel-content">' +
 					'<div class="novel-title">' +
@@ -711,14 +901,41 @@
 					lastChapter +
 					'<svg class="bookmark-icon" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>' +
 					'</a>' +
-					'<button type="button" class="glossary-btn" onclick="openGlossaryModal(\'' +
+					'<button type="button" class="glossary-btn" id="glossary-btn-' +
+					novel.id +
+					'" onclick="openGlossaryModal(\'' +
 					novel.id +
 					'\')">' +
-					'<i class="fas fa-book"></i> View Glossary' +
+					'<i class="fas fa-book"></i> Checking Glossary...' +
 					'</button>' +
 					'</div>' +
 					'</div>'
 
+				card.innerHTML = cardHtml
+
+				// Add hover effect styles for the cover image
+				var style = document.createElement('style')
+				style.textContent = `
+					.novel-image a {
+						display: block;
+						width: 100%;
+						height: 100%;
+						position: absolute;
+						top: 0;
+						left: 0;
+						cursor: pointer;
+					}
+					.novel-image a:hover img {
+						opacity: 0.8;
+						transition: opacity 0.2s ease;
+					}
+				`
+				document.head.appendChild(style)
+
+				// Check if glossary exists
+				checkGlossaryExists(novel.id)
+
+				// Add click handlers for all last-chapter links (including cover)
 				var links = card.getElementsByClassName('last-chapter-link')
 				for (var i = 0; i < links.length; i++) {
 					links[i].onclick = function (e) {
@@ -728,6 +945,44 @@
 				}
 
 				return card
+			}
+
+			function checkGlossaryExists(novelId) {
+				var xhr = new XMLHttpRequest()
+				xhr.open('GET', '/api/novel/novels/' + novelId + '/glossary', true)
+				xhr.setRequestHeader('Accept', 'application/json')
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						var btn = document.getElementById('glossary-btn-' + novelId)
+						if (!btn) return
+
+						if (xhr.status === 200) {
+							try {
+								var glossary = JSON.parse(xhr.responseText)
+								if (glossary && glossary.terms && glossary.terms.length > 0) {
+									btn.innerHTML = '<i class="fas fa-book"></i> View Glossary'
+								} else {
+									btn.innerHTML =
+										'<i class="fas fa-plus"></i> Generate Glossary'
+								}
+							} catch (error) {
+								btn.innerHTML = '<i class="fas fa-plus"></i> Generate Glossary'
+							}
+						} else {
+							btn.innerHTML = '<i class="fas fa-plus"></i> Generate Glossary'
+						}
+					}
+				}
+
+				xhr.onerror = function () {
+					var btn = document.getElementById('glossary-btn-' + novelId)
+					if (btn) {
+						btn.innerHTML = '<i class="fas fa-plus"></i> Generate Glossary'
+					}
+				}
+
+				xhr.send(null)
 			}
 
 			function handleLastChapterClick(novelId) {
@@ -885,18 +1140,12 @@
 			function openGlossaryModal(novelId) {
 				var modal = document.getElementById('glossaryModal')
 				var content = document.getElementById('glossaryContent')
+				var btn = document.getElementById('glossary-btn-' + novelId)
+
 				modal.className = 'visible'
 				content.innerHTML =
 					'<div class="glossary-loading">Loading glossary...</div>'
-				loadGlossary(novelId)
-			}
 
-			function closeGlossaryModal() {
-				var modal = document.getElementById('glossaryModal')
-				modal.className = ''
-			}
-
-			function loadGlossary(novelId) {
 				var xhr = new XMLHttpRequest()
 				xhr.open('GET', '/api/novel/novels/' + novelId + '/glossary', true)
 				xhr.setRequestHeader('Accept', 'application/json')
@@ -906,12 +1155,16 @@
 						if (xhr.status === 200) {
 							try {
 								var glossary = JSON.parse(xhr.responseText)
-								displayGlossary(glossary)
+								if (glossary && glossary.terms && glossary.terms.length > 0) {
+									displayGlossary(glossary)
+								} else {
+									generateGlossary(novelId)
+								}
 							} catch (error) {
-								showGlossaryError('Error loading glossary data')
+								generateGlossary(novelId)
 							}
 						} else {
-							showGlossaryError('Failed to load glossary')
+							generateGlossary(novelId)
 						}
 					}
 				}
@@ -921,6 +1174,11 @@
 				}
 
 				xhr.send(null)
+			}
+
+			function closeGlossaryModal() {
+				var modal = document.getElementById('glossaryModal')
+				modal.className = ''
 			}
 
 			function displayGlossary(glossary) {
@@ -978,6 +1236,47 @@
 						'Last updated: ' + new Date(glossary.lastUpdated).toLocaleString()
 					content.appendChild(updated)
 				}
+			}
+
+			function generateGlossary(novelId) {
+				var content = document.getElementById('glossaryContent')
+				content.innerHTML =
+					'<div class="glossary-loading">Generating glossary...</div>'
+
+				var xhr = new XMLHttpRequest()
+				xhr.open(
+					'POST',
+					'/api/novel/novels/' + novelId + '/glossary/generate',
+					true
+				)
+				xhr.setRequestHeader('Accept', 'application/json')
+				xhr.setRequestHeader('Content-Type', 'application/json')
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						if (xhr.status === 200) {
+							try {
+								var glossary = JSON.parse(xhr.responseText)
+								displayGlossary(glossary)
+								// Update button text after successful generation
+								var btn = document.getElementById('glossary-btn-' + novelId)
+								if (btn) {
+									btn.innerHTML = '<i class="fas fa-book"></i> View Glossary'
+								}
+							} catch (error) {
+								showGlossaryError('Error generating glossary')
+							}
+						} else {
+							showGlossaryError('Failed to generate glossary')
+						}
+					}
+				}
+
+				xhr.onerror = function () {
+					showGlossaryError('Network error while generating glossary')
+				}
+
+				xhr.send(JSON.stringify({}))
 			}
 
 			function showGlossaryError(message) {
