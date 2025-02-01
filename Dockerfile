@@ -5,6 +5,7 @@ ARG NODE_VERSION=20.18.0
 FROM node:${NODE_VERSION}-slim AS base
 
 LABEL fly_launch_runtime="Node.js"
+LABEL maintainer="RewriteAI"
 
 # Node.js app lives here
 WORKDIR /app
@@ -13,9 +14,10 @@ WORKDIR /app
 ENV NODE_ENV="production"
 ENV PORT=3000
 
-# Create necessary directories with correct permissions
-RUN mkdir -p /app/Lightnovels && \
-    chown -R node:node /app
+# Install dependencies for production
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl && \
+    rm -rf /var/lib/apt/lists/*
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
@@ -48,6 +50,9 @@ COPY --from=build /app/dist /app/dist
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/package.json /app/package.json
 
+# Create directory for novels and set permissions
+RUN mkdir -p /app/Lightnovels
+
 # Copy Lightnovels directory
 COPY Lightnovels /app/Lightnovels
 
@@ -63,6 +68,10 @@ ENV ORAMA_ENDPOINT=""
 ENV OPENAI_API_KEY=""
 ENV ANTHROPIC_API_KEY=""
 
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/health || exit 1
+
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
+EXPOSE ${PORT}
 CMD [ "npm", "run", "start" ]
