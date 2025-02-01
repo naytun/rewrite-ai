@@ -392,6 +392,165 @@
 				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
 					0 2px 4px -1px rgba(0, 0, 0, 0.18);
 			}
+
+			/* Settings Modal Styles */
+			.modal-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: rgba(0, 0, 0, 0.5);
+				display: none;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				-ms-flex-align: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				-ms-flex-pack: center;
+				justify-content: center;
+				z-index: 1000;
+			}
+
+			.modal-overlay.visible {
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: -ms-flexbox;
+				display: flex;
+			}
+
+			.modal-content {
+				background: #fff;
+				padding: 1.5rem;
+				border-radius: 0.5rem;
+				width: 90%;
+				max-width: 600px;
+				position: relative;
+				max-height: 90vh;
+				overflow-y: auto;
+			}
+
+			html.dark .modal-content {
+				background: #1a1a1a;
+				color: #fff;
+			}
+
+			.modal-header {
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: -ms-flexbox;
+				display: flex;
+				-webkit-box-pack: justify;
+				-webkit-justify-content: space-between;
+				-ms-flex-pack: justify;
+				justify-content: space-between;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				-ms-flex-align: center;
+				align-items: center;
+				margin-bottom: 1rem;
+			}
+
+			.modal-close {
+				background: none;
+				border: none;
+				font-size: 1.5rem;
+				cursor: pointer;
+				padding: 0.5rem;
+				color: #666;
+			}
+
+			html.dark .modal-close {
+				color: #999;
+			}
+
+			.modal-textarea {
+				width: 100%;
+				min-height: 200px;
+				padding: 0.5rem;
+				margin-bottom: 1rem;
+				border: 1px solid #ccc;
+				border-radius: 0.25rem;
+				font-family: inherit;
+			}
+
+			html.dark .modal-textarea {
+				background: #2d2d2d;
+				border-color: #444;
+				color: #fff;
+			}
+
+			.modal-save {
+				background: #3b82f6;
+				color: white;
+				padding: 0.5rem 1rem;
+				border-radius: 0.25rem;
+				border: none;
+				cursor: pointer;
+			}
+
+			.modal-save:hover {
+				background: #2563eb;
+			}
+
+			/* Add these styles for the new novel card structure */
+			.novel-card {
+				background: #fff;
+				border-radius: 8px;
+				overflow: hidden;
+				height: 100%;
+				-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+			.novel-title {
+				font-size: 1.125rem;
+				font-weight: 600;
+				margin-bottom: 0.5rem;
+				overflow: hidden;
+				display: -webkit-box;
+				-webkit-line-clamp: 3;
+				-webkit-box-orient: vertical;
+			}
+			.novel-title a {
+				color: inherit;
+				text-decoration: none;
+			}
+			.novel-info {
+				margin-top: auto;
+			}
+			.author {
+				font-size: 0.75rem;
+				color: #666;
+			}
+			.chapter-info {
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-pack: justify;
+				-webkit-justify-content: space-between;
+				justify-content: space-between;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				margin-top: 0.5rem;
+			}
+			.bookmark-icon {
+				width: 1rem;
+				height: 1rem;
+				fill: #f97316;
+				margin-left: 0.25rem;
+				vertical-align: middle;
+			}
+			.glossary-btn {
+				font-size: 0.75rem;
+				padding: 0.25rem 0.5rem;
+				background: #3b82f6;
+				color: white;
+				border: none;
+				border-radius: 0.25rem;
+				cursor: pointer;
+			}
 		</style>
 	</head>
 	<body class="bg-gray-100">
@@ -494,41 +653,22 @@
 		</div>
 
 		<!-- Settings Modal -->
-		<div
-			id="settingsModal"
-			class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50"
-		>
-			<div
-				class="settings-modal-content bg-gray-50 p-6 rounded-lg w-full max-w-2xl shadow-lg"
-			>
-				<div class="flex justify-between items-center mb-4">
-					<h2 class="text-2xl font-bold text-gray-500 transition-colors">
-						AI Settings
-					</h2>
-					<button
-						id="closeSettingsBtn"
-						class="settings-modal-close text-gray-500 hover:text-gray-700 transition-colors"
-					>
-						<i class="fas fa-times"></i>
-					</button>
+		<div id="settingsModal" class="modal-overlay">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="text-xl font-bold">AI Settings</h2>
+					<button id="closeSettingsBtn" class="modal-close">&times;</button>
 				</div>
-				<div class="mb-4">
-					<label class="settings-modal-label block mb-2" for="aiPrompt">
-						AI Rewrite Instructions
-					</label>
+				<div>
+					<label class="block mb-2">AI Rewrite Instructions</label>
 					<textarea
 						id="aiPrompt"
-						class="settings-modal-textarea w-full h-64 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-colors"
+						class="modal-textarea"
 						placeholder="Enter instructions for how the AI should rewrite the novel content..."
 					></textarea>
 				</div>
-				<div class="flex justify-end">
-					<button
-						id="saveSettingsBtn"
-						class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-					>
-						Save
-					</button>
+				<div style="text-align: right">
+					<button id="saveSettingsBtn" class="modal-save">Save</button>
 				</div>
 			</div>
 		</div>
@@ -646,106 +786,118 @@
 				}
 			})
 
-			async function loadNovels() {
+			function loadNovels() {
 				var loadingEl = document.getElementById('loading')
 				var errorEl = document.getElementById('error')
 				var novelsContainer = document.getElementById('novels')
 
-				try {
-					var response = await fetch('/api/novel/novels', {
-						headers: {
-							Accept: 'application/json',
-						},
-					})
-
-					if (!response.ok) {
-						throw new Error('HTTP error! status: ' + response.status)
-					}
-
-					var novels = await response.json()
-
-					if (!novels || novels.length === 0) {
-						errorEl.textContent = 'No novels found'
-						errorEl.classList.remove('hidden')
-						return
-					}
-
-					novels.forEach(function (novel) {
-						var card = document.createElement('div')
-						card.className = 'novel-card'
-
-						var lastChapter =
-							localStorage.getItem('lastChapter_' + novel.id) || 'Not started'
-						var coverUrl = novel.cover_url || '/placeholder.jpg'
-						var authors = novel.authors ? novel.authors.join(', ') : 'Unknown'
-
-						card.innerHTML =
-							'<div class="novel-image-container">' +
-							'<a href="#" class="last-chapter-link block" data-novel-id="' +
-							novel.id +
-							'">' +
-							'<img src="' +
-							coverUrl +
-							'" alt="' +
-							novel.title +
-							' cover" ' +
-							'onerror="this.src=\'/placeholder.jpg\'">' +
-							'</a>' +
-							'</div>' +
-							'<div class="novel-content">' +
-							'<h2 class="text-lg font-semibold mb-2" style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">' +
-							'<a href="/api/novel/novels/' +
-							novel.id +
-							'/chapters" class="hover:text-blue-600">' +
-							novel.title +
-							'</a>' +
-							'</h2>' +
-							'<div class="mt-auto">' +
-							'<p class="text-gray-600 text-xs">Author: ' +
-							authors +
-							'</p>' +
-							'<div class="flex items-center justify-between mt-1">' +
-							'<a href="#" class="last-chapter-link" data-novel-id="' +
-							novel.id +
-							'">' +
-							'<p class="text-gray-500 text-xs">' +
-							'Chapter ' +
-							lastChapter +
-							'<svg class="w-4 h-4 inline-block ml-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
-							'<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>' +
-							'</svg>' +
-							'</p>' +
-							'</a>' +
-							'<button ' +
-							'class="text-xs px-2 py-1 bg-blue-500 text-white rounded" ' +
-							'style="background-color: #3b82f6;" ' +
-							'onclick="openGlossaryModal(\'' +
-							novel.id +
-							'\')">' +
-							'Glossary' +
-							'</button>' +
-							'</div>' +
-							'</div>' +
-							'</div>'
-
-						// Add click handler for last chapter links
-						var lastChapterLinks = card.querySelectorAll('.last-chapter-link')
-						lastChapterLinks.forEach(function (link) {
-							link.onclick = function (e) {
-								e.preventDefault()
-								handleLastChapterClick(novel.id)
-							}
-						})
-
-						novelsContainer.appendChild(card)
-					})
-				} catch (error) {
-					console.error('Error loading novels:', error)
-					errorEl.textContent = 'Error loading novels: ' + error.message
-					errorEl.classList.remove('hidden')
-				} finally {
-					loadingEl.classList.add('hidden')
+				// Clear any existing content
+				while (novelsContainer.firstChild) {
+					novelsContainer.removeChild(novelsContainer.firstChild)
 				}
+
+				var xhr = new XMLHttpRequest()
+				xhr.open('GET', '/api/novel/novels', true)
+				xhr.setRequestHeader('Accept', 'application/json')
+
+				xhr.onload = function () {
+					if (xhr.status === 200) {
+						try {
+							var novels = JSON.parse(xhr.responseText)
+							if (!novels || novels.length === 0) {
+								showError('No novels found')
+								return
+							}
+
+							for (var i = 0; i < novels.length; i++) {
+								createNovelCard(novels[i], novelsContainer)
+							}
+						} catch (error) {
+							console.error('Error parsing novels:', error)
+							showError('Error loading novels: ' + error.message)
+						}
+					} else {
+						showError('Error loading novels: ' + xhr.status)
+					}
+					loadingEl.style.display = 'none'
+				}
+
+				xhr.onerror = function () {
+					showError('Network error while loading novels')
+					loadingEl.style.display = 'none'
+				}
+
+				xhr.send()
+			}
+
+			function showError(message) {
+				var errorEl = document.getElementById('error')
+				errorEl.textContent = message
+				errorEl.style.display = 'block'
+			}
+
+			function createNovelCard(novel, container) {
+				var card = document.createElement('div')
+				card.className = 'novel-card'
+
+				var lastChapter =
+					localStorage.getItem('lastChapter_' + novel.id) || 'Not started'
+				var coverUrl = novel.cover_url || '/placeholder.jpg'
+				var authors =
+					novel.authors && novel.authors.length
+						? novel.authors.join(', ')
+						: 'Unknown'
+
+				var cardHtml =
+					'<div class="novel-image-container">' +
+					'<a href="#" class="last-chapter-link" data-novel-id="' +
+					novel.id +
+					'">' +
+					'<img src="' +
+					coverUrl +
+					'" alt="Cover" onerror="this.src=\'/placeholder.jpg\'">' +
+					'</a>' +
+					'</div>' +
+					'<div class="novel-content">' +
+					'<h2 class="novel-title">' +
+					'<a href="/api/novel/novels/' +
+					novel.id +
+					'/chapters">' +
+					novel.title +
+					'</a>' +
+					'</h2>' +
+					'<div class="novel-info">' +
+					'<p class="author">Author: ' +
+					authors +
+					'</p>' +
+					'<div class="chapter-info">' +
+					'<a href="#" class="last-chapter-link" data-novel-id="' +
+					novel.id +
+					'">' +
+					'<span>Chapter ' +
+					lastChapter +
+					'</span>' +
+					'<svg viewBox="0 0 20 20" class="bookmark-icon"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>' +
+					'</a>' +
+					'<button onclick="openGlossaryModal(\'' +
+					novel.id +
+					'\')" class="glossary-btn">Glossary</button>' +
+					'</div>' +
+					'</div>' +
+					'</div>'
+
+				card.innerHTML = cardHtml
+
+				// Add click handlers
+				var links = card.getElementsByClassName('last-chapter-link')
+				for (var i = 0; i < links.length; i++) {
+					links[i].onclick = function (e) {
+						e.preventDefault()
+						handleLastChapterClick(this.getAttribute('data-novel-id'))
+					}
+				}
+
+				container.appendChild(card)
 			}
 
 			// Separate function for handling last chapter click
@@ -814,58 +966,79 @@
 			window.addEventListener('load', loadNovels)
 
 			// Settings Modal Functionality
-			const settingsModal = document.getElementById('settingsModal')
-			const settingsBtn = document.getElementById('settingsBtn')
-			const closeSettingsBtn = document.getElementById('closeSettingsBtn')
-			const saveSettingsBtn = document.getElementById('saveSettingsBtn')
-			const aiPromptTextarea = document.getElementById('aiPrompt')
+			var settingsModal = document.getElementById('settingsModal')
+			var settingsBtn = document.getElementById('settingsBtn')
+			var closeSettingsBtn = document.getElementById('closeSettingsBtn')
+			var saveSettingsBtn = document.getElementById('saveSettingsBtn')
+			var aiPromptTextarea = document.getElementById('aiPrompt')
 
 			// Load settings when opening modal
-			settingsBtn.addEventListener('click', async () => {
-				settingsModal.classList.remove('hidden')
-				try {
-					const response = await fetch('/api/settings/ai-rewrite')
-					const settings = await response.json()
-					aiPromptTextarea.value = settings.prompt || ''
-					aiToggle.checked = settings.enabled
-				} catch (error) {
-					console.error('Error loading settings:', error)
+			settingsBtn.onclick = function () {
+				settingsModal.classList.add('visible')
+				loadSettings()
+			}
+
+			function loadSettings() {
+				var xhr = new XMLHttpRequest()
+				xhr.open('GET', '/api/settings/ai-rewrite', true)
+				xhr.setRequestHeader('Accept', 'application/json')
+
+				xhr.onload = function () {
+					if (xhr.status === 200) {
+						try {
+							var settings = JSON.parse(xhr.responseText)
+							aiPromptTextarea.value = settings.prompt || ''
+							aiToggle.checked = settings.enabled
+						} catch (error) {
+							console.error('Error parsing settings:', error)
+						}
+					} else {
+						console.error('Error loading settings:', xhr.status)
+					}
 				}
-			})
 
-			closeSettingsBtn.addEventListener('click', () => {
-				settingsModal.classList.add('hidden')
-			})
+				xhr.onerror = function () {
+					console.error('Error loading settings')
+				}
 
-			saveSettingsBtn.addEventListener('click', async () => {
-				try {
-					const response = await fetch('/api/settings/ai-rewrite', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({
-							enabled: aiToggle.checked,
-							prompt: aiPromptTextarea.value,
-						}),
-					})
+				xhr.send()
+			}
 
-					if (response.ok) {
-						settingsModal.classList.add('hidden')
+			closeSettingsBtn.onclick = function () {
+				settingsModal.classList.remove('visible')
+			}
+
+			saveSettingsBtn.onclick = function () {
+				var xhr = new XMLHttpRequest()
+				xhr.open('POST', '/api/settings/ai-rewrite', true)
+				xhr.setRequestHeader('Content-Type', 'application/json')
+
+				xhr.onload = function () {
+					if (xhr.status === 200) {
+						settingsModal.classList.remove('visible')
 					} else {
 						console.error('Failed to save settings')
 					}
-				} catch (error) {
-					console.error('Error saving settings:', error)
 				}
-			})
+
+				xhr.onerror = function () {
+					console.error('Error saving settings')
+				}
+
+				xhr.send(
+					JSON.stringify({
+						enabled: aiToggle.checked,
+						prompt: aiPromptTextarea.value,
+					})
+				)
+			}
 
 			// Close modal when clicking outside
-			settingsModal.addEventListener('click', (e) => {
+			settingsModal.onclick = function (e) {
 				if (e.target === settingsModal) {
-					settingsModal.classList.add('hidden')
+					settingsModal.classList.remove('visible')
 				}
-			})
+			}
 
 			// Update the compare toggle function
 			function toggleCompare() {
