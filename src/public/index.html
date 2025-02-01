@@ -212,7 +212,7 @@
 				text-decoration: none;
 				transition: all 0.2s ease;
 				display: block;
-				margin-bottom: 8px;
+				margin-bottom: 4px;
 			}
 
 			.novel-chapter a:hover {
@@ -551,7 +551,7 @@
 				text-decoration: none;
 				transition: all 0.2s ease;
 				display: block;
-				margin-bottom: 8px;
+				margin-bottom: 4px;
 			}
 
 			.novel-chapter a:hover {
@@ -578,9 +578,8 @@
 			}
 
 			.glossary-btn {
-				display: block;
-				width: 100%;
-				padding: 6px;
+				display: inline-block;
+				padding: 4px 8px;
 				background: #3b82f6;
 				color: white;
 				border: none;
@@ -590,6 +589,7 @@
 				text-align: center;
 				-webkit-appearance: none;
 				margin-top: 8px;
+				margin-left: 0;
 				transition: background-color 0.2s ease;
 			}
 
@@ -682,6 +682,46 @@
 
 			.novel-chapter a:hover .bookmark-icon {
 				transform: scale(1.1);
+			}
+
+			/* Add stop button styles */
+			.stop-btn {
+				display: inline-block;
+				padding: 6px 12px;
+				background: #dc2626;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				font-size: 14px;
+				cursor: pointer;
+				margin-top: 10px;
+				transition: background-color 0.2s ease;
+			}
+
+			.stop-btn:hover {
+				background: #b91c1c;
+			}
+
+			/* Loading animation for generating text */
+			@keyframes ellipsis {
+				0% {
+					content: '.';
+				}
+				33% {
+					content: '..';
+				}
+				66% {
+					content: '...';
+				}
+				100% {
+					content: '.';
+				}
+			}
+
+			.generating-text::after {
+				content: '.';
+				display: inline-block;
+				animation: ellipsis 1.5s infinite;
 			}
 		</style>
 	</head>
@@ -906,7 +946,7 @@
 					'" onclick="openGlossaryModal(\'' +
 					novel.id +
 					'\')">' +
-					'<i class="fas fa-book"></i> Checking Glossary...' +
+					'<i class="fas fa-book"></i> Glossary...' +
 					'</button>' +
 					'</div>' +
 					'</div>'
@@ -961,7 +1001,7 @@
 							try {
 								var glossary = JSON.parse(xhr.responseText)
 								if (glossary && glossary.terms && glossary.terms.length > 0) {
-									btn.innerHTML = '<i class="fas fa-book"></i> View Glossary'
+									btn.innerHTML = '<i class="fas fa-book"></i> Glossary'
 								} else {
 									btn.innerHTML =
 										'<i class="fas fa-plus"></i> Generate Glossary'
@@ -1144,7 +1184,12 @@
 
 				modal.className = 'visible'
 				content.innerHTML =
-					'<div class="glossary-loading">Loading glossary...</div>'
+					'<div class="glossary-loading">' +
+					'<div class="generating-text">Generating glossary</div>' +
+					'<button type="button" class="stop-btn" onclick="stopGeneration()">' +
+					'<i class="fas fa-stop"></i> Stop Generation' +
+					'</button>' +
+					'</div>'
 
 				var xhr = new XMLHttpRequest()
 				xhr.open('GET', '/api/novel/novels/' + novelId + '/glossary', true)
@@ -1177,6 +1222,9 @@
 			}
 
 			function closeGlossaryModal() {
+				if (window.currentGlossaryXhr) {
+					stopGeneration()
+				}
 				var modal = document.getElementById('glossaryModal')
 				modal.className = ''
 			}
@@ -1240,43 +1288,69 @@
 
 			function generateGlossary(novelId) {
 				var content = document.getElementById('glossaryContent')
-				content.innerHTML =
-					'<div class="glossary-loading">Generating glossary...</div>'
+				var currentXhr = null
 
-				var xhr = new XMLHttpRequest()
-				xhr.open(
+				// Create generating message with stop button
+				content.innerHTML =
+					'<div class="glossary-loading">' +
+					'<div class="generating-text">Generating glossary</div>' +
+					'<button type="button" class="stop-btn" onclick="stopGeneration()">' +
+					'<i class="fas fa-stop"></i> Stop Generation' +
+					'</button>' +
+					'</div>'
+
+				currentXhr = new XMLHttpRequest()
+				// Store the XHR object globally so we can abort it
+				window.currentGlossaryXhr = currentXhr
+
+				currentXhr.open(
 					'POST',
 					'/api/novel/novels/' + novelId + '/glossary/generate',
 					true
 				)
-				xhr.setRequestHeader('Accept', 'application/json')
-				xhr.setRequestHeader('Content-Type', 'application/json')
+				currentXhr.setRequestHeader('Accept', 'application/json')
+				currentXhr.setRequestHeader('Content-Type', 'application/json')
 
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState === 4) {
-						if (xhr.status === 200) {
+				currentXhr.onreadystatechange = function () {
+					if (currentXhr.readyState === 4) {
+						// Clear the global XHR object since request is complete
+						window.currentGlossaryXhr = null
+
+						if (currentXhr.status === 200) {
 							try {
-								var glossary = JSON.parse(xhr.responseText)
+								var glossary = JSON.parse(currentXhr.responseText)
 								displayGlossary(glossary)
 								// Update button text after successful generation
 								var btn = document.getElementById('glossary-btn-' + novelId)
 								if (btn) {
-									btn.innerHTML = '<i class="fas fa-book"></i> View Glossary'
+									btn.innerHTML = '<i class="fas fa-book"></i> Glossary'
 								}
 							} catch (error) {
 								showGlossaryError('Error generating glossary')
 							}
-						} else {
+						} else if (currentXhr.status !== 0) {
+							// Status 0 means request was aborted
 							showGlossaryError('Failed to generate glossary')
 						}
 					}
 				}
 
-				xhr.onerror = function () {
+				currentXhr.onerror = function () {
+					window.currentGlossaryXhr = null
 					showGlossaryError('Network error while generating glossary')
 				}
 
-				xhr.send(JSON.stringify({}))
+				currentXhr.send(JSON.stringify({}))
+			}
+
+			function stopGeneration() {
+				if (window.currentGlossaryXhr) {
+					window.currentGlossaryXhr.abort()
+					window.currentGlossaryXhr = null
+					var content = document.getElementById('glossaryContent')
+					content.innerHTML =
+						'<div class="glossary-error">Glossary generation cancelled</div>'
+				}
 			}
 
 			function showGlossaryError(message) {
