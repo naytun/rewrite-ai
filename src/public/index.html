@@ -719,9 +719,37 @@
 			}
 
 			.generating-text::after {
-				content: '.';
-				display: inline-block;
-				animation: ellipsis 1.5s infinite;
+				content: '...';
+			}
+
+			/* Simpler animation fallback */
+			@-webkit-keyframes blink {
+				0% {
+					opacity: 0.2;
+				}
+				20% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0.2;
+				}
+			}
+
+			@keyframes blink {
+				0% {
+					opacity: 0.2;
+				}
+				20% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0.2;
+				}
+			}
+
+			.generating-text {
+				-webkit-animation: blink 1.5s infinite;
+				animation: blink 1.5s infinite;
 			}
 		</style>
 	</head>
@@ -793,6 +821,35 @@
 		</div>
 
 		<script>
+			// Add polyfill for Element.prototype.matches
+			if (!Element.prototype.matches) {
+				Element.prototype.matches =
+					Element.prototype.msMatchesSelector ||
+					Element.prototype.webkitMatchesSelector
+			}
+
+			// Add polyfill for Element.prototype.closest
+			if (!Element.prototype.closest) {
+				Element.prototype.closest = function (s) {
+					var el = this
+					do {
+						if (el.matches(s)) return el
+						el = el.parentElement || el.parentNode
+					} while (el !== null && el.nodeType === 1)
+					return null
+				}
+			}
+
+			// Add polyfill for querySelector if needed
+			if (!document.querySelector) {
+				document.querySelector = function (selector) {
+					return (
+						document.getElementsByTagName(selector)[0] ||
+						document.getElementsByClassName(selector.replace('.', ''))[0]
+					)
+				}
+			}
+
 			// Dark mode and AI mode functionality
 			var darkModeToggle = document.getElementById('darkModeToggle')
 			var aiToggle = document.getElementById('aiToggle')
@@ -1180,42 +1237,64 @@
 			function openGlossaryModal(novelId) {
 				var modal = document.getElementById('glossaryModal')
 				var content = document.getElementById('glossaryContent')
-				var btn = document.getElementById('glossary-btn-' + novelId)
+				var title = document.querySelector('.glossary-title')
 
+				console.log('[Glossary] Opening modal for novel:', novelId)
+
+				// Store the novel ID in the title element for reference
+				title.setAttribute('data-novel-id', novelId)
 				modal.className = 'visible'
-				content.innerHTML =
-					'<div class="glossary-loading">' +
-					'<div class="generating-text">Generating glossary</div>' +
-					'<button type="button" class="stop-btn" onclick="stopGeneration()">' +
-					'<i class="fas fa-stop"></i> Stop Generation' +
-					'</button>' +
-					'</div>'
 
+				// Show initial loading state
+				content.innerHTML =
+					'<div class="glossary-loading">Checking glossary status...</div>'
+
+				var btn = document.getElementById('glossary-btn-' + novelId)
+				if (btn && btn.innerHTML.includes('Generate')) {
+					// If button says "Generate", start generation directly
+					console.log('[Glossary] Starting generation directly')
+					generateGlossary(novelId)
+					return
+				}
+
+				// Otherwise, check if glossary exists
 				var xhr = new XMLHttpRequest()
-				xhr.open('GET', '/api/novel/novels/' + novelId + '/glossary', true)
+				xhr.open(
+					'GET',
+					'/api/novel/novels/' + encodeURIComponent(novelId) + '/glossary',
+					true
+				)
 				xhr.setRequestHeader('Accept', 'application/json')
 
 				xhr.onreadystatechange = function () {
 					if (xhr.readyState === 4) {
+						console.log('[Glossary] Check status:', xhr.status)
 						if (xhr.status === 200) {
 							try {
 								var glossary = JSON.parse(xhr.responseText)
 								if (glossary && glossary.terms && glossary.terms.length > 0) {
+									console.log('[Glossary] Existing glossary found, displaying')
 									displayGlossary(glossary)
 								} else {
+									console.log('[Glossary] Empty glossary, starting generation')
 									generateGlossary(novelId)
 								}
 							} catch (error) {
+								console.log(
+									'[Glossary] Error parsing response, starting generation'
+								)
 								generateGlossary(novelId)
 							}
 						} else {
+							console.log('[Glossary] No glossary found, starting generation')
 							generateGlossary(novelId)
 						}
 					}
 				}
 
 				xhr.onerror = function () {
-					showGlossaryError('Network error while loading glossary')
+					console.error('[Glossary] Network error checking glossary')
+					showGlossaryError('Network error while checking glossary status')
 				}
 
 				xhr.send(null)
@@ -1287,69 +1366,365 @@
 			}
 
 			function generateGlossary(novelId) {
-				var content = document.getElementById('glossaryContent')
-				var currentXhr = null
+				if (!novelId) {
+					console.error('[Glossary] No novel ID provided for generation')
+					showGlossaryError('Missing novel ID')
+					return
+				}
 
-				// Create generating message with stop button
+				var content = document.getElementById('glossaryContent')
+				console.log('[Glossary] Starting generation for novel:', novelId)
+
+				// Show generation UI
 				content.innerHTML =
 					'<div class="glossary-loading">' +
-					'<div class="generating-text">Generating glossary</div>' +
+					'<div class="generating-text">Starting glossary generation...</div>' +
+					'<div class="generation-status" style="font-size: 12px; color: #666; margin-top: 8px;">Status: Initializing...</div>' +
 					'<button type="button" class="stop-btn" onclick="stopGeneration()">' +
 					'<i class="fas fa-stop"></i> Stop Generation' +
 					'</button>' +
 					'</div>'
 
-				currentXhr = new XMLHttpRequest()
-				// Store the XHR object globally so we can abort it
-				window.currentGlossaryXhr = currentXhr
+				// Start state polling
+				var stateCheckInterval = setInterval(function () {
+					var stateXhr = new XMLHttpRequest()
+					stateXhr.open(
+						'GET',
+						'/api/novel/novels/' +
+							encodeURIComponent(novelId) +
+							'/glossary/state',
+						true
+					)
+					stateXhr.setRequestHeader('Accept', 'application/json')
 
-				currentXhr.open(
-					'POST',
-					'/api/novel/novels/' + novelId + '/glossary/generate',
-					true
-				)
-				currentXhr.setRequestHeader('Accept', 'application/json')
-				currentXhr.setRequestHeader('Content-Type', 'application/json')
-
-				currentXhr.onreadystatechange = function () {
-					if (currentXhr.readyState === 4) {
-						// Clear the global XHR object since request is complete
-						window.currentGlossaryXhr = null
-
-						if (currentXhr.status === 200) {
+					stateXhr.onreadystatechange = function () {
+						if (stateXhr.readyState === 4 && stateXhr.status === 200) {
 							try {
-								var glossary = JSON.parse(currentXhr.responseText)
-								displayGlossary(glossary)
-								// Update button text after successful generation
-								var btn = document.getElementById('glossary-btn-' + novelId)
-								if (btn) {
-									btn.innerHTML = '<i class="fas fa-book"></i> Glossary'
+								var stateResponse = JSON.parse(stateXhr.responseText)
+								console.log('[Glossary] Current state:', stateResponse.state)
+
+								// Update status display
+								var statusEl = content.querySelector('.generation-status')
+								if (statusEl) {
+									statusEl.textContent =
+										'Status: ' + (stateResponse.message || stateResponse.state)
+								}
+
+								// Check if cancelled
+								if (stateResponse.state === 'cancelled') {
+									console.log('[Glossary] Detected cancelled state')
+									clearInterval(stateCheckInterval)
+									handleCancellation()
+									return
 								}
 							} catch (error) {
-								showGlossaryError('Error generating glossary')
+								console.error('[Glossary] Error checking state:', error)
 							}
-						} else if (currentXhr.status !== 0) {
-							// Status 0 means request was aborted
-							showGlossaryError('Failed to generate glossary')
+						}
+					}
+					stateXhr.send(null)
+				}, 1000) // Check every second
+
+				// Start the generation process
+				var xhr = new XMLHttpRequest()
+				window.currentGlossaryXhr = xhr
+
+				xhr.open(
+					'POST',
+					'/api/novel/novels/' +
+						encodeURIComponent(novelId) +
+						'/glossary/generate',
+					true
+				)
+				xhr.setRequestHeader('Accept', 'application/json')
+				xhr.setRequestHeader('Content-Type', 'application/json')
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						console.log('[Glossary] Generation response status:', xhr.status)
+						console.log('[Glossary] Generation response:', xhr.responseText)
+
+						window.currentGlossaryXhr = null
+						clearInterval(stateCheckInterval)
+
+						if (xhr.status === 200) {
+							try {
+								var response = JSON.parse(xhr.responseText)
+								if (response.status === 'cancelled') {
+									handleCancellation()
+								} else if (response.glossary) {
+									displayGlossary(response.glossary)
+									updateButton(novelId, 'view')
+								} else {
+									showGlossaryError('Invalid response from server')
+								}
+							} catch (error) {
+								console.error('[Glossary] Error parsing response:', error)
+								showGlossaryError('Error parsing server response')
+							}
+						} else {
+							showGlossaryError(
+								'Failed to generate glossary (Status: ' + xhr.status + ')'
+							)
 						}
 					}
 				}
 
-				currentXhr.onerror = function () {
+				xhr.onerror = function () {
+					console.error('[Glossary] Network error during generation')
 					window.currentGlossaryXhr = null
-					showGlossaryError('Network error while generating glossary')
+					clearInterval(stateCheckInterval)
+					showGlossaryError('Network error during generation')
 				}
 
-				currentXhr.send(JSON.stringify({}))
+				// Send the generation request
+				var requestData = {
+					novelId: novelId,
+					timestamp: new Date().toISOString(),
+				}
+
+				console.log('[Glossary] Sending generation request:', requestData)
+				xhr.send(JSON.stringify(requestData))
 			}
 
 			function stopGeneration() {
+				console.log('[Glossary] Stop button pressed')
+
 				if (window.currentGlossaryXhr) {
 					window.currentGlossaryXhr.abort()
 					window.currentGlossaryXhr = null
+
+					var novelId = document
+						.querySelector('.glossary-title')
+						.getAttribute('data-novel-id')
+					if (!novelId) {
+						console.error('[Glossary] No novel ID found when stopping')
+						return
+					}
+
 					var content = document.getElementById('glossaryContent')
-					content.innerHTML =
-						'<div class="glossary-error">Glossary generation cancelled</div>'
+					var maxRetries = 5
+					var currentRetry = 0
+					var retryDelay = 10000 // 10 seconds
+
+					function showCancellingStatus(attempt, timeLeft) {
+						content.innerHTML =
+							'<div class="glossary-loading">' +
+							'<div>Cancelling generation...</div>' +
+							'<div class="generation-status" style="font-size: 12px; color: #666; margin-top: 8px;">' +
+							'Status: Attempting to cancel (try ' +
+							attempt +
+							' of ' +
+							maxRetries +
+							')<br>' +
+							'Next attempt in: ' +
+							timeLeft +
+							' seconds' +
+							'</div>' +
+							'<div style="font-size: 12px; color: #666; margin-top: 8px;">' +
+							'Please wait while the AI process is being stopped...' +
+							'</div>' +
+							'</div>'
+					}
+
+					function updateCountdown(attempt, secondsLeft) {
+						if (secondsLeft > 0) {
+							showCancellingStatus(attempt, secondsLeft)
+							setTimeout(() => updateCountdown(attempt, secondsLeft - 1), 1000)
+						}
+					}
+
+					function attemptCancel() {
+						currentRetry++
+						console.log(
+							'[Glossary] Cancel attempt ' + currentRetry + ' for novel:',
+							novelId
+						)
+
+						// Show initial status with countdown
+						updateCountdown(currentRetry, 10)
+
+						// First try to cancel the process
+						var cancelXhr = new XMLHttpRequest()
+						cancelXhr.open(
+							'POST',
+							'/api/novel/novels/' +
+								encodeURIComponent(novelId) +
+								'/glossary/cancel',
+							true
+						)
+						cancelXhr.setRequestHeader('Accept', 'application/json')
+						cancelXhr.setRequestHeader('Content-Type', 'application/json')
+
+						cancelXhr.onreadystatechange = function () {
+							if (cancelXhr.readyState === 4) {
+								if (cancelXhr.status === 200) {
+									// Now set the state to cancelled
+									setStateToCancelled()
+								} else {
+									console.error(
+										'[Glossary] Cancel attempt ' + currentRetry + ' failed:',
+										cancelXhr.status
+									)
+									if (currentRetry < maxRetries) {
+										// Retry after delay
+										setTimeout(attemptCancel, retryDelay)
+									} else {
+										content.innerHTML =
+											'<div class="glossary-error">' +
+											'Failed to cancel generation after ' +
+											maxRetries +
+											' attempts.<br>' +
+											'<small>The process will be terminated when current chunk completes.</small>' +
+											'</div>'
+									}
+								}
+							}
+						}
+
+						cancelXhr.onerror = function () {
+							console.error(
+								'[Glossary] Network error during cancel attempt ' + currentRetry
+							)
+							if (currentRetry < maxRetries) {
+								setTimeout(attemptCancel, retryDelay)
+							} else {
+								content.innerHTML =
+									'<div class="glossary-error">' +
+									'Network error while trying to cancel.<br>' +
+									'<small>The process will be terminated when current chunk completes.</small>' +
+									'</div>'
+							}
+						}
+
+						cancelXhr.send(
+							JSON.stringify({
+								novelId: novelId,
+								timestamp: new Date().toISOString(),
+								force: true,
+							})
+						)
+					}
+
+					function setStateToCancelled() {
+						var stateXhr = new XMLHttpRequest()
+						stateXhr.open(
+							'POST',
+							'/api/novel/novels/' +
+								encodeURIComponent(novelId) +
+								'/glossary/state',
+							true
+						)
+						stateXhr.setRequestHeader('Accept', 'application/json')
+						stateXhr.setRequestHeader('Content-Type', 'application/json')
+
+						stateXhr.onreadystatechange = function () {
+							if (stateXhr.readyState === 4) {
+								if (stateXhr.status === 200 || stateXhr.status === 201) {
+									console.log('[Glossary] Successfully set state to cancelled')
+									// Start monitoring the state
+									monitorCancellationState()
+								} else {
+									console.error(
+										'[Glossary] Failed to set cancelled state:',
+										stateXhr.status
+									)
+									if (currentRetry < maxRetries) {
+										setTimeout(attemptCancel, retryDelay)
+									} else {
+										content.innerHTML =
+											'<div class="glossary-error">Failed to update cancellation state</div>'
+									}
+								}
+							}
+						}
+
+						var stateData = {
+							state: 'cancelled',
+							novelId: novelId,
+							timestamp: new Date().toISOString(),
+							force: true,
+						}
+						stateXhr.send(JSON.stringify(stateData))
+					}
+
+					function monitorCancellationState() {
+						var checkInterval = setInterval(function () {
+							var checkXhr = new XMLHttpRequest()
+							checkXhr.open(
+								'GET',
+								'/api/novel/novels/' +
+									encodeURIComponent(novelId) +
+									'/glossary/state',
+								true
+							)
+							checkXhr.setRequestHeader('Accept', 'application/json')
+
+							checkXhr.onreadystatechange = function () {
+								if (checkXhr.readyState === 4 && checkXhr.status === 200) {
+									try {
+										var response = JSON.parse(checkXhr.responseText)
+										console.log('[Glossary] Current state:', response.state)
+
+										if (response.state === 'cancelled' && response.confirmed) {
+											clearInterval(checkInterval)
+											handleCancellation()
+										} else {
+											content.innerHTML =
+												'<div class="glossary-loading">' +
+												'<div>Waiting for process to stop...</div>' +
+												'<div class="generation-status" style="font-size: 12px; color: #666; margin-top: 8px;">' +
+												'Status: ' +
+												(response.message || response.state) +
+												'</div>' +
+												'</div>'
+										}
+									} catch (error) {
+										console.error('[Glossary] Error checking state:', error)
+									}
+								}
+							}
+							checkXhr.send(null)
+						}, 1000)
+
+						// Set a timeout to stop checking after 60 seconds
+						setTimeout(function () {
+							clearInterval(checkInterval)
+							content.innerHTML =
+								'<div class="glossary-error">' +
+								'Process is taking longer than expected to stop.<br>' +
+								'<small>It will be terminated when the current chunk completes.</small>' +
+								'</div>'
+						}, 60000)
+					}
+
+					// Start the cancellation process
+					attemptCancel()
+				}
+			}
+
+			function handleCancellation() {
+				console.log('[Glossary] Handling cancellation')
+				var content = document.getElementById('glossaryContent')
+				content.innerHTML =
+					'<div class="glossary-error">Glossary generation cancelled</div>'
+
+				var novelId = document
+					.querySelector('.glossary-title')
+					.getAttribute('data-novel-id')
+				if (novelId) {
+					updateButton(novelId, 'generate')
+				}
+			}
+
+			function updateButton(novelId, state) {
+				var btn = document.getElementById('glossary-btn-' + novelId)
+				if (btn) {
+					if (state === 'view') {
+						btn.innerHTML = '<i class="fas fa-book"></i> Glossary'
+					} else if (state === 'generate') {
+						btn.innerHTML = '<i class="fas fa-plus"></i> Generate Glossary'
+					}
 				}
 			}
 
