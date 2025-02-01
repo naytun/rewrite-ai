@@ -182,31 +182,44 @@
 			/* iPad mini specific styles */
 			@media (min-width: 768px) and (max-width: 820px) {
 				#novels {
-					grid-template-columns: repeat(4, 1fr) !important;
-					gap: 1rem !important;
-					width: 95% !important;
+					grid-template-columns: repeat(4, 1fr);
+					gap: 1rem;
+					width: 95%;
+				}
+
+				#novels > div {
+					width: 90%;
+					height: 450px;
+				}
+
+				#novels > div [class*='h-[280px]'] {
+					height: 300px;
+				}
+
+				#novels > div img {
+					height: 300px;
 				}
 			}
 
 			/* Desktop specific styles */
 			@media (min-width: 1280px) {
 				#novels {
-					grid-template-columns: repeat(5, 1fr) !important;
-					gap: 2rem !important;
-					width: 95% !important;
+					grid-template-columns: repeat(5, 1fr);
+					gap: 2rem;
+					width: 95%;
 				}
 
 				#novels > div {
-					width: 90% !important;
-					height: 450px !important;
+					width: 90%;
+					height: 450px;
 				}
 
-				#novels > div .h-[280px] {
-					height: 300px !important;
+				#novels > div [class*='h-[280px]'] {
+					height: 300px;
 				}
 
 				#novels > div img {
-					height: 300px !important;
+					height: 300px;
 				}
 			}
 
@@ -283,6 +296,50 @@
 			html.dark #glossaryContent .p-2:hover {
 				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
 					0 2px 4px -1px rgba(0, 0, 0, 0.18);
+			}
+
+			/* Base styles with flexbox fallback for older browsers */
+			#novels {
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: -ms-flexbox;
+				display: flex;
+				-webkit-flex-wrap: wrap;
+				-ms-flex-wrap: wrap;
+				flex-wrap: wrap;
+				margin: 0 auto;
+				width: 90%;
+				gap: 1rem;
+			}
+
+			/* Grid layout for modern browsers */
+			@supports (display: grid) {
+				#novels {
+					display: grid;
+					grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+					gap: 1rem;
+				}
+			}
+
+			/* Novel card base styles */
+			#novels > div {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1 1 300px;
+				-ms-flex: 1 1 300px;
+				flex: 1 1 300px;
+				min-width: 250px;
+				max-width: 100%;
+				margin: 1rem;
+				-webkit-transition: -webkit-transform 0.3s;
+				transition: -webkit-transform 0.3s;
+				transition: transform 0.3s;
+				transition: transform 0.3s, -webkit-transform 0.3s;
+			}
+
+			#novels > div:hover {
+				-webkit-transform: scale(1.05);
+				-ms-transform: scale(1.05);
+				transform: scale(1.05);
 			}
 		</style>
 	</head>
@@ -542,18 +599,22 @@
 			})
 
 			async function loadNovels() {
-				const loadingEl = document.getElementById('loading')
-				const errorEl = document.getElementById('error')
-				const novelsContainer = document.getElementById('novels')
+				var loadingEl = document.getElementById('loading')
+				var errorEl = document.getElementById('error')
+				var novelsContainer = document.getElementById('novels')
 
 				try {
-					const response = await fetch('/api/novel/novels')
+					var response = await fetch('/api/novel/novels', {
+						headers: {
+							Accept: 'application/json',
+						},
+					})
 
 					if (!response.ok) {
-						throw new Error(`HTTP error! status: ${response.status}`)
+						throw new Error('HTTP error! status: ' + response.status)
 					}
 
-					const novels = await response.json()
+					var novels = await response.json()
 
 					if (!novels || novels.length === 0) {
 						errorEl.textContent = 'No novels found'
@@ -561,107 +622,69 @@
 						return
 					}
 
-					novels.forEach((novel) => {
-						const card = document.createElement('div')
+					novels.forEach(function (novel) {
+						var card = document.createElement('div')
 						card.className =
 							'overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 cursor-pointer w-[75%] mx-auto flex flex-col h-[450px]'
 
-						card.onclick = null
+						var lastChapter =
+							localStorage.getItem('lastChapter_' + novel.id) || 'Not started'
+						var coverUrl = novel.cover_url || '/placeholder.jpg'
+						var authors = novel.authors ? novel.authors.join(', ') : 'Unknown'
 
-						card.innerHTML = `
-							<div class="h-[280px] w-full overflow-hidden flex-shrink-0">
-								<a href="#" class="last-chapter-link block h-full" data-novel-id="${novel.id}">
-									<img src="${novel.cover_url || '/placeholder.jpg'}" 
-										class="w-full h-[280px] object-cover object-center rounded-lg hover:opacity-90 transition-opacity"
-										onerror="this.src='/placeholder.jpg'">
-								</a>
-							</div>
-							<div class="p-3 h-[170px] flex flex-col flex-shrink-0 bg-transparent">
-								<h2 class="text-lg font-semibold mb-2 line-clamp-3 flex-grow">
-									<a href="/api/novel/novels/${
-										novel.id
-									}/chapters" class="hover:text-blue-600 dark:hover:text-blue-400">
-										${novel.title}
-									</a>
-								</h2>
-								<div class="flex flex-col justify-end">
-									<p class="text-gray-600 text-xs">Author: ${
-										novel.authors ? novel.authors.join(', ') : 'Unknown'
-									}</p>
-									<div class="flex justify-between items-center mt-1">
-										<a href="#" class="last-chapter-link" data-novel-id="${novel.id}">
-											<p class="text-gray-500 dark:text-gray-200 text-xs hover:text-blue-600 dark:hover:text-blue-400">
-												Chapter ${
-													Number(
-														localStorage.getItem(`lastChapter_${novel.id}`)
-													) || 'Not started'
-												}
-												<svg class="w-4 h-4 inline-block ml-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-													<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
-												</svg>
-											</p>
-										</a>
-										<button 
-											class="text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-											onclick="openGlossaryModal('${novel.id}')"
-										>
-											Glossary
-										</button>
-									</div>
-								</div>
-							</div>`
+						card.innerHTML =
+							'<div class="h-[280px] w-full overflow-hidden flex-shrink-0">' +
+							'<a href="#" class="last-chapter-link block h-full" data-novel-id="' +
+							novel.id +
+							'">' +
+							'<img src="' +
+							coverUrl +
+							'" ' +
+							'class="w-full h-[280px] object-cover object-center rounded-lg hover:opacity-90 transition-opacity" ' +
+							'onerror="this.src=\'/placeholder.jpg\'">' +
+							'</a>' +
+							'</div>' +
+							'<div class="p-3 h-[170px] flex flex-col flex-shrink-0 bg-transparent">' +
+							'<h2 class="text-lg font-semibold mb-2 line-clamp-3 flex-grow">' +
+							'<a href="/api/novel/novels/' +
+							novel.id +
+							'/chapters" class="hover:text-blue-600 dark:hover:text-blue-400">' +
+							novel.title +
+							'</a>' +
+							'</h2>' +
+							'<div class="flex flex-col justify-end">' +
+							'<p class="text-gray-600 text-xs">Author: ' +
+							authors +
+							'</p>' +
+							'<div class="flex justify-between items-center mt-1">' +
+							'<a href="#" class="last-chapter-link" data-novel-id="' +
+							novel.id +
+							'">' +
+							'<p class="text-gray-500 dark:text-gray-200 text-xs hover:text-blue-600 dark:hover:text-blue-400">' +
+							'Chapter ' +
+							lastChapter +
+							'<svg class="w-4 h-4 inline-block ml-1" fill="#f97316" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">' +
+							'<path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>' +
+							'</svg>' +
+							'</p>' +
+							'</a>' +
+							'<button ' +
+							'class="text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors" ' +
+							'onclick="openGlossaryModal(\'' +
+							novel.id +
+							'\')">' +
+							'Glossary' +
+							'</button>' +
+							'</div>' +
+							'</div>' +
+							'</div>'
 
 						// Add click handler for last chapter links
-						const lastChapterLinks = card.querySelectorAll('.last-chapter-link')
-						lastChapterLinks.forEach((link) => {
-							link.onclick = async (e) => {
+						var lastChapterLinks = card.querySelectorAll('.last-chapter-link')
+						lastChapterLinks.forEach(function (link) {
+							link.onclick = function (e) {
 								e.preventDefault()
-								const novelId = link.dataset.novelId
-								const lastChapter = localStorage.getItem(
-									`lastChapter_${novelId}`
-								)
-								const lastVolume = localStorage.getItem(`lastVolume_${novelId}`)
-								const url = `/api/novel/novels/${novelId}/chapters`
-
-								try {
-									// Get AI settings
-									const aiResponse = await fetch('/api/settings/ai-rewrite', {
-										headers: {
-											Accept: 'application/json',
-										},
-									})
-
-									let aiParam = ''
-									if (aiResponse.ok) {
-										const { enabled } = await aiResponse.json()
-										if (enabled) {
-											aiParam = '?useAI=true'
-										}
-									}
-
-									if (lastChapter && lastVolume) {
-										// Go directly to the last read chapter
-										window.location.href = `/api/novel/novels/${novelId}/chapters/${encodeURIComponent(
-											lastVolume
-										)}/${encodeURIComponent(lastChapter)}${aiParam}`
-									} else {
-										// If no last read chapter, fetch first chapter info
-										const response = await fetch(url)
-										const data = await response.json()
-										if (data.chapters && data.chapters.length > 0) {
-											const firstChapter = data.chapters[0]
-											window.location.href = `/api/novel/novels/${novelId}/chapters/${encodeURIComponent(
-												firstChapter.volume
-											)}/${encodeURIComponent(firstChapter.chapter)}${aiParam}`
-										} else {
-											// Fallback to chapter list if no chapters found
-											window.location.href = url
-										}
-									}
-								} catch (error) {
-									console.error('Error fetching chapters:', error)
-									window.location.href = url
-								}
+								handleLastChapterClick(novel.id)
 							}
 						})
 
@@ -673,6 +696,63 @@
 					errorEl.classList.remove('hidden')
 				} finally {
 					loadingEl.classList.add('hidden')
+				}
+			}
+
+			// Separate function for handling last chapter click
+			async function handleLastChapterClick(novelId) {
+				var lastChapter = localStorage.getItem('lastChapter_' + novelId)
+				var lastVolume = localStorage.getItem('lastVolume_' + novelId)
+				var url = '/api/novel/novels/' + novelId + '/chapters'
+
+				try {
+					// Get AI settings
+					var aiResponse = await fetch('/api/settings/ai-rewrite', {
+						headers: {
+							Accept: 'application/json',
+						},
+					})
+
+					var aiParam = ''
+					if (aiResponse.ok) {
+						var aiSettings = await aiResponse.json()
+						if (aiSettings.enabled) {
+							aiParam = '?useAI=true'
+						}
+					}
+
+					if (lastChapter && lastVolume) {
+						// Go directly to the last read chapter
+						window.location.href =
+							'/api/novel/novels/' +
+							novelId +
+							'/chapters/' +
+							encodeURIComponent(lastVolume) +
+							'/' +
+							encodeURIComponent(lastChapter) +
+							aiParam
+					} else {
+						// If no last read chapter, fetch first chapter info
+						var response = await fetch(url)
+						var data = await response.json()
+						if (data.chapters && data.chapters.length > 0) {
+							var firstChapter = data.chapters[0]
+							window.location.href =
+								'/api/novel/novels/' +
+								novelId +
+								'/chapters/' +
+								encodeURIComponent(firstChapter.volume) +
+								'/' +
+								encodeURIComponent(firstChapter.chapter) +
+								aiParam
+						} else {
+							// Fallback to chapter list if no chapters found
+							window.location.href = url
+						}
+					}
+				} catch (error) {
+					console.error('Error fetching chapters:', error)
+					window.location.href = url
 				}
 			}
 
