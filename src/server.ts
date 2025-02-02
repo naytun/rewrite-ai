@@ -1,81 +1,100 @@
-import dotenv from 'dotenv'
-import express, { Request, Response, NextFunction, Application } from 'express'
-import routes from './routes'
-import { HttpStatusCode } from 'axios'
+import express, { Request, Response, Router } from 'express'
 import cors from 'cors'
-import path from 'path'
+import { config } from 'dotenv'
+import { ParamsDictionary } from 'express-serve-static-core'
 
-// Load environment variables
-dotenv.config()
+config()
 
-// Validate required environment variables
-const requiredEnvVars = ['ORAMA_API_KEY', 'ORAMA_ENDPOINT', 'PORT']
-const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar])
+const app = express()
+const port = process.env.PORT || 8080
 
-if (missingEnvVars.length > 0) {
-	console.error(
-		'Error: Missing required environment variables:',
-		missingEnvVars.join(', ')
-	)
-	process.exit(1)
-}
-
-// Error handling interface
-interface ErrorWithStatus extends Error {
-	status?: number
-}
-
-// Initialize express app
-const app: Application = express()
+// Middleware
 app.use(cors())
 app.use(express.json())
 
-// Serve static files
-app.use('/public', express.static(path.join(__dirname, 'public')))
-app.use('/covers', express.static(path.join(process.cwd(), 'Lightnovels')))
+// Sample data
+const sampleNovels = [
+  {
+    id: '1',
+    title: 'The First Novel',
+    author: 'John Doe',
+    coverImage: 'https://via.placeholder.com/300x400',
+    latestChapter: '10',
+    description: 'A fascinating story about adventure and discovery.',
+    chapters: [
+      { id: '1', title: 'The Beginning', number: 1 },
+      { id: '2', title: 'The Journey', number: 2 },
+      { id: '3', title: 'The Challenge', number: 3 },
+    ],
+  },
+  {
+    id: '2',
+    title: 'The Second Novel',
+    author: 'Jane Smith',
+    coverImage: 'https://via.placeholder.com/300x400',
+    latestChapter: '15',
+    description: 'An epic tale of friendship and courage.',
+    chapters: [
+      { id: '1', title: 'New Horizons', number: 1 },
+      { id: '2', title: 'The Quest', number: 2 },
+      { id: '3', title: 'The Resolution', number: 3 },
+    ],
+  },
+]
 
-// Request logging middleware
-app.use((req: Request, res: Response, next: NextFunction) => {
-	const timestamp = new Date().toISOString()
-	console.log(`[${timestamp}] ${req.method} ${req.url}`)
-	next()
-})
-
-// Mount routes
-app.use('/api', routes)
-
-// Serve home page
-app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, 'public', 'index.html'))
-})
-
-// Error handling middleware
-app.use(
-	(err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) => {
-		const status = err.status || 500
-		const message = err.message || 'Internal Server Error'
-
-		res.status(status).json({
-			status,
-			message,
-		})
-	}
-)
-
-// 404 handler for undefined routes
-app.use((req: Request, res: Response) => {
-	res.status(HttpStatusCode.NotFound).json({
-		status: HttpStatusCode.NotFound,
-		message: 'Route not found',
-	})
-})
-
-const PORT = process.env.PORT || 3000
-if (process.env.NODE_ENV !== 'test') {
-	app.listen(PORT, () => {
-		console.log(`> Server is running on port: ${PORT}`)
-		console.log('> Environment:', process.env.NODE_ENV || 'development')
-	})
+interface NovelParams extends ParamsDictionary {
+  id: string
 }
 
-export default app
+interface ChapterParams extends ParamsDictionary {
+  id: string
+  chapterId: string
+}
+
+// API Routes
+const router = Router()
+
+router.get('/api/novels', (_req: Request, res: Response) => {
+  res.json(sampleNovels)
+})
+
+router.get('/api/novels/:id', (req: Request<NovelParams>, res: Response) => {
+  const novel = sampleNovels.find((n) => n.id === req.params.id)
+  if (!novel) {
+    return res.status(404).json({ error: 'Novel not found' })
+  }
+  res.json(novel)
+})
+
+router.get(
+  '/api/novels/:id/chapters/:chapterId',
+  (req: Request<ChapterParams>, res: Response) => {
+    const novel = sampleNovels.find((n) => n.id === req.params.id)
+    if (!novel) {
+      return res.status(404).json({ error: 'Novel not found' })
+    }
+
+    const chapter = novel.chapters.find((c) => c.id === req.params.chapterId)
+    if (!chapter) {
+      return res.status(404).json({ error: 'Chapter not found' })
+    }
+
+    // Sample chapter content
+    res.json(
+      `This is the content of chapter ${chapter.number}: ${chapter.title}.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`
+    )
+  }
+)
+
+app.post('/api/settings', (req: Request, res: Response) => {
+  // In a real app, you would save these settings to a database
+  console.log('Received settings:', req.body)
+  res.json({ success: true })
+})
+
+app.use(router)
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`)
+})
