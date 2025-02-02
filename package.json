@@ -65,7 +65,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@mui/icons-material": "^6.4.2",
+    "@mui/icons-material": "^5.15.11",
     "@oramacloud/client": "^2.1.4",
     "@types/cheerio": "^0.22.35",
     "@types/cors": "^2.8.17",
