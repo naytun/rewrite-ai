@@ -3,7 +3,7 @@ import { Box, Container } from '@mui/material'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import NovelDetail from './pages/NovelDetail'
-import Settings from './pages/Settings'
+import { Settings } from '@mui/icons-material'
 
 const App = () => {
   return (
@@ -20,4 +20,4 @@ const App = () => {
   )
 }
 
-export default App 
+export default App

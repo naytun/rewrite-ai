@@ -1,18 +1,7 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import {
-  Box,
-  Grid,
-  Typography,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  CircularProgress,
-  Alert,
-  Divider,
-} from '@mui/material'
+import { Box, Typography, CircularProgress, Alert } from '@mui/material'
 import axios from 'axios'
 
 interface Chapter {
@@ -83,73 +72,10 @@ const NovelDetail = () => {
   }
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} md={4}>
-        <Paper sx={{ p: 2 }}>
-          <Box
-            component="img"
-            src={novel.coverImage}
-            alt={novel.title}
-            sx={{
-              width: '100%',
-              height: 'auto',
-              borderRadius: 1,
-              mb: 2,
-            }}
-          />
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
-            {novel.title}
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-            by {novel.author}
-          </Typography>
-          <Typography variant="body1" paragraph>
-            {novel.description}
-          </Typography>
-        </Paper>
-      </Grid>
-      <Grid item xs={12} md={8}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Chapters
-          </Typography>
-          <List>
-            {novel.chapters.map((chapter) => (
-              <Box key={chapter.id}>
-                <ListItem
-                  button
-                  selected={selectedChapter?.id === chapter.id}
-                  onClick={() => setSelectedChapter(chapter)}
-                >
-                  <ListItemText
-                    primary={`Chapter ${chapter.number}: ${chapter.title}`}
-                  />
-                </ListItem>
-                <Divider />
-              </Box>
-            ))}
-          </List>
-        </Paper>
-        {selectedChapter && (
-          <Paper sx={{ p: 2, mt: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              {`Chapter ${selectedChapter.number}: ${selectedChapter.title}`}
-            </Typography>
-            {isLoadingChapter ? (
-              <CircularProgress />
-            ) : (
-              <Typography
-                variant="body1"
-                component="div"
-                sx={{ whiteSpace: 'pre-wrap' }}
-              >
-                {chapterContent}
-              </Typography>
-            )}
-          </Paper>
-        )}
-      </Grid>
-    </Grid>
+    <Box>
+      <Typography variant="h4">Novel Details</Typography>
+      <Typography>Novel ID: {id}</Typography>
+    </Box>
   )
 }
 
