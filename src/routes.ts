@@ -6,24 +6,22 @@ import settingsRoutes from './settings/settings.routes'
 import aiRoutes from './ai/ai.routes'
 
 import { oramaRoutes } from './orama'
-import { webScrapeRoutes } from './webScrape'
 
 const router = Router()
 const status = {
-	message: 'Everything is functioning normally!',
-	version: PACKAGE.version,
+  message: 'Everything is functioning normally!',
+  version: PACKAGE.version,
 }
 
 router.get('/status', (req, res) => {
-	res.status(200).json(status)
+  res.status(200).json(status)
 })
 router.get('/', (req, res) => {
-	res.status(200).json({ message: 'Welcome to the API' })
+  res.status(200).json({ message: 'Welcome to the API' })
 })
 
 // Mount Route modules
 router.use('/orama', oramaRoutes)
-router.use('/webscrape', webScrapeRoutes)
 router.use('/novel', novelRoutes)
 router.use('/settings', settingsRoutes)
 router.use('/ai', aiRoutes)
