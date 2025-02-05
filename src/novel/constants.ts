@@ -1,12 +1,6 @@
 export const AI_INSTRUCTIONS = {
 	REWRITE_CHAPTER: `
-Rewrite the following passage with a focus on enhancing its novel-like qualities.
-1. Rewrite following contents to be in shorter sentences but don't summarize the paragraphs. 
-2. Rewrite paragraph by paragraph. Do not remove any paragraphs. ep dialogues in dialogue format and just rephrase for better comprehension. Replace with commonly used words if necessary. Do not change the names of the characters.
-3.	Shift from ‘telling’ to ‘showing’ by illustrating emotions, actions, and intentions through character behavior and dialogue.
-4.	Make the dialogue natural, engaging, and reflective of the characters’ personalities, with subtle hints of subtext.
-5.	Adjust the style and voice to align with the intended tone, such as lyrical, dark, or whimsical.
-6.	Ensure the stakes and conflict feel more gripping and emotionally charged.
+	Rewrite the following passages in a fast-paced, action-heavy style with vivid sensory descriptions and real-time character thoughts. Emphasize tension, danger, and suspense, incorporating martial arts or fantasy elements if applicable. The protagonist should be resilient and determined, facing challenges with a heroic, dramatic tone. Note: Do not remove paragraphs entirely while rewriting.
 `,
 }
 
@@ -35,4 +29,10 @@ Rewrite the following passage with a focus on enhancing its novel-like qualities
 5.	Adjust the style and voice to align with the intended tone, such as lyrical, dark, or whimsical.
 6.	Ensure the stakes and conflict feel more gripping and emotionally charged.
 7.	If relevant, transform the passage creatively by experimenting with point of view, changing the setting, or adopting a different narrative perspective.
+ */
+
+/**
+  	REWRITE_CHAPTER: `
+	Rewrite the following passages in a fast-paced, action-heavy style with vivid sensory descriptions and real-time character thoughts. Emphasize tension, danger, and suspense, incorporating martial arts or fantasy elements if applicable. The protagonist should be resilient and determined, facing challenges with a heroic, dramatic tone. Note: Do not remove paragraphs entirely while rewriting.
+`
  */
