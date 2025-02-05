@@ -13,39 +13,78 @@
 			rel="stylesheet"
 		/>
 		<style>
+			/* Basic styles */
+			body {
+				margin: 0;
+				padding: 0;
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+					sans-serif;
+				background: #f3f4f6;
+			}
+
 			/* Dark mode styles */
 			html.dark body {
 				background-color: #1a1a1a;
 				color: #ffffff;
 			}
-			html.dark .bg-white {
-				background-color: #2d2d2d;
-			}
-			html.dark .text-gray-600 {
-				color: #d1d1d1;
-			}
-			.custom-shadow {
-				box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-			}
-			html.dark .custom-shadow {
-				box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
-			}
-			html.dark footer {
-				background-color: rgba(17, 17, 17, 0.7);
+
+			/* Container styles */
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 15px;
 			}
 
-			/* Toggle switch custom styles */
+			/* Header styles */
+			.header {
+				padding: 20px 0;
+				margin-bottom: 30px;
+			}
+
+			.header-content {
+				display: table;
+				width: 100%;
+			}
+
+			.header-title {
+				display: table-cell;
+				vertical-align: middle;
+				font-size: 24px;
+				font-weight: bold;
+			}
+
+			.header-controls {
+				display: table-cell;
+				vertical-align: middle;
+				text-align: right;
+			}
+
+			/* Toggle switch styles */
+			.toggle-container {
+				display: inline-block;
+				margin-right: 20px;
+				vertical-align: middle;
+			}
+
+			.toggle-label {
+				margin-right: 8px;
+				vertical-align: middle;
+			}
+
 			.toggle-switch {
 				position: relative;
 				display: inline-block;
 				width: 48px;
 				height: 24px;
+				vertical-align: middle;
 			}
+
 			.toggle-switch input {
 				opacity: 0;
 				width: 0;
 				height: 0;
 			}
+
 			.toggle-slider {
 				position: absolute;
 				cursor: pointer;
@@ -54,9 +93,10 @@
 				right: 0;
 				bottom: 0;
 				background-color: #ccc;
-				transition: 0.4s;
 				border-radius: 24px;
+				transition: 0.4s;
 			}
+
 			.toggle-slider:before {
 				position: absolute;
 				content: '';
@@ -65,181 +105,59 @@
 				left: 3px;
 				bottom: 3px;
 				background-color: white;
-				transition: 0.4s;
 				border-radius: 50%;
+				transition: 0.4s;
 			}
+
 			input:checked + .toggle-slider {
 				background-color: #3b82f6;
 			}
+
 			input:checked + .toggle-slider:before {
 				transform: translateX(24px);
 			}
-			.toggle-label {
-				font-size: 1rem;
-				color: #4b5563;
-				margin-right: 8px;
-			}
-			html.dark .toggle-label {
-				color: #e5e7eb;
-			}
 
-			/* Ensure minimum height for content */
-			html,
-			body {
-				height: 100%;
-				margin: 0;
-			}
-
-			/* Settings Modal Dark Mode */
-			html.dark .settings-modal-content {
-				background-color: #1a1a1a;
-				color: #e5e7eb;
-			}
-			html.dark .settings-modal-textarea {
-				background-color: #374151;
-				border-color: #4b5563;
-				color: #e5e7eb;
-				line-height: 1.5rem;
-			}
-			html.dark .settings-modal-textarea::placeholder {
-				color: #9ca3af;
-			}
-			html.dark .settings-modal-label {
-				color: #e5e7eb;
-			}
-			html.dark .settings-modal-close {
-				color: #9ca3af;
-			}
-			html.dark .settings-modal-close:hover {
-				color: #e5e7eb;
-			}
-
-			/* Add or update these styles */
-			.original-text {
-				display: none;
-				color: #808080;
-				font-style: italic;
-				margin-left: 2em;
-			}
-			.compare-mode .original-text {
-				display: block !important;
-			}
-			.paragraph-pair {
-				margin-bottom: 1.5rem;
-			}
-			.ai-text {
-				margin-bottom: 0.5rem;
-			}
-			.compare-button {
-				position: fixed;
-				bottom: 80px;
-				right: 20px;
-				width: 56px;
-				height: 56px;
-				border-radius: 50%;
-				background-color: #9ca3af;
+			/* Settings button */
+			.settings-btn {
+				display: inline-block;
+				padding: 8px 16px;
+				background-color: #3b82f6;
 				color: white;
-				display: none;
-				align-items: center;
-				justify-content: center;
+				border: none;
+				border-radius: 4px;
 				cursor: pointer;
-				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-				transition: all 0.3s ease;
-				z-index: 100;
-			}
-			.compare-button.show {
-				display: flex;
-			}
-			.compare-button.active {
-				background-color: #3b82f6;
-			}
-			.compare-button:hover {
-				transform: scale(1.1);
-			}
-			html.dark .compare-button {
-				background-color: #4b5563;
-			}
-			html.dark .compare-button.active {
-				background-color: #3b82f6;
+				vertical-align: middle;
 			}
 
-			/* Add novel cover image styles */
-			.novel-cover {
-				position: relative;
-				width: 100%;
-				padding-top: 133.33%; /* 3:4 aspect ratio */
-				overflow: hidden;
-			}
-			.novel-cover img {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-			}
-
-			/* Mobile-first base styles */
+			/* Novels grid */
 			#novels {
-				display: block;
-				width: 100%;
-				max-width: 1200px;
-				margin: 0 auto;
-				padding: 0 1rem;
 				text-align: center;
+				font-size: 0; /* Remove space between inline-block elements */
 			}
 
-			#novels > div {
+			.novel-card {
 				display: inline-block;
 				vertical-align: top;
-				width: 100%;
-				max-width: 300px;
-				margin: 1rem;
-				background: #fff;
+				width: 280px;
+				margin: 10px;
+				background: white;
 				border-radius: 8px;
-				-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-				overflow: hidden;
-				height: auto;
-				min-height: 450px;
+				text-align: left;
+				font-size: 16px; /* Reset font size */
 			}
 
-			/* Tablet and up styles */
-			@media (min-width: 768px) {
-				#novels > div {
-					width: calc(50% - 2rem);
-				}
-			}
-
-			/* iPad mini specific styles */
-			@media (min-width: 768px) and (max-width: 820px) {
-				#novels > div {
-					width: calc(33.333% - 2rem);
-				}
-			}
-
-			/* Desktop styles */
-			@media (min-width: 1024px) {
-				#novels > div {
-					width: calc(25% - 2rem);
-				}
-			}
-
-			@media (min-width: 1280px) {
-				#novels > div {
-					width: calc(20% - 2rem);
-				}
-			}
-
-			/* Novel card image container */
-			.novel-image-container {
+			.novel-image {
 				position: relative;
 				width: 100%;
-				padding-top: 133.33%;
+				height: 0;
+				padding-bottom: 133.33%;
+				overflow: hidden;
 				background: #f5f5f5;
+				border-radius: 8px 8px 0 0;
 			}
 
-			.novel-image-container img {
+			.novel-image img {
 				position: absolute;
 				top: 0;
 				left: 0;
@@ -247,473 +165,694 @@
 				height: 100%;
 			}
 
-			/* Card content styles */
 			.novel-content {
-				padding: 1rem;
-			}
-
-			/* Novel card styles */
-			.novel-card {
-				text-align: left;
-				background: #fff;
-				border-radius: 8px;
-				overflow: hidden;
-				-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				padding: 15px;
 			}
 
 			.novel-title {
-				font-size: 1.125rem;
-				font-weight: 600;
-				margin-bottom: 0.5rem;
+				font-size: 18px;
+				font-weight: bold;
+				margin: 0 0 10px 0;
 				overflow: hidden;
-				max-height: 4.5em;
-				line-height: 1.5;
+				text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
+				max-height: 2.4em;
 			}
 
 			.novel-title a {
 				color: inherit;
 				text-decoration: none;
+				transition: color 0.2s ease;
 			}
 
-			.novel-info {
-				margin-top: 1rem;
+			.novel-title a:hover {
+				color: #3b82f6;
 			}
 
-			.author {
-				font-size: 0.75rem;
+			html.dark .novel-title a:hover {
+				color: #60a5fa;
+			}
+
+			.novel-author {
+				font-size: 14px;
 				color: #666;
-				margin-bottom: 0.5rem;
+				margin-bottom: 10px;
 			}
 
-			.chapter-info {
-				display: -webkit-box;
-				display: -webkit-flex;
-				display: flex;
-				-webkit-box-pack: justify;
-				-webkit-justify-content: space-between;
-				justify-content: space-between;
-				-webkit-box-align: center;
-				-webkit-align-items: center;
-				align-items: center;
-				margin-top: 0.5rem;
+			.novel-chapter {
+				font-size: 14px;
+				color: #666;
+				display: block;
+			}
+
+			.novel-chapter a {
+				color: inherit;
+				text-decoration: none;
+				transition: all 0.2s ease;
+				display: block;
+				margin-bottom: 4px;
+			}
+
+			.novel-chapter a:hover {
+				color: #3b82f6;
+			}
+
+			html.dark .novel-chapter a:hover {
+				color: #60a5fa;
 			}
 
 			.bookmark-icon {
-				width: 1rem;
-				height: 1rem;
-				fill: #f97316;
-				margin-left: 0.25rem;
-				vertical-align: middle;
 				display: inline-block;
+				width: 14px;
+				height: 14px;
+				margin-left: 4px;
+				vertical-align: middle;
+				fill: #f97316;
 			}
 
-			.glossary-btn {
-				font-size: 0.75rem;
-				padding: 0.25rem 0.5rem;
+			.novel-image a {
+				display: block;
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+				cursor: pointer;
+			}
+
+			.novel-image a:hover img {
+				opacity: 0.8;
+				transition: opacity 0.2s ease;
+			}
+
+			/* Loading and error states */
+			#loading,
+			#error {
+				text-align: center;
+				padding: 20px;
+				font-size: 16px;
+			}
+
+			#error {
+				color: #dc2626;
+				display: none;
+			}
+
+			/* Settings Modal */
+			#settingsModal {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(0, 0, 0, 0.5);
+				z-index: 1000;
+			}
+
+			#settingsModal.visible {
+				display: block;
+			}
+
+			.modal-content {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: white;
+				padding: 20px;
+				border-radius: 8px;
+				width: 90%;
+				max-width: 500px;
+			}
+
+			.modal-header {
+				margin-bottom: 15px;
+			}
+
+			.modal-close {
+				float: right;
+				background: none;
+				border: none;
+				font-size: 24px;
+				cursor: pointer;
+				padding: 0;
+				margin: 0;
+			}
+
+			.modal-textarea {
+				width: 100%;
+				min-height: 150px;
+				margin-bottom: 15px;
+				padding: 8px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				resize: vertical;
+			}
+
+			.modal-save {
+				float: right;
+				padding: 8px 16px;
 				background: #3b82f6;
 				color: white;
 				border: none;
-				border-radius: 0.25rem;
+				border-radius: 4px;
 				cursor: pointer;
-				-webkit-appearance: none;
 			}
 
-			/* Dark mode styles */
+			/* Dark mode overrides */
 			html.dark .novel-card {
 				background: #2d2d2d;
-				color: #fff;
 			}
 
-			html.dark .author {
+			html.dark .novel-author,
+			html.dark .novel-chapter {
 				color: #999;
 			}
 
-			html.dark .novel-title a {
-				color: #fff;
+			html.dark .modal-content {
+				background: #2d2d2d;
+				color: white;
 			}
 
-			/* Fix for older Safari flex issues */
-			.flex {
-				display: -webkit-box;
-				display: -webkit-flex;
-				display: -ms-flexbox;
-				display: flex;
+			html.dark .modal-textarea {
+				background: #1a1a1a;
+				border-color: #444;
+				color: white;
 			}
 
-			.flex-col {
-				-webkit-box-orient: vertical;
-				-webkit-box-direction: normal;
-				-webkit-flex-direction: column;
-				-ms-flex-direction: column;
-				flex-direction: column;
+			/* Media queries */
+			@media (max-width: 640px) {
+				.novel-card {
+					width: calc(100% - 20px);
+					margin: 10px;
+				}
+
+				.header-content {
+					display: block;
+				}
+
+				.header-title {
+					display: block;
+					text-align: center;
+					margin-bottom: 15px;
+				}
+
+				.header-controls {
+					display: block;
+					text-align: center;
+				}
+
+				.toggle-container {
+					display: block;
+					margin: 10px 0;
+				}
 			}
 
-			.items-center {
-				-webkit-box-align: center;
-				-webkit-align-items: center;
-				-ms-flex-align: center;
-				align-items: center;
+			@media (min-width: 641px) and (max-width: 1024px) {
+				.novel-card {
+					width: calc(50% - 20px);
+				}
 			}
 
-			.justify-between {
-				-webkit-box-pack: justify;
-				-webkit-justify-content: space-between;
-				-ms-flex-pack: justify;
-				justify-content: space-between;
+			@media (min-width: 1025px) {
+				.novel-card {
+					width: calc(33.333% - 20px);
+				}
 			}
 
-			/* Glossary modal styles */
+			/* Add glossary modal styles */
 			#glossaryModal {
-				overflow: hidden;
-			}
-
-			#glossaryModal > div {
-				max-height: 50vh !important;
-				height: auto !important;
-			}
-
-			#glossaryContent {
-				max-height: calc(50vh - 4rem) !important;
-				overflow-y: auto;
-				scrollbar-width: thin;
-				scrollbar-color: #888 #f1f1f1;
-			}
-
-			#glossaryContent::-webkit-scrollbar {
-				width: 8px;
-			}
-
-			#glossaryContent::-webkit-scrollbar-track {
-				background: #f1f1f1;
-				border-radius: 4px;
-			}
-
-			#glossaryContent::-webkit-scrollbar-thumb {
-				background: #888;
-				border-radius: 4px;
-			}
-
-			#glossaryContent::-webkit-scrollbar-thumb:hover {
-				background: #555;
-			}
-
-			html.dark #glossaryContent {
-				scrollbar-color: #4a5568 #2d3748;
-			}
-
-			html.dark #glossaryContent::-webkit-scrollbar-track {
-				background: #2d3748;
-			}
-
-			html.dark #glossaryContent::-webkit-scrollbar-thumb {
-				background: #4a5568;
-			}
-
-			html.dark #glossaryContent::-webkit-scrollbar-thumb:hover {
-				background: #718096;
-			}
-
-			/* Glossary content styles */
-			#glossaryContent .mb-6:last-child {
-				margin-bottom: 0;
-			}
-
-			#glossaryContent .grid {
-				gap: 1rem;
-			}
-
-			#glossaryContent .p-2 {
-				transition: all 0.2s ease-in-out;
-			}
-
-			#glossaryContent .p-2:hover {
-				transform: translateY(-2px);
-				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-					0 2px 4px -1px rgba(0, 0, 0, 0.06);
-			}
-
-			html.dark #glossaryContent .p-2:hover {
-				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
-					0 2px 4px -1px rgba(0, 0, 0, 0.18);
-			}
-
-			/* Settings Modal Styles */
-			.modal-overlay {
+				display: none;
 				position: fixed;
 				top: 0;
 				left: 0;
 				right: 0;
 				bottom: 0;
 				background-color: rgba(0, 0, 0, 0.5);
-				display: none;
-				-webkit-box-align: center;
-				-webkit-align-items: center;
-				-ms-flex-align: center;
-				align-items: center;
-				-webkit-box-pack: center;
-				-webkit-justify-content: center;
-				-ms-flex-pack: center;
-				justify-content: center;
+				-webkit-transform: translateZ(0);
+				overflow: hidden;
 				z-index: 1000;
 			}
 
-			.modal-overlay.visible {
-				display: -webkit-box;
-				display: -webkit-flex;
-				display: -ms-flexbox;
-				display: flex;
+			#glossaryModal.visible {
+				display: block;
 			}
 
-			.modal-content {
-				background: #fff;
-				padding: 1.5rem;
-				border-radius: 0.5rem;
-				width: 90%;
-				max-width: 600px;
-				position: relative;
-				max-height: 90vh;
+			.glossary-modal-content {
+				position: fixed;
+				left: 5%;
+				right: 5%;
+				top: 50%;
+				-webkit-transform: translateY(-50%);
+				transform: translateY(-50%);
+				background: white;
+				padding: 20px;
+				border-radius: 8px;
+				max-height: 80%;
 				overflow-y: auto;
+				-webkit-overflow-scrolling: touch;
 			}
 
-			html.dark .modal-content {
-				background: #1a1a1a;
+			.glossary-header {
+				position: relative;
+				padding-bottom: 15px;
+				border-bottom: 1px solid #eee;
+				margin-bottom: 15px;
+			}
+
+			.glossary-title {
+				font-size: 18px;
+				font-weight: bold;
+				margin-right: 40px;
+				color: #333;
+			}
+
+			.glossary-close {
+				position: absolute;
+				right: 0;
+				top: 0;
+				width: 30px;
+				height: 30px;
+				line-height: 30px;
+				text-align: center;
+				font-size: 24px;
+				color: #666;
+				background: none;
+				border: none;
+				padding: 0;
+				cursor: pointer;
+				-webkit-appearance: none;
+			}
+
+			.glossary-content {
+				-webkit-overflow-scrolling: touch;
+			}
+
+			.glossary-section {
+				margin-bottom: 20px;
+			}
+
+			.glossary-section-title {
+				font-size: 16px;
+				font-weight: bold;
+				margin-bottom: 10px;
+				color: #4a5568;
+			}
+
+			.glossary-term {
+				background: #f7f7f7;
+				border-radius: 4px;
+				padding: 12px;
+				margin-bottom: 8px;
+			}
+
+			.glossary-term-title {
+				font-weight: bold;
+				margin-bottom: 4px;
+				font-size: 14px;
+			}
+
+			.glossary-term-desc {
+				font-size: 13px;
+				color: #666;
+				line-height: 1.4;
+			}
+
+			/* Dark mode styles */
+			html.dark .glossary-modal-content {
+				background: #2d2d2d;
 				color: #fff;
 			}
 
-			.modal-header {
-				display: -webkit-box;
-				display: -webkit-flex;
-				display: -ms-flexbox;
-				display: flex;
-				-webkit-box-pack: justify;
-				-webkit-justify-content: space-between;
-				-ms-flex-pack: justify;
-				justify-content: space-between;
-				-webkit-box-align: center;
-				-webkit-align-items: center;
-				-ms-flex-align: center;
-				align-items: center;
-				margin-bottom: 1rem;
+			html.dark .glossary-header {
+				border-bottom-color: #444;
 			}
 
-			.modal-close {
-				background: none;
-				border: none;
-				font-size: 1.5rem;
-				cursor: pointer;
-				padding: 0.5rem;
-				color: #666;
+			html.dark .glossary-title {
+				color: #fff;
 			}
 
-			html.dark .modal-close {
+			html.dark .glossary-close {
 				color: #999;
 			}
 
-			.modal-textarea {
+			html.dark .glossary-section-title {
+				color: #e5e7eb;
+			}
+
+			html.dark .glossary-term {
+				background: #374151;
+			}
+
+			html.dark .glossary-term-desc {
+				color: #9ca3af;
+			}
+
+			/* Loading and error states */
+			.glossary-loading,
+			.glossary-error {
+				text-align: center;
+				padding: 20px;
+				color: #666;
+			}
+
+			.glossary-error {
+				color: #dc2626;
+			}
+
+			html.dark .glossary-loading {
+				color: #999;
+			}
+
+			html.dark .glossary-error {
+				color: #ef4444;
+			}
+
+			/* Add hover styles for clickable elements */
+			.novel-title a {
+				color: inherit;
+				text-decoration: none;
+				transition: color 0.2s ease;
+			}
+
+			.novel-title a:hover {
+				color: #3b82f6;
+			}
+
+			html.dark .novel-title a:hover {
+				color: #60a5fa;
+			}
+
+			.novel-chapter a {
+				color: inherit;
+				text-decoration: none;
+				transition: all 0.2s ease;
+				display: block;
+				margin-bottom: 4px;
+			}
+
+			.novel-chapter a:hover {
+				color: #3b82f6;
+			}
+
+			html.dark .novel-chapter a:hover {
+				color: #60a5fa;
+			}
+
+			.novel-image a {
+				display: block;
 				width: 100%;
-				min-height: 200px;
-				padding: 0.5rem;
-				margin-bottom: 1rem;
-				border: 1px solid #ccc;
-				border-radius: 0.25rem;
-				font-family: inherit;
-			}
-
-			html.dark .modal-textarea {
-				background: #2d2d2d;
-				border-color: #444;
-				color: #fff;
-			}
-
-			.modal-save {
-				background: #3b82f6;
-				color: white;
-				padding: 0.5rem 1rem;
-				border-radius: 0.25rem;
-				border: none;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
 				cursor: pointer;
 			}
 
+			.novel-image a:hover img {
+				opacity: 0.8;
+				transition: opacity 0.2s ease;
+			}
+
+			.glossary-btn {
+				display: inline-block;
+				padding: 4px 8px;
+				background: #3b82f6;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				font-size: 12px;
+				cursor: pointer;
+				text-align: center;
+				-webkit-appearance: none;
+				margin-top: 8px;
+				margin-left: 0;
+				transition: background-color 0.2s ease;
+			}
+
+			.glossary-btn:hover {
+				background-color: #2563eb;
+			}
+
+			.settings-btn {
+				display: inline-block;
+				padding: 8px 16px;
+				background-color: #3b82f6;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				cursor: pointer;
+				vertical-align: middle;
+				transition: background-color 0.2s ease;
+			}
+
+			.settings-btn:hover {
+				background-color: #2563eb;
+			}
+
+			.toggle-switch {
+				position: relative;
+				display: inline-block;
+				width: 48px;
+				height: 24px;
+				vertical-align: middle;
+				cursor: pointer;
+			}
+
+			.toggle-slider {
+				transition: background-color 0.2s ease;
+			}
+
+			.toggle-slider:before {
+				transition: transform 0.2s ease;
+			}
+
+			.toggle-label {
+				cursor: pointer;
+				transition: opacity 0.2s ease;
+			}
+
+			.toggle-label:hover {
+				opacity: 0.8;
+			}
+
+			/* Modal close button hover */
+			.modal-close {
+				transition: color 0.2s ease;
+			}
+
+			.modal-close:hover {
+				color: #1f2937;
+			}
+
+			html.dark .modal-close:hover {
+				color: #ffffff;
+			}
+
+			/* Modal save button hover */
+			.modal-save {
+				transition: background-color 0.2s ease;
+			}
+
 			.modal-save:hover {
-				background: #2563eb;
+				background-color: #2563eb;
+			}
+
+			/* Glossary term hover effect */
+			.glossary-term {
+				transition: transform 0.2s ease, box-shadow 0.2s ease;
+			}
+
+			.glossary-term:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+			}
+
+			html.dark .glossary-term:hover {
+				box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+			}
+
+			/* Bookmark icon hover effect */
+			.bookmark-icon {
+				transition: transform 0.2s ease;
+			}
+
+			.novel-chapter a:hover .bookmark-icon {
+				transform: scale(1.1);
+			}
+
+			/* Add stop button styles */
+			.stop-btn {
+				display: inline-block;
+				padding: 6px 12px;
+				background: #dc2626;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				font-size: 14px;
+				cursor: pointer;
+				margin-top: 10px;
+				transition: background-color 0.2s ease;
+			}
+
+			.stop-btn:hover {
+				background: #b91c1c;
+			}
+
+			/* Loading animation for generating text */
+			@keyframes ellipsis {
+				0% {
+					content: '.';
+				}
+				33% {
+					content: '..';
+				}
+				66% {
+					content: '...';
+				}
+				100% {
+					content: '.';
+				}
+			}
+
+			.generating-text::after {
+				content: '...';
+			}
+
+			/* Simpler animation fallback */
+			@-webkit-keyframes blink {
+				0% {
+					opacity: 0.2;
+				}
+				20% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0.2;
+				}
+			}
+
+			@keyframes blink {
+				0% {
+					opacity: 0.2;
+				}
+				20% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0.2;
+				}
+			}
+
+			.generating-text {
+				-webkit-animation: blink 1.5s infinite;
+				animation: blink 1.5s infinite;
 			}
 		</style>
 	</head>
-	<body class="bg-gray-100">
-		<div class="min-h-screen flex flex-col">
-			<main class="flex-grow">
-				<div class="container mx-auto px-4 py-8">
-					<div class="flex justify-between items-center mb-8">
-						<h1 class="text-4xl font-bold text-center">Novel Library</h1>
-						<div class="flex items-center gap-4">
-							<div class="flex items-center px-4 py-2 rounded-full">
-								<span class="toggle-label">AI Rewrite</span>
-								<label class="toggle-switch">
-									<input type="checkbox" id="aiToggle" />
-									<span class="toggle-slider"></span>
-								</label>
-							</div>
-							<div class="flex items-center px-4 py-2 rounded-full">
-								<span class="toggle-label">Dark Mode</span>
-								<label class="toggle-switch">
-									<input type="checkbox" id="darkModeToggle" />
-									<span class="toggle-slider"></span>
-								</label>
-							</div>
-							<button
-								id="settingsBtn"
-								class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
-							>
-								<i class="fas fa-cog mr-2"></i>AI Settings
-							</button>
+	<body>
+		<div class="container">
+			<header class="header">
+				<div class="header-content">
+					<div class="header-title">Novel Library</div>
+					<div class="header-controls">
+						<div class="toggle-container">
+							<span class="toggle-label">AI Rewrite</span>
+							<label class="toggle-switch">
+								<input type="checkbox" id="aiToggle" />
+								<span class="toggle-slider"></span>
+							</label>
 						</div>
-					</div>
-					<div id="loading" class="text-center text-gray-600 mb-4">
-						Loading novels...
-					</div>
-					<div id="error" class="text-center text-red-600 mb-4 hidden"></div>
-					<div id="novels">
-						<!-- Novels will be loaded here -->
+						<div class="toggle-container">
+							<span class="toggle-label">Dark Mode</span>
+							<label class="toggle-switch">
+								<input type="checkbox" id="darkModeToggle" />
+								<span class="toggle-slider"></span>
+							</label>
+						</div>
+						<button id="settingsBtn" class="settings-btn">
+							<i class="fas fa-cog"></i> AI Settings
+						</button>
 					</div>
 				</div>
-			</main>
+			</header>
 
-			<!-- Footer -->
-			<footer class="bg-gray-50 dark:bg-gray-900/30 mt-auto">
-				<div class="container mx-auto px-4 py-4">
-					<div class="text-center">
-						<p class="text-gray-500 dark:text-gray-400 mb-2">
-							Powered by
-							<a
-								href="https://orama.com"
-								target="_blank"
-								rel="noopener noreferrer"
-								class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-								>OramaAI</a
-							>
-						</p>
-						<p class="text-gray-500 dark:text-gray-600 mb-2">
-							This website is 99% written by
-							<a
-								href="https://www.cursor.com/"
-								target="_blank"
-								rel="noopener noreferrer"
-								class="text-blue-800 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-								>Cursor AI</a
-							>
-						</p>
-						<div class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
-							<p>
-								© 2025 Nay Tun Thein •
-								<a
-									href="mailto:naytunthein70@gmail.com"
-									class="text-blue-800 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-									>naytunthein70@gmail.com</a
-								>
-							</p>
-							<p>
-								Novel contents are sourced from
-								<a
-									href="https://novelfull.com"
-									target="_blank"
-									rel="noopener noreferrer"
-									class="text-blue-800 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-									>novelfull.com</a
-								>
-							</p>
-							<p class="mt-2">
-								<a
-									href="https://github.com/naytun/rewrite-ai"
-									target="_blank"
-									rel="noopener noreferrer"
-									class="text-blue-800 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-								>
-									<i class="fab fa-github"></i>
-									<span>GitHub</span>
-								</a>
-							</p>
-						</div>
-					</div>
-				</div>
-			</footer>
+			<div id="loading">Loading novels...</div>
+			<div id="error"></div>
+			<div id="novels"></div>
 		</div>
 
 		<!-- Settings Modal -->
-		<div id="settingsModal" class="modal-overlay">
+		<div id="settingsModal">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h2 class="text-xl font-bold">AI Settings</h2>
+					<h2>AI Settings</h2>
 					<button id="closeSettingsBtn" class="modal-close">&times;</button>
 				</div>
 				<div>
-					<label class="block mb-2">AI Rewrite Instructions</label>
 					<textarea
 						id="aiPrompt"
 						class="modal-textarea"
 						placeholder="Enter instructions for how the AI should rewrite the novel content..."
 					></textarea>
 				</div>
-				<div style="text-align: right">
+				<div>
 					<button id="saveSettingsBtn" class="modal-save">Save</button>
 				</div>
 			</div>
 		</div>
 
-		<!-- Add Glossary Modal -->
-		<div
-			id="glossaryModal"
-			class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4 overflow-hidden"
-		>
-			<div
-				class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl max-h-[50vh] flex flex-col relative"
-			>
-				<!-- Header -->
-				<div
-					class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center shrink-0"
-				>
-					<h2 class="text-xl font-bold dark:text-white">Glossary</h2>
-					<div class="flex gap-2">
-						<button
-							id="generateGlossaryBtn"
-							class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
-						>
-							<span>Generate</span>
-							<i class="fas fa-spinner fa-spin hidden"></i>
-						</button>
-						<button
-							onclick="closeGlossaryModal()"
-							class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-						>
-							<svg
-								class="w-6 h-6"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M6 18L18 6M6 6l12 12"
-								/>
-							</svg>
-						</button>
-					</div>
+		<!-- Glossary Modal -->
+		<div id="glossaryModal">
+			<div class="glossary-modal-content">
+				<div class="glossary-header">
+					<h2 class="glossary-title">Glossary</h2>
+					<button class="glossary-close" onclick="closeGlossaryModal()">
+						&times;
+					</button>
 				</div>
-				<!-- Scrollable Content -->
-				<div id="glossaryContent" class="flex-1 overflow-y-auto p-4 min-h-0">
-					<div class="text-center text-gray-500 dark:text-gray-400">
-						Loading glossary...
-					</div>
+				<div id="glossaryContent" class="glossary-content">
+					<div class="loading">Loading glossary...</div>
 				</div>
 			</div>
 		</div>
 
 		<script>
+			// Add polyfill for Element.prototype.matches
+			if (!Element.prototype.matches) {
+				Element.prototype.matches =
+					Element.prototype.msMatchesSelector ||
+					Element.prototype.webkitMatchesSelector
+			}
+
+			// Add polyfill for Element.prototype.closest
+			if (!Element.prototype.closest) {
+				Element.prototype.closest = function (s) {
+					var el = this
+					do {
+						if (el.matches(s)) return el
+						el = el.parentElement || el.parentNode
+					} while (el !== null && el.nodeType === 1)
+					return null
+				}
+			}
+
+			// Add polyfill for querySelector if needed
+			if (!document.querySelector) {
+				document.querySelector = function (selector) {
+					return (
+						document.getElementsByTagName(selector)[0] ||
+						document.getElementsByClassName(selector.replace('.', ''))[0]
+					)
+				}
+			}
+
 			// Dark mode and AI mode functionality
-			const darkModeToggle = document.getElementById('darkModeToggle')
-			const aiToggle = document.getElementById('aiToggle')
+			var darkModeToggle = document.getElementById('darkModeToggle')
+			var aiToggle = document.getElementById('aiToggle')
 
 			// Check for saved preferences
 			if (localStorage.getItem('darkMode') === 'true') {
@@ -726,8 +865,8 @@
 			}
 
 			// Toggle dark mode
-			darkModeToggle.addEventListener('change', () => {
-				const isDark = darkModeToggle.checked
+			darkModeToggle.onclick = function () {
+				var isDark = darkModeToggle.checked
 				if (isDark) {
 					document.documentElement.classList.add('dark')
 					localStorage.setItem('darkMode', 'true')
@@ -735,54 +874,51 @@
 					document.documentElement.classList.remove('dark')
 					localStorage.setItem('darkMode', 'false')
 				}
-			})
+			}
 
 			// Toggle AI mode
-			aiToggle.addEventListener('change', async () => {
-				const isEnabled = aiToggle.checked
+			aiToggle.onclick = function () {
+				var isEnabled = aiToggle.checked
 				localStorage.setItem('aiRewrite', isEnabled.toString())
 
-				try {
-					const response = await fetch('/api/settings/ai-rewrite', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							Accept: 'application/json',
-						},
-						body: JSON.stringify({ enabled: isEnabled }),
-					})
+				var xhr = new XMLHttpRequest()
+				xhr.open('POST', '/api/settings/ai-rewrite', true)
+				xhr.setRequestHeader('Content-Type', 'application/json')
+				xhr.setRequestHeader('Accept', 'application/json')
 
-					if (!response.ok) {
-						throw new Error('Failed to update AI settings')
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						if (xhr.status === 200) {
+							try {
+								var result = JSON.parse(xhr.responseText)
+								if (result.enabled !== isEnabled) {
+									aiToggle.checked = result.enabled
+								}
+								window.location.reload()
+							} catch (error) {
+								console.error('Error parsing response:', error)
+								aiToggle.checked = !isEnabled
+								localStorage.setItem('aiRewrite', (!isEnabled).toString())
+							}
+						} else {
+							console.error('Failed to update AI settings')
+							aiToggle.checked = !isEnabled
+							localStorage.setItem('aiRewrite', (!isEnabled).toString())
+						}
 					}
-
-					const result = await response.json()
-					console.log('AI toggle response:', result)
-
-					if (result.enabled !== isEnabled) {
-						aiToggle.checked = result.enabled
-					}
-
-					// Reload the page to reflect the new AI state
-					window.location.reload()
-				} catch (error) {
-					console.error('Failed to save AI preference:', error)
-					// Revert the toggle if the API call fails
-					aiToggle.checked = !isEnabled
-					localStorage.setItem('aiRewrite', (!isEnabled).toString())
 				}
-			})
 
+				xhr.send(JSON.stringify({ enabled: isEnabled }))
+			}
+
+			// Load novels
 			function loadNovels() {
 				var loadingEl = document.getElementById('loading')
 				var errorEl = document.getElementById('error')
 				var novelsContainer = document.getElementById('novels')
 
-				// Show loading state
 				loadingEl.style.display = 'block'
 				errorEl.style.display = 'none'
-
-				// Clear any existing content
 				novelsContainer.innerHTML = ''
 
 				var xhr = new XMLHttpRequest()
@@ -795,15 +931,12 @@
 
 						if (xhr.status === 200) {
 							try {
-								var response = xhr.responseText
-								var novels = JSON.parse(response)
-
+								var novels = JSON.parse(xhr.responseText)
 								if (!novels || !novels.length) {
 									showError('No novels found')
 									return
 								}
 
-								// Create and append all novel cards
 								for (var i = 0; i < novels.length; i++) {
 									var card = createNovelCard(novels[i])
 									if (card) {
@@ -811,30 +944,19 @@
 									}
 								}
 							} catch (error) {
-								console.error('Error parsing novels:', error)
-								showError('Error loading novels: Invalid data received')
+								showError('Error loading novels: Invalid data')
 							}
 						} else {
-							showError(
-								'Error loading novels: Server returned status ' + xhr.status
-							)
+							showError('Error loading novels: Server error')
 						}
 					}
-				}
-
-				xhr.onerror = function () {
-					loadingEl.style.display = 'none'
-					showError('Network error while loading novels')
 				}
 
 				xhr.send(null)
 			}
 
 			function createNovelCard(novel) {
-				if (!novel || !novel.id || !novel.title) {
-					console.error('Invalid novel data:', novel)
-					return null
-				}
+				if (!novel || !novel.id || !novel.title) return null
 
 				var card = document.createElement('div')
 				card.className = 'novel-card'
@@ -847,51 +969,73 @@
 						? novel.authors.join(', ')
 						: 'Unknown'
 
-				var imageHtml =
-					'<div class="novel-image-container">' +
+				var cardHtml =
+					'<div class="novel-image">' +
+					'<a href="#" class="last-chapter-link" data-novel-id="' +
+					novel.id +
+					'">' +
 					'<img src="' +
 					coverUrl +
-					'" alt="' +
-					novel.title +
-					' cover" ' +
-					'onerror="this.onerror=null; this.src=\'/placeholder.jpg\';">' +
-					'</div>'
-
-				var contentHtml =
+					'" alt="Cover" onerror="this.src=\'/placeholder.jpg\'">' +
+					'</a>' +
+					'</div>' +
 					'<div class="novel-content">' +
-					'<h2 class="novel-title">' +
+					'<div class="novel-title">' +
 					'<a href="/api/novel/novels/' +
 					novel.id +
 					'/chapters">' +
 					novel.title +
 					'</a>' +
-					'</h2>' +
-					'<div class="novel-info">' +
-					'<p class="author">Author: ' +
+					'</div>' +
+					'<div class="novel-author">Author: ' +
 					authors +
-					'</p>' +
-					'<div class="chapter-info">' +
+					'</div>' +
+					'<div class="novel-chapter">' +
 					'<a href="#" class="last-chapter-link" data-novel-id="' +
 					novel.id +
 					'">' +
-					'<span>Chapter ' +
+					'Chapter ' +
 					lastChapter +
-					'</span>' +
 					'<svg class="bookmark-icon" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>' +
 					'</a>' +
-					'<button type="button" class="glossary-btn" onclick="openGlossaryModal(\'' +
+					'<button type="button" class="glossary-btn" id="glossary-btn-' +
 					novel.id +
-					'\')">Glossary</button>' +
-					'</div>' +
+					'" onclick="openGlossaryModal(\'' +
+					novel.id +
+					'\')">' +
+					'<i class="fas fa-book"></i> Glossary...' +
+					'</button>' +
 					'</div>' +
 					'</div>'
 
-				card.innerHTML = imageHtml + contentHtml
+				card.innerHTML = cardHtml
 
-				// Add click handler for last chapter link
-				var lastChapterLinks = card.getElementsByClassName('last-chapter-link')
-				for (var i = 0; i < lastChapterLinks.length; i++) {
-					lastChapterLinks[i].onclick = function (e) {
+				// Add hover effect styles for the cover image
+				var style = document.createElement('style')
+				style.textContent = `
+					.novel-image a {
+						display: block;
+						width: 100%;
+						height: 100%;
+						position: absolute;
+						top: 0;
+						left: 0;
+						cursor: pointer;
+					}
+					.novel-image a:hover img {
+						opacity: 0.8;
+						transition: opacity 0.2s ease;
+					}
+				`
+				document.head.appendChild(style)
+
+				// Check if glossary exists
+				checkGlossaryExists(novel.id)
+
+				// Add click handlers for all last-chapter links (including cover)
+				var links = card.getElementsByClassName('last-chapter-link')
+				for (var i = 0; i < links.length; i++) {
+					links[i].onclick = function (e) {
 						e.preventDefault()
 						handleLastChapterClick(this.getAttribute('data-novel-id'))
 					}
@@ -900,90 +1044,144 @@
 				return card
 			}
 
-			function showError(message) {
-				var errorEl = document.getElementById('error')
-				if (errorEl) {
-					errorEl.textContent = message || 'An error occurred'
-					errorEl.style.display = 'block'
+			function checkGlossaryExists(novelId) {
+				var xhr = new XMLHttpRequest()
+				xhr.open('GET', '/api/novel/novels/' + novelId + '/glossary', true)
+				xhr.setRequestHeader('Accept', 'application/json')
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						var btn = document.getElementById('glossary-btn-' + novelId)
+						if (!btn) return
+
+						if (xhr.status === 200) {
+							try {
+								var glossary = JSON.parse(xhr.responseText)
+								if (glossary && glossary.terms && glossary.terms.length > 0) {
+									btn.innerHTML = '<i class="fas fa-book"></i> Glossary'
+								} else {
+									btn.innerHTML =
+										'<i class="fas fa-plus"></i> Generate Glossary'
+								}
+							} catch (error) {
+								btn.innerHTML = '<i class="fas fa-plus"></i> Generate Glossary'
+							}
+						} else {
+							btn.innerHTML = '<i class="fas fa-plus"></i> Generate Glossary'
+						}
+					}
 				}
+
+				xhr.onerror = function () {
+					var btn = document.getElementById('glossary-btn-' + novelId)
+					if (btn) {
+						btn.innerHTML = '<i class="fas fa-plus"></i> Generate Glossary'
+					}
+				}
+
+				xhr.send(null)
 			}
 
-			// Separate function for handling last chapter click
-			async function handleLastChapterClick(novelId) {
+			function handleLastChapterClick(novelId) {
 				var lastChapter = localStorage.getItem('lastChapter_' + novelId)
 				var lastVolume = localStorage.getItem('lastVolume_' + novelId)
 				var url = '/api/novel/novels/' + novelId + '/chapters'
 
-				try {
-					// Get AI settings
-					var aiResponse = await fetch('/api/settings/ai-rewrite', {
-						headers: {
-							Accept: 'application/json',
-						},
-					})
+				var xhr = new XMLHttpRequest()
+				xhr.open('GET', '/api/settings/ai-rewrite', true)
+				xhr.setRequestHeader('Accept', 'application/json')
 
-					var aiParam = ''
-					if (aiResponse.ok) {
-						var aiSettings = await aiResponse.json()
-						if (aiSettings.enabled) {
-							aiParam = '?useAI=true'
-						}
-					}
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						if (xhr.status === 200) {
+							try {
+								var settings = JSON.parse(xhr.responseText)
+								var aiParam = settings.enabled ? '?useAI=true' : ''
 
-					if (lastChapter && lastVolume) {
-						// Go directly to the last read chapter
-						window.location.href =
-							'/api/novel/novels/' +
-							novelId +
-							'/chapters/' +
-							encodeURIComponent(lastVolume) +
-							'/' +
-							encodeURIComponent(lastChapter) +
-							aiParam
-					} else {
-						// If no last read chapter, fetch first chapter info
-						var response = await fetch(url)
-						var data = await response.json()
-						if (data.chapters && data.chapters.length > 0) {
-							var firstChapter = data.chapters[0]
-							window.location.href =
-								'/api/novel/novels/' +
-								novelId +
-								'/chapters/' +
-								encodeURIComponent(firstChapter.volume) +
-								'/' +
-								encodeURIComponent(firstChapter.chapter) +
-								aiParam
+								if (lastChapter && lastVolume) {
+									window.location.href =
+										'/api/novel/novels/' +
+										novelId +
+										'/chapters/' +
+										encodeURIComponent(lastVolume) +
+										'/' +
+										encodeURIComponent(lastChapter) +
+										aiParam
+								} else {
+									loadFirstChapter(novelId, aiParam)
+								}
+							} catch (error) {
+								console.error('Error parsing AI settings:', error)
+								window.location.href = url
+							}
 						} else {
-							// Fallback to chapter list if no chapters found
 							window.location.href = url
 						}
 					}
-				} catch (error) {
-					console.error('Error fetching chapters:', error)
-					window.location.href = url
 				}
+
+				xhr.send(null)
 			}
 
-			// Function to save last opened chapter
-			function saveLastOpenedChapter(novelId, chapterNumber) {
-				localStorage.setItem(`lastChapter_${novelId}`, chapterNumber)
+			function loadFirstChapter(novelId, aiParam) {
+				var xhr = new XMLHttpRequest()
+				xhr.open('GET', '/api/novel/novels/' + novelId + '/chapters', true)
+				xhr.setRequestHeader('Accept', 'application/json')
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						if (xhr.status === 200) {
+							try {
+								var data = JSON.parse(xhr.responseText)
+								if (data.chapters && data.chapters.length > 0) {
+									var firstChapter = data.chapters[0]
+									window.location.href =
+										'/api/novel/novels/' +
+										novelId +
+										'/chapters/' +
+										encodeURIComponent(firstChapter.volume) +
+										'/' +
+										encodeURIComponent(firstChapter.chapter) +
+										aiParam
+								} else {
+									window.location.href =
+										'/api/novel/novels/' + novelId + '/chapters'
+								}
+							} catch (error) {
+								console.error('Error parsing chapters:', error)
+								window.location.href =
+									'/api/novel/novels/' + novelId + '/chapters'
+							}
+						} else {
+							window.location.href =
+								'/api/novel/novels/' + novelId + '/chapters'
+						}
+					}
+				}
+
+				xhr.send(null)
 			}
 
-			// Load novels when the page loads
-			window.addEventListener('load', loadNovels)
+			function showError(message) {
+				var errorEl = document.getElementById('error')
+				errorEl.textContent = message
+				errorEl.style.display = 'block'
+			}
 
-			// Settings Modal Functionality
+			// Settings Modal
 			var settingsModal = document.getElementById('settingsModal')
 			var settingsBtn = document.getElementById('settingsBtn')
 			var closeSettingsBtn = document.getElementById('closeSettingsBtn')
 			var saveSettingsBtn = document.getElementById('saveSettingsBtn')
 			var aiPromptTextarea = document.getElementById('aiPrompt')
 
-			// Load settings when opening modal
 			settingsBtn.onclick = function () {
-				settingsModal.classList.add('visible')
+				settingsModal.className = 'visible'
 				loadSettings()
+			}
+
+			closeSettingsBtn.onclick = function () {
+				settingsModal.className = ''
 			}
 
 			function loadSettings() {
@@ -991,29 +1189,19 @@
 				xhr.open('GET', '/api/settings/ai-rewrite', true)
 				xhr.setRequestHeader('Accept', 'application/json')
 
-				xhr.onload = function () {
-					if (xhr.status === 200) {
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4 && xhr.status === 200) {
 						try {
 							var settings = JSON.parse(xhr.responseText)
 							aiPromptTextarea.value = settings.prompt || ''
 							aiToggle.checked = settings.enabled
 						} catch (error) {
-							console.error('Error parsing settings:', error)
+							console.error('Error loading settings:', error)
 						}
-					} else {
-						console.error('Error loading settings:', xhr.status)
 					}
 				}
 
-				xhr.onerror = function () {
-					console.error('Error loading settings')
-				}
-
-				xhr.send()
-			}
-
-			closeSettingsBtn.onclick = function () {
-				settingsModal.classList.remove('visible')
+				xhr.send(null)
 			}
 
 			saveSettingsBtn.onclick = function () {
@@ -1021,16 +1209,14 @@
 				xhr.open('POST', '/api/settings/ai-rewrite', true)
 				xhr.setRequestHeader('Content-Type', 'application/json')
 
-				xhr.onload = function () {
-					if (xhr.status === 200) {
-						settingsModal.classList.remove('visible')
-					} else {
-						console.error('Failed to save settings')
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						if (xhr.status === 200) {
+							settingsModal.className = ''
+						} else {
+							console.error('Failed to save settings')
+						}
 					}
-				}
-
-				xhr.onerror = function () {
-					console.error('Error saving settings')
 				}
 
 				xhr.send(
@@ -1041,150 +1227,98 @@
 				)
 			}
 
-			// Close modal when clicking outside
-			settingsModal.onclick = function (e) {
+			window.onclick = function (e) {
 				if (e.target === settingsModal) {
-					settingsModal.classList.remove('visible')
+					settingsModal.className = ''
 				}
 			}
 
-			// Update the compare toggle function
-			function toggleCompare() {
-				const compareButton = document.getElementById('compareButton')
-				const aiToggle = document.getElementById('aiToggle')
-				const content = document.querySelector('.chapter-content')
+			// Glossary functionality
+			function openGlossaryModal(novelId) {
+				var modal = document.getElementById('glossaryModal')
+				var content = document.getElementById('glossaryContent')
+				var title = document.querySelector('.glossary-title')
 
-				// Only allow compare when AI is enabled
-				if (!aiToggle.checked) {
-					alert('AI Rewrite must be enabled to use Compare mode')
+				console.log('[Glossary] Opening modal for novel:', novelId)
+
+				// Store the novel ID in the title element for reference
+				title.setAttribute('data-novel-id', novelId)
+				modal.className = 'visible'
+
+				// Show initial loading state
+				content.innerHTML =
+					'<div class="glossary-loading">Checking glossary status...</div>'
+
+				var btn = document.getElementById('glossary-btn-' + novelId)
+				if (btn && btn.innerHTML.includes('Generate')) {
+					// If button says "Generate", start generation directly
+					console.log('[Glossary] Starting generation directly')
+					generateGlossary(novelId)
 					return
 				}
 
-				// Toggle the active state of the button
-				const isCompareMode = compareButton.classList.contains('active')
+				// Otherwise, check if glossary exists
+				var xhr = new XMLHttpRequest()
+				xhr.open(
+					'GET',
+					'/api/novel/novels/' + encodeURIComponent(novelId) + '/glossary',
+					true
+				)
+				xhr.setRequestHeader('Accept', 'application/json')
 
-				if (isCompareMode) {
-					compareButton.classList.remove('active')
-					content.classList.remove('compare-mode')
-				} else {
-					compareButton.classList.add('active')
-					content.classList.add('compare-mode')
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						console.log('[Glossary] Check status:', xhr.status)
+						if (xhr.status === 200) {
+							try {
+								var glossary = JSON.parse(xhr.responseText)
+								if (glossary && glossary.terms && glossary.terms.length > 0) {
+									console.log('[Glossary] Existing glossary found, displaying')
+									displayGlossary(glossary)
+								} else {
+									console.log('[Glossary] Empty glossary, starting generation')
+									generateGlossary(novelId)
+								}
+							} catch (error) {
+								console.log(
+									'[Glossary] Error parsing response, starting generation'
+								)
+								generateGlossary(novelId)
+							}
+						} else {
+							console.log('[Glossary] No glossary found, starting generation')
+							generateGlossary(novelId)
+						}
+					}
 				}
 
-				// Update URL without reloading
-				const currentUrl = new URL(window.location.href)
-				if (isCompareMode) {
-					currentUrl.searchParams.delete('compare')
-				} else {
-					currentUrl.searchParams.set('compare', 'true')
-				}
-				window.history.pushState({}, '', currentUrl.toString())
-			}
-
-			// Initialize compare button state on page load
-			document.addEventListener('DOMContentLoaded', () => {
-				const compareButton = document.getElementById('compareButton')
-				const aiToggle = document.getElementById('aiToggle')
-				const content = document.querySelector('.chapter-content')
-				const urlParams = new URLSearchParams(window.location.search)
-
-				// Show compare button if AI is enabled
-				if (aiToggle.checked) {
-					compareButton.classList.add('show')
+				xhr.onerror = function () {
+					console.error('[Glossary] Network error checking glossary')
+					showGlossaryError('Network error while checking glossary status')
 				}
 
-				// Set initial compare mode state
-				if (urlParams.get('compare') === 'true' && aiToggle.checked) {
-					compareButton.classList.add('active')
-					content.classList.add('compare-mode')
-				}
-			})
-
-			// Add these new functions for glossary functionality
-			let currentNovelId = null
-
-			function openGlossaryModal(novelId) {
-				currentNovelId = novelId
-				const modal = document.getElementById('glossaryModal')
-				modal.classList.remove('hidden')
-				modal.classList.add('flex') // Add flex display when showing
-				loadGlossary(novelId)
-
-				// Set up generate button click handler
-				const generateBtn = document.getElementById('generateGlossaryBtn')
-				generateBtn.onclick = () => generateGlossary(novelId)
+				xhr.send(null)
 			}
 
 			function closeGlossaryModal() {
-				const modal = document.getElementById('glossaryModal')
-				modal.classList.add('hidden')
-				modal.classList.remove('flex') // Remove flex display when hiding
-				currentNovelId = null
-			}
-
-			async function loadGlossary(novelId) {
-				const contentDiv = document.getElementById('glossaryContent')
-				contentDiv.innerHTML =
-					'<div class="text-center text-gray-500 dark:text-gray-400 py-4">Loading glossary...</div>'
-
-				try {
-					console.log('Frontend: Loading glossary for novel:', novelId)
-					const response = await fetch(`/api/novel/novels/${novelId}/glossary`)
-					console.log(
-						'Frontend: Glossary load response status:',
-						response.status
-					)
-
-					if (!response.ok) {
-						throw new Error(`Failed to load glossary: ${response.status}`)
-					}
-
-					const glossary = await response.json()
-					console.log(
-						'Frontend: Glossary loaded, terms count:',
-						glossary?.terms?.length || 0
-					)
-					displayGlossary(glossary)
-				} catch (error) {
-					console.error('Frontend: Error loading glossary:', error)
-					contentDiv.innerHTML =
-						'<div class="text-center text-red-500 py-4">Failed to load glossary. The glossary might not exist yet.</div>'
+				if (window.currentGlossaryXhr) {
+					stopGeneration()
 				}
+				var modal = document.getElementById('glossaryModal')
+				modal.className = ''
 			}
 
 			function displayGlossary(glossary) {
-				const contentDiv = document.getElementById('glossaryContent')
-				contentDiv.innerHTML = ''
+				var content = document.getElementById('glossaryContent')
+				content.innerHTML = ''
 
 				if (!glossary || !glossary.terms || glossary.terms.length === 0) {
-					contentDiv.innerHTML =
-						'<div class="text-center text-gray-500 dark:text-gray-400 py-4">No glossary terms available.</div>'
+					content.innerHTML =
+						'<div class="glossary-loading">No glossary terms available.</div>'
 					return
 				}
 
-				// Sort terms alphabetically
-				const sortedTerms = glossary.terms.sort((a, b) =>
-					a.term.localeCompare(b.term)
-				)
-
-				// Group terms by type
-				const groupedTerms = sortedTerms.reduce((acc, term) => {
-					const type = term.type || 'other'
-					if (!acc[type]) acc[type] = []
-					acc[type].push(term)
-					return acc
-				}, {})
-
-				// Create sections for each type
-				const typeOrder = [
-					'person',
-					'location',
-					'organization',
-					'item',
-					'technique',
-					'other',
-				]
-				const typeLabels = {
+				var types = {
 					person: 'Characters',
 					location: 'Locations',
 					organization: 'Organizations',
@@ -1193,105 +1327,414 @@
 					other: 'Other Terms',
 				}
 
-				typeOrder.forEach((type) => {
-					if (groupedTerms[type] && groupedTerms[type].length > 0) {
-						const section = document.createElement('div')
-						section.className = 'mb-6'
-						section.innerHTML = `
-							<h3 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">${
-								typeLabels[type]
-							}</h3>
-							<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-								${groupedTerms[type]
-									.map(
-										(term) => `
-									<div class="p-2 bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
-										<div class="font-medium text-gray-800 dark:text-gray-200">${term.term}</div>
-										<div class="text-sm text-gray-600 dark:text-gray-400">${term.description}</div>
-									</div>
-								`
-									)
-									.join('')}
-							</div>
-						`
-						contentDiv.appendChild(section)
-					}
-				})
-
-				// Add last updated info
-				if (glossary.lastUpdated) {
-					const lastUpdated = document.createElement('div')
-					lastUpdated.className =
-						'text-xs text-gray-500 dark:text-gray-400 text-right mt-4'
-					lastUpdated.textContent = `Last updated: ${new Date(
-						glossary.lastUpdated
-					).toLocaleString()}`
-					contentDiv.appendChild(lastUpdated)
+				var terms = {}
+				for (var i = 0; i < glossary.terms.length; i++) {
+					var term = glossary.terms[i]
+					var type = term.type || 'other'
+					if (!terms[type]) terms[type] = []
+					terms[type].push(term)
 				}
-			}
 
-			async function generateGlossary(novelId) {
-				const generateBtn = document.getElementById('generateGlossaryBtn')
-				const contentDiv = document.getElementById('glossaryContent')
-				const spinner = generateBtn.querySelector('.fa-spinner')
-				const btnText = generateBtn.querySelector('span')
-
-				// Show spinner and disable button before starting
-				generateBtn.disabled = true
-				generateBtn.classList.add('opacity-50')
-				spinner.classList.remove('hidden')
-				btnText.textContent = 'Generating...'
-
-				try {
-					contentDiv.innerHTML =
-						'<div class="text-center text-gray-500 dark:text-gray-400 py-4">Generating glossary...</div>'
-
-					console.log(
-						'Frontend: Starting glossary generation for novel:',
-						novelId
-					)
-					const response = await fetch(
-						`/api/novel/novels/${novelId}/glossary/generate`,
-						{
-							method: 'POST',
-							headers: {
-								Accept: 'application/json',
-								'Content-Type': 'application/json',
-							},
+				var html = ''
+				for (var type in types) {
+					if (terms[type] && terms[type].length > 0) {
+						html += '<div class="glossary-section">'
+						html +=
+							'<h3 class="glossary-section-title">' + types[type] + '</h3>'
+						for (var j = 0; j < terms[type].length; j++) {
+							var term = terms[type][j]
+							html += '<div class="glossary-term">'
+							html += '<div class="glossary-term-title">' + term.term + '</div>'
+							html +=
+								'<div class="glossary-term-desc">' + term.description + '</div>'
+							html += '</div>'
 						}
-					)
-					console.log('Frontend: Generation response status:', response.status)
-
-					if (!response.ok) {
-						const errorData = await response.json()
-						console.error('Frontend: Server error details:', errorData)
-						throw new Error(errorData.details || 'Failed to generate glossary')
+						html += '</div>'
 					}
+				}
 
-					const result = await response.json()
-					console.log('Frontend: Generation successful, reloading glossary')
-					await loadGlossary(novelId)
-				} catch (error) {
-					console.error('Frontend: Error generating glossary:', error)
-					contentDiv.innerHTML =
-						'<div class="text-center text-red-500 py-4">Failed to generate glossary. Please try again.</div>'
-				} finally {
-					// Reset button state
-					generateBtn.disabled = false
-					generateBtn.classList.remove('opacity-50')
-					spinner.classList.add('hidden')
-					btnText.textContent = 'Generate'
+				content.innerHTML = html
+
+				if (glossary.lastUpdated) {
+					var updated = document.createElement('div')
+					updated.style.cssText =
+						'font-size: 12px; color: #666; text-align: right; margin-top: 20px;'
+					updated.textContent =
+						'Last updated: ' + new Date(glossary.lastUpdated).toLocaleString()
+					content.appendChild(updated)
 				}
 			}
 
-			// Close modal when clicking outside
-			document
-				.getElementById('glossaryModal')
-				.addEventListener('click', (e) => {
-					if (e.target === document.getElementById('glossaryModal')) {
-						closeGlossaryModal()
+			function generateGlossary(novelId) {
+				if (!novelId) {
+					console.error('[Glossary] No novel ID provided for generation')
+					showGlossaryError('Missing novel ID')
+					return
+				}
+
+				var content = document.getElementById('glossaryContent')
+				console.log('[Glossary] Starting generation for novel:', novelId)
+
+				// Show generation UI
+				content.innerHTML =
+					'<div class="glossary-loading">' +
+					'<div class="generating-text">Starting glossary generation...</div>' +
+					'<div class="generation-status" style="font-size: 12px; color: #666; margin-top: 8px;">Status: Initializing...</div>' +
+					'<button type="button" class="stop-btn" onclick="stopGeneration()">' +
+					'<i class="fas fa-stop"></i> Stop Generation' +
+					'</button>' +
+					'</div>'
+
+				// Start state polling
+				var stateCheckInterval = setInterval(function () {
+					var stateXhr = new XMLHttpRequest()
+					stateXhr.open(
+						'GET',
+						'/api/novel/novels/' +
+							encodeURIComponent(novelId) +
+							'/glossary/state',
+						true
+					)
+					stateXhr.setRequestHeader('Accept', 'application/json')
+
+					stateXhr.onreadystatechange = function () {
+						if (stateXhr.readyState === 4 && stateXhr.status === 200) {
+							try {
+								var stateResponse = JSON.parse(stateXhr.responseText)
+								console.log('[Glossary] Current state:', stateResponse.state)
+
+								// Update status display
+								var statusEl = content.querySelector('.generation-status')
+								if (statusEl) {
+									statusEl.textContent =
+										'Status: ' + (stateResponse.message || stateResponse.state)
+								}
+
+								// Check if cancelled
+								if (stateResponse.state === 'cancelled') {
+									console.log('[Glossary] Detected cancelled state')
+									clearInterval(stateCheckInterval)
+									handleCancellation()
+									return
+								}
+							} catch (error) {
+								console.error('[Glossary] Error checking state:', error)
+							}
+						}
 					}
-				})
+					stateXhr.send(null)
+				}, 1000) // Check every second
+
+				// Start the generation process
+				var xhr = new XMLHttpRequest()
+				window.currentGlossaryXhr = xhr
+
+				xhr.open(
+					'POST',
+					'/api/novel/novels/' +
+						encodeURIComponent(novelId) +
+						'/glossary/generate',
+					true
+				)
+				xhr.setRequestHeader('Accept', 'application/json')
+				xhr.setRequestHeader('Content-Type', 'application/json')
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4) {
+						console.log('[Glossary] Generation response status:', xhr.status)
+						console.log('[Glossary] Generation response:', xhr.responseText)
+
+						window.currentGlossaryXhr = null
+						clearInterval(stateCheckInterval)
+
+						if (xhr.status === 200) {
+							try {
+								var response = JSON.parse(xhr.responseText)
+								if (response.status === 'cancelled') {
+									handleCancellation()
+								} else if (response.glossary) {
+									displayGlossary(response.glossary)
+									updateButton(novelId, 'view')
+								} else {
+									showGlossaryError('Invalid response from server')
+								}
+							} catch (error) {
+								console.error('[Glossary] Error parsing response:', error)
+								showGlossaryError('Error parsing server response')
+							}
+						} else {
+							showGlossaryError(
+								'Failed to generate glossary (Status: ' + xhr.status + ')'
+							)
+						}
+					}
+				}
+
+				xhr.onerror = function () {
+					console.error('[Glossary] Network error during generation')
+					window.currentGlossaryXhr = null
+					clearInterval(stateCheckInterval)
+					showGlossaryError('Network error during generation')
+				}
+
+				// Send the generation request
+				var requestData = {
+					novelId: novelId,
+					timestamp: new Date().toISOString(),
+				}
+
+				console.log('[Glossary] Sending generation request:', requestData)
+				xhr.send(JSON.stringify(requestData))
+			}
+
+			function stopGeneration() {
+				console.log('[Glossary] Stop button pressed')
+
+				if (window.currentGlossaryXhr) {
+					window.currentGlossaryXhr.abort()
+					window.currentGlossaryXhr = null
+
+					var novelId = document
+						.querySelector('.glossary-title')
+						.getAttribute('data-novel-id')
+					if (!novelId) {
+						console.error('[Glossary] No novel ID found when stopping')
+						return
+					}
+
+					var content = document.getElementById('glossaryContent')
+					var maxRetries = 5
+					var currentRetry = 0
+					var retryDelay = 10000 // 10 seconds
+
+					function showCancellingStatus(attempt, timeLeft) {
+						content.innerHTML =
+							'<div class="glossary-loading">' +
+							'<div>Cancelling generation...</div>' +
+							'<div class="generation-status" style="font-size: 12px; color: #666; margin-top: 8px;">' +
+							'Status: Attempting to cancel (try ' +
+							attempt +
+							' of ' +
+							maxRetries +
+							')<br>' +
+							'Next attempt in: ' +
+							timeLeft +
+							' seconds' +
+							'</div>' +
+							'<div style="font-size: 12px; color: #666; margin-top: 8px;">' +
+							'Please wait while the AI process is being stopped...' +
+							'</div>' +
+							'</div>'
+					}
+
+					function updateCountdown(attempt, secondsLeft) {
+						if (secondsLeft > 0) {
+							showCancellingStatus(attempt, secondsLeft)
+							setTimeout(() => updateCountdown(attempt, secondsLeft - 1), 1000)
+						}
+					}
+
+					function attemptCancel() {
+						currentRetry++
+						console.log(
+							'[Glossary] Cancel attempt ' + currentRetry + ' for novel:',
+							novelId
+						)
+
+						// Show initial status with countdown
+						updateCountdown(currentRetry, 10)
+
+						// First try to cancel the process
+						var cancelXhr = new XMLHttpRequest()
+						cancelXhr.open(
+							'POST',
+							'/api/novel/novels/' +
+								encodeURIComponent(novelId) +
+								'/glossary/cancel',
+							true
+						)
+						cancelXhr.setRequestHeader('Accept', 'application/json')
+						cancelXhr.setRequestHeader('Content-Type', 'application/json')
+
+						cancelXhr.onreadystatechange = function () {
+							if (cancelXhr.readyState === 4) {
+								if (cancelXhr.status === 200) {
+									// Now set the state to cancelled
+									setStateToCancelled()
+								} else {
+									console.error(
+										'[Glossary] Cancel attempt ' + currentRetry + ' failed:',
+										cancelXhr.status
+									)
+									if (currentRetry < maxRetries) {
+										// Retry after delay
+										setTimeout(attemptCancel, retryDelay)
+									} else {
+										content.innerHTML =
+											'<div class="glossary-error">' +
+											'Failed to cancel generation after ' +
+											maxRetries +
+											' attempts.<br>' +
+											'<small>The process will be terminated when current chunk completes.</small>' +
+											'</div>'
+									}
+								}
+							}
+						}
+
+						cancelXhr.onerror = function () {
+							console.error(
+								'[Glossary] Network error during cancel attempt ' + currentRetry
+							)
+							if (currentRetry < maxRetries) {
+								setTimeout(attemptCancel, retryDelay)
+							} else {
+								content.innerHTML =
+									'<div class="glossary-error">' +
+									'Network error while trying to cancel.<br>' +
+									'<small>The process will be terminated when current chunk completes.</small>' +
+									'</div>'
+							}
+						}
+
+						cancelXhr.send(
+							JSON.stringify({
+								novelId: novelId,
+								timestamp: new Date().toISOString(),
+								force: true,
+							})
+						)
+					}
+
+					function setStateToCancelled() {
+						var stateXhr = new XMLHttpRequest()
+						stateXhr.open(
+							'POST',
+							'/api/novel/novels/' +
+								encodeURIComponent(novelId) +
+								'/glossary/state',
+							true
+						)
+						stateXhr.setRequestHeader('Accept', 'application/json')
+						stateXhr.setRequestHeader('Content-Type', 'application/json')
+
+						stateXhr.onreadystatechange = function () {
+							if (stateXhr.readyState === 4) {
+								if (stateXhr.status === 200 || stateXhr.status === 201) {
+									console.log('[Glossary] Successfully set state to cancelled')
+									// Start monitoring the state
+									monitorCancellationState()
+								} else {
+									console.error(
+										'[Glossary] Failed to set cancelled state:',
+										stateXhr.status
+									)
+									if (currentRetry < maxRetries) {
+										setTimeout(attemptCancel, retryDelay)
+									} else {
+										content.innerHTML =
+											'<div class="glossary-error">Failed to update cancellation state</div>'
+									}
+								}
+							}
+						}
+
+						var stateData = {
+							state: 'cancelled',
+							novelId: novelId,
+							timestamp: new Date().toISOString(),
+							force: true,
+						}
+						stateXhr.send(JSON.stringify(stateData))
+					}
+
+					function monitorCancellationState() {
+						var checkInterval = setInterval(function () {
+							var checkXhr = new XMLHttpRequest()
+							checkXhr.open(
+								'GET',
+								'/api/novel/novels/' +
+									encodeURIComponent(novelId) +
+									'/glossary/state',
+								true
+							)
+							checkXhr.setRequestHeader('Accept', 'application/json')
+
+							checkXhr.onreadystatechange = function () {
+								if (checkXhr.readyState === 4 && checkXhr.status === 200) {
+									try {
+										var response = JSON.parse(checkXhr.responseText)
+										console.log('[Glossary] Current state:', response.state)
+
+										if (response.state === 'cancelled' && response.confirmed) {
+											clearInterval(checkInterval)
+											handleCancellation()
+										} else {
+											content.innerHTML =
+												'<div class="glossary-loading">' +
+												'<div>Waiting for process to stop...</div>' +
+												'<div class="generation-status" style="font-size: 12px; color: #666; margin-top: 8px;">' +
+												'Status: ' +
+												(response.message || response.state) +
+												'</div>' +
+												'</div>'
+										}
+									} catch (error) {
+										console.error('[Glossary] Error checking state:', error)
+									}
+								}
+							}
+							checkXhr.send(null)
+						}, 1000)
+
+						// Set a timeout to stop checking after 60 seconds
+						setTimeout(function () {
+							clearInterval(checkInterval)
+							content.innerHTML =
+								'<div class="glossary-error">' +
+								'Process is taking longer than expected to stop.<br>' +
+								'<small>It will be terminated when the current chunk completes.</small>' +
+								'</div>'
+						}, 60000)
+					}
+
+					// Start the cancellation process
+					attemptCancel()
+				}
+			}
+
+			function handleCancellation() {
+				console.log('[Glossary] Handling cancellation')
+				var content = document.getElementById('glossaryContent')
+				content.innerHTML =
+					'<div class="glossary-error">Glossary generation cancelled</div>'
+
+				var novelId = document
+					.querySelector('.glossary-title')
+					.getAttribute('data-novel-id')
+				if (novelId) {
+					updateButton(novelId, 'generate')
+				}
+			}
+
+			function updateButton(novelId, state) {
+				var btn = document.getElementById('glossary-btn-' + novelId)
+				if (btn) {
+					if (state === 'view') {
+						btn.innerHTML = '<i class="fas fa-book"></i> Glossary'
+					} else if (state === 'generate') {
+						btn.innerHTML = '<i class="fas fa-plus"></i> Generate Glossary'
+					}
+				}
+			}
+
+			function showGlossaryError(message) {
+				var content = document.getElementById('glossaryContent')
+				content.innerHTML = '<div class="glossary-error">' + message + '</div>'
+			}
+
+			// Load novels when page loads
+			window.onload = loadNovels
 		</script>
 	</body>
 </html>
