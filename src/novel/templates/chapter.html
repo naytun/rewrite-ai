@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
@@ -762,18 +762,18 @@
 		</div>
 		<div class="chat-dialog">
 			<div class="chat-header">
-				<span>AI Chat Assistant</span>
+				<span>Glossary</span>
 				<span class="chat-close"><i class="fas fa-times"></i></span>
 			</div>
 			<div class="chat-messages"></div>
-			<div class="chat-input-container">
+			<!-- <div class="chat-input-container">
 				<input
 					type="text"
 					class="chat-input"
 					placeholder="Type a character's name to learn about them"
 				/>
 				<button class="chat-send">Send</button>
-			</div>
+			</div> -->
 		</div>
 
 		<div id="orama-ui">
@@ -1196,7 +1196,7 @@
 							'Content-Type': 'application/json',
 						},
 						body: JSON.stringify({
-							question: `Extract ALL people names from this chapter with brief descriptions. Format as: "Name: Brief description of their role and relation to the main character and the whole story". Separate entries with ||. Content: ${content}`,
+							question: `Extract all names (people, places, items, techniques, organizations, etc), don't left out anything, from this chapter with brief descriptions. Format as: "Name: Brief description of their role and relation to the main character and the whole story". Separate entries with ||. Content: ${content}`,
 						}),
 					})
 
@@ -1353,8 +1353,7 @@
 						// Show default welcome message if no terms were extracted
 						const welcomeMessage = document.createElement('div')
 						welcomeMessage.className = 'message ai welcome-message'
-						welcomeMessage.textContent =
-							"You can type a character's name to learn more about them."
+						welcomeMessage.textContent = 'Generating glossary...'
 						chatMessages.appendChild(welcomeMessage)
 					}
 				}
