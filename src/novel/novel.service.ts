@@ -3,7 +3,7 @@ import * as fs from 'node:fs/promises'
 
 import { askAI } from '../orama/orama.service'
 import { getAISettings } from '../settings/settings.service'
-
+import { Novel } from '../types/novel'
 const basePath = 'Lightnovels'
 
 interface GlossaryTerm {
@@ -396,7 +396,7 @@ export const readChapter = async (
 	}
 }
 
-export const listNovels = async (): Promise<any[]> => {
+export const listNovels = async (): Promise<Novel[]> => {
 	try {
 		const websites = await fs.readdir(path.join(process.cwd(), basePath))
 		const novels = []
@@ -422,13 +422,13 @@ export const listNovels = async (): Promise<any[]> => {
 							const metaContent = await fs.readFile(metaPath, 'utf-8')
 							const metadata = JSON.parse(metaContent)
 
-							const coverUrl = `/covers/${website}/${novelFolder}/cover.jpg`
+							// const coverUrl = `/covers/${website}/${novelFolder}/cover.jpg`
 
 							novels.push({
 								id: novelFolder,
 								website,
 								...metadata.novel,
-								cover_url: coverUrl,
+								cover_url: metadata.novel.cover_url,
 							})
 						} catch (error) {
 							console.error(`Error reading metadata for ${novelFolder}:`, error)
@@ -438,7 +438,7 @@ export const listNovels = async (): Promise<any[]> => {
 			}
 		}
 
-		return novels
+		return novels as Novel[]
 	} catch (error) {
 		console.error('Error listing novels:', error)
 		throw error
