@@ -13,6 +13,7 @@ import { getAISettings } from '../settings/settings.service'
 import type { Chapter, ChapterNavigation } from '../types/novel'
 import * as path from 'path'
 import * as fs from 'node:fs/promises'
+import { Novel } from '../types/novel'
 
 const generateNavigationButtons = (
 	navigation: ChapterNavigation,
@@ -25,15 +26,15 @@ const generateNavigationButtons = (
 			navigation.prev
 				? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
 						novelId
-				  )}/chapters/${encodeURIComponent(
+					)}/chapters/${encodeURIComponent(
 						navigation.prev.volume
-				  )}/${encodeURIComponent(
+					)}/${encodeURIComponent(
 						navigation.prev.chapter
-				  )}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+					)}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						navigation.prev.volume
-				  )}', '${encodeURIComponent(
+					)}', '${encodeURIComponent(
 						navigation.prev.chapter
-				  )}')" >← Previous</a>`
+					)}')" >← Previous</a>`
 				: '<span class="nav-button disabled">← Previous</span>'
 		}
 		<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
@@ -43,13 +44,13 @@ const generateNavigationButtons = (
 			navigation.next
 				? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
 						novelId
-				  )}/chapters/${encodeURIComponent(
+					)}/chapters/${encodeURIComponent(
 						navigation.next.volume
-				  )}/${encodeURIComponent(
+					)}/${encodeURIComponent(
 						navigation.next.chapter
-				  )}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+					)}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						navigation.next.volume
-				  )}', '${encodeURIComponent(navigation.next.chapter)}')" >Next →</a>`
+					)}', '${encodeURIComponent(navigation.next.chapter)}')" >Next →</a>`
 				: '<span class="nav-button disabled">Next →</span>'
 		}`
 }
@@ -72,8 +73,8 @@ const generateChapterListHtml = (
 					href="/api/novel/novels/${encodeURIComponent(
 						novelId
 					)}/chapters/${encodeURIComponent(
-				chapter.volume
-			)}/${encodeURIComponent(chapter.chapter)}${aiParam}"
+						chapter.volume
+					)}/${encodeURIComponent(chapter.chapter)}${aiParam}"
 					class="chapter-link ${chapterClass}"
 					onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						chapter.volume
@@ -163,9 +164,9 @@ const navigationButtons = (
 					? 'class="current"'
 					: `href="/api/novel/novels/${encodeURIComponent(
 							novelId
-					  )}/chapters/${encodeURIComponent(ch.volume)}/${encodeURIComponent(
+						)}/chapters/${encodeURIComponent(ch.volume)}/${encodeURIComponent(
 							ch.chapter
-					  )}"`
+						)}"`
 			}>
 				${Number(ch.chapter)}
 			</a>
@@ -303,12 +304,12 @@ export const listChapters = async (
 									.map(
 										(chapter) => `
 									<div class="chapter-item" data-volume="${chapter.volume}" data-chapter="${
-											chapter.chapter
-										}" onclick="openChapter('${encodeURIComponent(
-											novelId
-										)}', '${encodeURIComponent(
-											chapter.volume
-										)}', '${encodeURIComponent(chapter.chapter)}')">
+										chapter.chapter
+									}" onclick="openChapter('${encodeURIComponent(
+										novelId
+									)}', '${encodeURIComponent(
+										chapter.volume
+									)}', '${encodeURIComponent(chapter.chapter)}')">
 										<h3 class="font-semibold">Chapter ${Number(chapter.chapter)}</h3>
 									</div>
 								`
