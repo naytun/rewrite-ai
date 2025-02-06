@@ -6,7 +6,6 @@ import settingsRoutes from './settings/settings.routes'
 import aiRoutes from './ai/ai.routes'
 
 import { oramaRoutes } from './orama'
-import { webScrapeRoutes } from './webScrape'
 
 const router = Router()
 const status = {
@@ -23,7 +22,6 @@ router.get('/', (req, res) => {
 
 // Mount Route modules
 router.use('/orama', oramaRoutes)
-router.use('/webscrape', webScrapeRoutes)
 router.use('/novel', novelRoutes)
 router.use('/settings', settingsRoutes)
 router.use('/ai', aiRoutes)
