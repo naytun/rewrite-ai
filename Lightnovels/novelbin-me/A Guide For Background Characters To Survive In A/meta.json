@@ -1,0 +1,682 @@
+{
+	"novel": {
+		"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga",
+		"title": "A Guide For Background Characters To Survive In A Manga",
+		"authors": ["XXX"],
+		"cover_url": "https://novelbin.me/media/novel/a-guide-for-background-characters-to-survive-in-a-manga.jpg",
+		"chapters": [
+			{
+				"id": 1,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-1",
+				"title": "Chapter 1",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 2,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-2",
+				"title": "Chapter 2",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 3,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-3",
+				"title": "Chapter 3",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 4,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-4",
+				"title": "Chapter 4",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 5,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-5",
+				"title": "Chapter 5",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 6,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-6",
+				"title": "Chapter 6",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 7,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-7",
+				"title": "Chapter 7",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 8,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-8",
+				"title": "Chapter 8",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 9,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-9",
+				"title": "Chapter 9",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 10,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-10",
+				"title": "Chapter 10",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 11,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-11",
+				"title": "Chapter 11",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 12,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-12-update",
+				"title": "Chapter 12 (Update)",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 13,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-13",
+				"title": "Chapter 13",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 14,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-14",
+				"title": "Chapter 14",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 15,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-15",
+				"title": "Chapter 15",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 16,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-16",
+				"title": "Chapter 16",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 17,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-17",
+				"title": "Chapter 17",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 18,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-18",
+				"title": "Chapter 18",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 19,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-19",
+				"title": "Chapter 19",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 20,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-20",
+				"title": "Chapter 20",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 21,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-21",
+				"title": "Chapter 21",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 22,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-22",
+				"title": "Chapter 22",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 23,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-23",
+				"title": "Chapter 23",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 24,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-24",
+				"title": "Chapter 24",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 25,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-25",
+				"title": "Chapter 25",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 26,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-26",
+				"title": "Chapter 26",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 27,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-27",
+				"title": "Chapter 27",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 28,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-28",
+				"title": "Chapter 28",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 29,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-29",
+				"title": "Chapter 29",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 30,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-30",
+				"title": "Chapter 30",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 31,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-31",
+				"title": "Chapter 31",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 32,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-32",
+				"title": "Chapter 32",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 33,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-33",
+				"title": "Chapter 33",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 34,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-34",
+				"title": "Chapter 34",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 35,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-35",
+				"title": "Chapter 35",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 36,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-36",
+				"title": "Chapter 36",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 37,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-37",
+				"title": "Chapter 37",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 38,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-38",
+				"title": "Chapter 38",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 39,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-39",
+				"title": "Chapter 39",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 40,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-40",
+				"title": "Chapter 40",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 41,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-41",
+				"title": "Chapter 41",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 42,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-42",
+				"title": "Chapter 42",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 43,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-43",
+				"title": "Chapter 43",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 44,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-44",
+				"title": "Chapter 44",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 45,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-45",
+				"title": "Chapter 45",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 46,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-46",
+				"title": "Chapter 46",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 47,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-47",
+				"title": "Chapter 47",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 48,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-48",
+				"title": "Chapter 48",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 49,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-49",
+				"title": "Chapter 49",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 50,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-50",
+				"title": "Chapter 50",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 51,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-51",
+				"title": "Chapter 51",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 52,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-52",
+				"title": "Chapter 52",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 53,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-53",
+				"title": "Chapter 53",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 54,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-54",
+				"title": "Chapter 54",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 55,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-55",
+				"title": "Chapter 55",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 56,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-56",
+				"title": "Chapter 56",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 57,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-57",
+				"title": "Chapter 57",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 58,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-58",
+				"title": "Chapter 58",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 59,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-59",
+				"title": "Chapter 59",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			},
+			{
+				"id": 60,
+				"url": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga/chapter-60",
+				"title": "Chapter 60",
+				"volume": 1,
+				"volume_title": "Volume 1",
+				"body": null,
+				"images": {},
+				"success": true
+			}
+		],
+		"volumes": [
+			{
+				"id": 1,
+				"title": "Volume 1",
+				"start_chapter": 1,
+				"final_chapter": 60,
+				"chapter_count": 60
+			}
+		],
+		"is_rtl": false,
+		"synopsis": "",
+		"language": "en",
+		"novel_tags": "",
+		"has_manga": null,
+		"has_mtl": null,
+		"language_code": [],
+		"source": null,
+		"editors": [],
+		"translators": [],
+		"status": "Unknown",
+		"genres": [],
+		"tags": [],
+		"description": null,
+		"original_publisher": null,
+		"english_publisher": null,
+		"novelupdates_url": null
+	},
+	"session": {
+		"user_input": "https://novelbin.me/novel-book/a-guide-for-background-characters-to-survive-in-a-manga",
+		"output_path": "/Users/naythein/Development/RewriteAI/Lightnovels/novelbin-me/A Guide For Background Characters To Survive In A",
+		"completed": true,
+		"pack_by_volume": false,
+		"download_chapters": [
+			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+			22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+			40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+			58, 59, 60
+		],
+		"good_file_name": "A Guide For Background Characters To Survive In A",
+		"no_append_after_filename": false,
+		"login_data": null,
+		"output_formats": {
+			"json": true,
+			"epub": false,
+			"text": false,
+			"web": false,
+			"docx": false,
+			"mobi": false,
+			"pdf": false,
+			"rtf": false,
+			"txt": false,
+			"azw3": false,
+			"fb2": false,
+			"lit": false,
+			"lrf": false,
+			"oeb": false,
+			"pdb": false,
+			"rb": false,
+			"snb": false,
+			"tcr": false
+		},
+		"headers": {
+			"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.4636.164 Mobile Safari/537.36",
+			"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+			"Accept-Language": "en-US,en;q=0.9",
+			"Accept-Encoding": "gzip, deflate"
+		},
+		"cookies": {
+			"_csrf": "gK6_r92Z0uNovkOvldawUAQG",
+			"connect.sid": "s%3ADCs4iT7zZteAjrwG8URUWDffgUV2kQfx.F7FgwqzB7TTsEbynPuDT6lNtjPrrEv2N00h83u2RV%2F8"
+		},
+		"proxies": {}
+	}
+}
