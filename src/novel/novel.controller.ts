@@ -92,7 +92,7 @@ const generateChapterHtml = async (
 	allChapters: Chapter[],
 	novelId: string,
 	useAI: boolean = false
-): Promise<string> => {
+): Promise<any> => {
 	try {
 		// Read the template file
 		const templatePath = path.join(__dirname, 'templates', 'chapter.html')
@@ -128,7 +128,7 @@ const generateChapterHtml = async (
 			.replace(/{{next_volume}}/g, navigation.next?.volume || '')
 			.replace(/{{next_chapter}}/g, navigation.next?.chapter || '')
 
-		return template
+		return { template, content: chapterData.body || '' }
 	} catch (error) {
 		console.error('Error generating chapter HTML:', error)
 		throw error
@@ -396,6 +396,7 @@ export const readChapter = async (
 ): Promise<void> => {
 	try {
 		const { novelId, volume, chapter } = req.params
+		const plainText = req.query.plainText === 'true' || false
 		// Convert compare parameter to boolean properly
 		const compare = req.query.compare === 'true'
 		const useAI = req.query.useAI === 'true'
@@ -502,6 +503,11 @@ export const readChapter = async (
 				)
 		}
 
+		// Remove all HTML tags from the body
+		const plainTextBody = chapterData.body
+			.replace(/<\/p>/g, '\n\n')
+			.replace(/<.*?>/g, '')
+
 		// Get chapters for navigation
 		const { chapters } = await getChapters(novelId)
 		console.log('Got chapters list, total chapters:', chapters.length)
@@ -517,7 +523,6 @@ export const readChapter = async (
 		const currentIndex = allChapters.findIndex(
 			(ch: Chapter) => ch.volume === volume && ch.chapter === chapter
 		)
-		console.log('Current chapter index:', currentIndex)
 
 		const navigation: ChapterNavigation = {
 			current: allChapters[currentIndex],
@@ -540,7 +545,7 @@ export const readChapter = async (
 			useAI && aiEnabled
 		)
 
-		res.send(html)
+		res.send(plainText ? plainTextBody : html.template)
 	} catch (error: unknown) {
 		console.error('Error in readChapter:', error)
 		const errorMessage =
