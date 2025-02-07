@@ -11,7 +11,7 @@
 		"test": "jest",
 		"test:watch": "jest --watch",
 		"test:coverage": "jest --coverage",
-		"scrape": "lncrawl -s https://novelfull.com/humanitys-great-sage.html --all"
+		"scrape": "lncrawl -s https://ranobes.top/novels/1206622-a-guide-for-background-characters-to-survive-in-a-manga.html --all"
 	},
 	"keywords": [],
 	"author": "",
