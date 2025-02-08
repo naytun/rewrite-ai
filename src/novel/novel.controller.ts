@@ -14,6 +14,7 @@ import type { Chapter, ChapterNavigation } from '../types/novel'
 import * as path from 'path'
 import * as fs from 'node:fs/promises'
 import { Novel } from '../types/novel'
+import { AnyIndex } from '@orama/orama'
 
 const generateNavigationButtons = (
 	navigation: ChapterNavigation,
@@ -173,6 +174,20 @@ const navigationButtons = (
 		`)
 	}
 	return buttons.join('')
+}
+
+export const getChapterList = async (
+	req: Request,
+	res: Response
+): Promise<any> => {
+	try {
+		const { novelId } = req.params
+		const { title, chapters } = await getChapters(novelId)
+		return res.json({ title, chapters })
+	} catch (error) {
+		console.error('Error listing chapters:', error)
+		res.status(500).send('Error listing chapters')
+	}
 }
 
 export const listChapters = async (
