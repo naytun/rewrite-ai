@@ -412,9 +412,8 @@ export const readChapter = async (
 	try {
 		const { novelId, volume, chapter } = req.params
 		const plainText = req.query.plainText === 'true' || false
-		// Convert compare parameter to boolean properly
-		const compare = req.query.compare === 'true'
-		const useAI = req.query.useAI === 'true'
+		const compare = req.query.compare === 'true' || false
+		const useAI = req.query.useAI === 'true' || false
 
 		// Add cache control headers
 		res.setHeader(
@@ -441,7 +440,7 @@ export const readChapter = async (
 			novelId,
 			volume,
 			chapter,
-			useAI && aiEnabled,
+			useAI || aiEnabled,
 			compare
 		)
 		if (!chapterData) {
