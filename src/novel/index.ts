@@ -12,19 +12,6 @@ import {
 } from './novel.controller'
 
 const router = Router()
-
-// Request logging middleware
-// router.use((req, res, next) => {
-// 	console.log('Novel route hit::', {
-// 		method: req.method,
-// 		path: req.path,
-// 		params: req.params,
-// 		query: req.query,
-// 		body: req.body,
-// 	})
-// 	next()
-// })
-
 // Novel routes
 router.get('/novels', listNovels)
 router.get('/novels/:novelId/chapter-list', getChapterList)
