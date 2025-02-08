@@ -9,6 +9,7 @@ import {
 	getAllChaptersContent,
 	getGlossary,
 	generateGlossary,
+	getChapterList,
 } from './novel.controller'
 
 const router = Router()
@@ -21,6 +22,7 @@ router.post('/test', (req, res) => {
 
 // Novel listing and chapter routes
 router.get('/novels', listNovels)
+router.get('/novels/:novelId/chapter-list', getChapterList)
 router.get('/novels/:novelId/chapters', listChapters)
 router.get('/novels/:novelId/chapters/:volume/:chapter', readChapter)
 

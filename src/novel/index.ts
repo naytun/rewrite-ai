@@ -8,6 +8,7 @@ import {
 	getAllChaptersContent,
 	getGlossary,
 	generateGlossary,
+	getChapterList,
 } from './novel.controller'
 
 const router = Router()
@@ -26,6 +27,7 @@ const router = Router()
 
 // Novel routes
 router.get('/novels', listNovels)
+router.get('/novels/:novelId/chapter-list', getChapterList)
 router.get('/novels/:novelId/chapters', listChapters)
 router.get('/novels/:novelId/chapters/:volume/:chapter', readChapter)
 router.get('/novels/:novelId/all-chapters', getAllChaptersContent)
