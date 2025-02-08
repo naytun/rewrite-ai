@@ -9,6 +9,7 @@ import {
 	getGlossary,
 	generateGlossary,
 	getChapterList,
+	readChapterAI,
 } from './novel.controller'
 
 const router = Router()
@@ -17,6 +18,7 @@ router.get('/novels', listNovels)
 router.get('/novels/:novelId/chapter-list', getChapterList)
 router.get('/novels/:novelId/chapters', listChapters)
 router.get('/novels/:novelId/chapters/:volume/:chapter', readChapter)
+router.get('/novels/:novelId/chapters/:volume/:chapter/ai', readChapterAI)
 router.get('/novels/:novelId/all-chapters', getAllChaptersContent)
 
 // Bulk generation route
