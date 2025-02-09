@@ -13,8 +13,6 @@ import { getAISettings } from '../settings/settings.service'
 import type { Chapter, ChapterNavigation } from '../types/novel'
 import * as path from 'path'
 import * as fs from 'node:fs/promises'
-import { Novel } from '../types/novel'
-import { AnyIndex } from '@orama/orama'
 
 const generateNavigationButtons = (
 	navigation: ChapterNavigation,
