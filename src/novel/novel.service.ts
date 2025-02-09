@@ -312,7 +312,7 @@ export const readChapter = async (
 		const aiSettings = await getAISettings()
 
 		// If AI is not enabled, return original content
-		if (!useAI || !aiSettings.enabled) {
+		if (!useAI) {
 			return chapterData
 		}
 
@@ -321,7 +321,6 @@ export const readChapter = async (
 		try {
 			const aiContent = await fs.readFile(aiFilePath, 'utf-8')
 			aiData = JSON.parse(aiContent)
-
 			// Validate AI data structure
 			if (!aiData || !aiData.body || !aiData.isAIGenerated) {
 				console.log('Invalid AI data format')

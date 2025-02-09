@@ -427,7 +427,7 @@ export const readChapterAI = async (
 		// Get current AI settings
 		const aiSettings = await getAISettings()
 		const aiEnabled = aiSettings.enabled
-		console.log('Reading chapter with settings:', {
+		console.log('AI: Reading chapter with settings:', {
 			aiEnabled,
 			useAI,
 			compare,
@@ -444,41 +444,30 @@ export const readChapterAI = async (
 			compare
 		)
 		if (!chapterData) {
-			console.error('No chapter data returned')
-			throw new Error('Failed to get chapter content')
+			console.error('AI: No chapter data returned')
+			throw new Error('AI: Failed to get chapter content')
 		}
 
-		console.log('Chapter data received:', {
+		console.log('AI: Chapter data received:', {
 			hasBody: !!chapterData.body,
 			noAIContent: !!chapterData.noAIContent,
 			useAI,
 			aiEnabled,
 		})
 
-		// Handle AI content visibility:
-		if (useAI && aiEnabled) {
-			console.log('AI mode is active, checking content...')
-			if (chapterData.noAIContent) {
-				console.log('No AI content available, showing message')
-				chapterData.showNoAIContent = true
-				delete chapterData.noAIContent
-				// Hide the original content when showing "No AI Content" message
-				chapterData.body = ''
-			} else {
-				console.log('AI content available, showing content')
-				chapterData.showNoAIContent = false
-			}
+		console.log('AI: AI mode is active, checking content...')
+		if (chapterData.noAIContent) {
+			console.log('No AI content available, showing message')
+			chapterData.showNoAIContent = true
+			delete chapterData.noAIContent
+			// Hide the original content when showing "No AI Content" message
+			chapterData.body = 'NO AI CONTENT'
 		} else {
-			console.log('AI mode is not active, showing original content')
+			console.log('AI: AI content available, showing content')
 			chapterData.showNoAIContent = false
-			// If we had saved the original body, restore it
-			if (chapterData.originalBody) {
-				chapterData.body = chapterData.originalBody
-				delete chapterData.originalBody
-			}
 		}
 
-		console.log('Final chapter data state:', {
+		console.log('AI: Final chapter data state:', {
 			showNoAIContent: chapterData.showNoAIContent,
 			hasBody: !!chapterData.body,
 		})
@@ -524,7 +513,7 @@ export const readChapterAI = async (
 
 		// Get chapters for navigation
 		const { chapters } = await getChapters(novelId)
-		console.log('Got chapters list, total chapters:', chapters.length)
+		console.log('AI: Got chapters list, total chapters:', chapters.length)
 
 		res.send(plainText ? plainTextBody : chapterData.body)
 	} catch (error: unknown) {
@@ -588,7 +577,7 @@ export const readChapter = async (
 		})
 
 		// Handle AI content visibility:
-		if (useAI && aiEnabled) {
+		if (useAI || aiEnabled) {
 			console.log('AI mode is active, checking content...')
 			if (chapterData.noAIContent) {
 				console.log('No AI content available, showing message')
