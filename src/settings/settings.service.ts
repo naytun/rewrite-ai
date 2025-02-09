@@ -6,6 +6,7 @@ const AI_SETTINGS_FILE = path.join(SETTINGS_DIR, 'ai-rewrite.json')
 
 interface AISettings {
 	enabled: boolean
+	aiEnabled: boolean
 	prompt: string
 }
 
@@ -14,6 +15,7 @@ export const getAISettings = async (): Promise<AISettings> => {
 		if (!fs.existsSync(AI_SETTINGS_FILE)) {
 			return {
 				enabled: false,
+				aiEnabled: false,
 				prompt: '',
 			}
 		}
@@ -25,12 +27,15 @@ export const getAISettings = async (): Promise<AISettings> => {
 		console.error('Failed to load AI settings:', error)
 		return {
 			enabled: false,
+			aiEnabled: false,
 			prompt: '',
 		}
 	}
 }
 
-export const saveAISettings = async (settings: AISettings): Promise<void> => {
+export const saveAISettings = async (
+	settings: AISettings
+): Promise<AISettings> => {
 	try {
 		if (!fs.existsSync(SETTINGS_DIR)) {
 			await fs.promises.mkdir(SETTINGS_DIR, { recursive: true })
@@ -39,6 +44,7 @@ export const saveAISettings = async (settings: AISettings): Promise<void> => {
 			AI_SETTINGS_FILE,
 			JSON.stringify(settings, null, 2)
 		)
+		return settings
 	} catch (error) {
 		console.error('Failed to save AI settings:', error)
 		throw error
