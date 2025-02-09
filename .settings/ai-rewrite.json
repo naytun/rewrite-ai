@@ -1,4 +1,5 @@
 {
-  "enabled": true,
+  "enabled": false,
+  "aiEnabled": false,
   "prompt": "Rewrite the following passage in the style of God of Slaughter by Ni Cang Tian.\n Make the tone dark and brutal, using short, punchy sentences.\nEmphasize violence, power, and survival instincts.\nDescribe sensory details vividly—blood, pain, energy, fear.\nThe protagonist should be morally gray, prioritizing strength above all else.\nUse visceral combat descriptions with intense inner monologue"
 }
