@@ -508,7 +508,7 @@ export const readChapterAI = async (
 
 		// Remove all HTML tags from the body
 		const plainTextBody = chapterData.body
-			.replace(/<\/p>/g, '\n\n')
+			.replace(/<\/p>/g, '\n')
 			.replace(/<.*?>/g, '')
 
 		// Get chapters for navigation
