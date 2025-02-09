@@ -730,12 +730,6 @@ export const regenerateChapter = async (
 		const { novelId, volume, chapter } = req.params
 
 		try {
-			// Get current AI settings
-			const aiSettings = await getAISettings()
-			if (!aiSettings.enabled) {
-				throw new Error('AI rewrite is not enabled')
-			}
-
 			// Get the novel path
 			const novelPath = await getNovelPath(novelId)
 			const aiFilePath = path.join(
