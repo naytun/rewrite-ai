@@ -461,7 +461,7 @@ export const readChapterAI = async (
 			chapterData.showNoAIContent = true
 			delete chapterData.noAIContent
 			// Hide the original content when showing "No AI Content" message
-			chapterData.body = 'NO AI CONTENT'
+			chapterData.body = ''
 		} else {
 			console.log('AI: AI content available, showing content')
 			chapterData.showNoAIContent = false
