@@ -13,8 +13,6 @@ import { getAISettings } from '../settings/settings.service'
 import type { Chapter, ChapterNavigation } from '../types/novel'
 import * as path from 'path'
 import * as fs from 'node:fs/promises'
-import { Novel } from '../types/novel'
-import { AnyIndex } from '@orama/orama'
 
 const generateNavigationButtons = (
 	navigation: ChapterNavigation,
@@ -424,11 +422,8 @@ export const readChapterAI = async (
 		res.setHeader('Expires', '0')
 		res.setHeader('Content-Type', 'text/html; charset=utf-8')
 
-		// Get current AI settings
-		const aiSettings = await getAISettings()
-		const aiEnabled = aiSettings.enabled
+		// Get current settings
 		console.log('AI: Reading chapter with settings:', {
-			aiEnabled,
 			useAI,
 			compare,
 			volume,
@@ -452,7 +447,6 @@ export const readChapterAI = async (
 			hasBody: !!chapterData.body,
 			noAIContent: !!chapterData.noAIContent,
 			useAI,
-			aiEnabled,
 		})
 
 		console.log('AI: AI mode is active, checking content...')
@@ -546,10 +540,7 @@ export const readChapter = async (
 		res.setHeader('Content-Type', 'text/html; charset=utf-8')
 
 		// Get current AI settings
-		const aiSettings = await getAISettings()
-		const aiEnabled = aiSettings.enabled
 		console.log('Reading chapter with settings:', {
-			aiEnabled,
 			useAI,
 			compare,
 			volume,
@@ -561,7 +552,7 @@ export const readChapter = async (
 			novelId,
 			volume,
 			chapter,
-			useAI || aiEnabled,
+			useAI,
 			compare
 		)
 		if (!chapterData) {
@@ -573,11 +564,10 @@ export const readChapter = async (
 			hasBody: !!chapterData.body,
 			noAIContent: !!chapterData.noAIContent,
 			useAI,
-			aiEnabled,
 		})
 
 		// Handle AI content visibility:
-		if (useAI || aiEnabled) {
+		if (useAI) {
 			console.log('AI mode is active, checking content...')
 			if (chapterData.noAIContent) {
 				console.log('No AI content available, showing message')
@@ -677,7 +667,7 @@ export const readChapter = async (
 			navigation,
 			allChapters,
 			novelId,
-			useAI && aiEnabled
+			useAI
 		)
 
 		res.send(plainText ? plainTextBody : html.template)
