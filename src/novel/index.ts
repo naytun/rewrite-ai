@@ -13,6 +13,8 @@ import {
 } from './novel.controller'
 
 const router = Router()
+
+
 // Novel routes
 router.get('/novels', listNovels)
 router.get('/novels/:novelId/chapter-list', getChapterList)
