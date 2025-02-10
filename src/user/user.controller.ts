@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import * as userService from './user.service'
-import { SignUpRequest, SignInRequest, UpdateUserRequest } from '../types/user'
+import { SignUpRequest, SignInRequest, SignInWithOtpRequest, UpdateUserRequest, ForgotPasswordRequest, ResetPasswordRequest } from '../types/user'
 
 export const signUp = async (req: Request, res: Response): Promise<void> => {
 	const signUpData: SignUpRequest = req.body
@@ -60,4 +60,58 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 	}
 
 	res.status(200).json({ user: result.user })
+}
+
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+	const { email }: ForgotPasswordRequest = req.body
+
+	if (!email) {
+		res.status(400).json({ error: 'Email is required' })
+		return
+	}
+
+	const result = await userService.forgotPassword({ email })
+
+	if (result.error) {
+		res.status(400).json({ error: result.error })
+		return
+	}
+
+	res.status(200).json({ message: 'Password reset instructions sent to your email' })
+}
+
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+	const { password }: ResetPasswordRequest = req.body
+
+	if (!password) {
+		res.status(400).json({ error: 'New password is required' })
+		return
+	}
+
+	const result = await userService.resetPassword({ password })
+
+	if (result.error) {
+		res.status(400).json({ error: result.error })
+		return
+	}
+
+	res.status(200).json({ message: 'Password has been reset successfully' })
+}
+
+export const signInWithOtp = async (req: Request, res: Response): Promise<void> => {
+	const { email }: SignInWithOtpRequest = req.body
+
+	if (!email) {
+		res.status(400).json({ error: 'Email is required' })
+		return
+	}
+
+	const result = await userService.signInWithOtp({ email })
+
+	if (result.error) {
+		res.status(400).json({ error: result.error })
+		return
+	}
+
+	res.status(200).json({ message: 'Magic link sent to your email' })
 }

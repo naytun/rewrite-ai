@@ -19,8 +19,20 @@ export interface SignInRequest {
 	password: string
 }
 
+export interface SignInWithOtpRequest {
+	email: string
+}
+
 export interface UpdateUserRequest {
 	full_name?: string
+}
+
+export interface ForgotPasswordRequest {
+	email: string
+}
+
+export interface ResetPasswordRequest {
+	password: string
 }
 
 export interface AuthResponse {

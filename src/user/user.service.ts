@@ -2,7 +2,10 @@ import { supabase } from '../config/supabase'
 import {
 	SignUpRequest,
 	SignInRequest,
+	SignInWithOtpRequest,
 	UpdateUserRequest,
+	ForgotPasswordRequest,
+	ResetPasswordRequest,
 	AuthResponse,
 	User,
 } from '../types/user'
@@ -103,5 +106,50 @@ export const updateUser = async (
 			user: null,
 			error: error.message,
 		}
+	}
+}
+
+export const forgotPassword = async ({ email }: ForgotPasswordRequest): Promise<{ error?: string }> => {
+	try {
+		const { error } = await supabase.auth.resetPasswordForEmail(email, {
+			redirectTo: `${process.env.APP_URL}/reset-password`,
+		})
+		
+		if (error) throw error
+		
+		return {}
+	} catch (error: any) {
+		return { error: error.message }
+	}
+}
+
+export const resetPassword = async ({ password }: ResetPasswordRequest): Promise<{ error?: string }> => {
+	try {
+		const { error } = await supabase.auth.updateUser({
+			password: password
+		})
+		
+		if (error) throw error
+		
+		return {}
+	} catch (error: any) {
+		return { error: error.message }
+	}
+}
+
+export const signInWithOtp = async ({ email }: SignInWithOtpRequest): Promise<{ error?: string }> => {
+	try {
+		const { error } = await supabase.auth.signInWithOtp({
+			email,
+			options: {
+				emailRedirectTo: `${process.env.APP_URL}/auth/callback`,
+			},
+		})
+		
+		if (error) throw error
+		
+		return {}
+	} catch (error: any) {
+		return { error: error.message }
 	}
 }
