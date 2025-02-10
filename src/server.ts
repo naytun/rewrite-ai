@@ -1,9 +1,10 @@
+import * as PACKAGE from '../package.json'
 import dotenv from 'dotenv'
 import express, { Request, Response, NextFunction, Application } from 'express'
 import routes from './routes'
-import { HttpStatusCode } from 'axios'
 import cors from 'cors'
 import path from 'path'
+import { HttpStatusCode } from 'axios'
 
 // Load environment variables
 dotenv.config()
@@ -41,12 +42,25 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 	next()
 })
 
-// Mount routes
+// Mount API routes
 app.use('/api', routes)
 
 // Serve home page
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+const status = {
+	message: 'Everything is functioning normally!',
+	version: PACKAGE.version,
+}
+
+// Status and health check routes
+app.get('/status', (_req, res) => {
+	res.status(200).json(status)
+})
+
+app.get('/health', (_req, res) => {
+	res.status(200).json({ message: 'OK' })
 })
 
 // Error handling middleware
