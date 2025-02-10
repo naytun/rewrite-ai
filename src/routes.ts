@@ -4,6 +4,7 @@ import * as PACKAGE from '../package.json'
 import novelRoutes from './novel'
 import settingsRoutes from './settings/settings.routes'
 import aiRoutes from './ai/ai.routes'
+import userRoutes from './user/user.routes'
 
 import { oramaRoutes } from './orama'
 
@@ -25,5 +26,6 @@ router.use('/orama', oramaRoutes)
 router.use('/novel', novelRoutes)
 router.use('/settings', settingsRoutes)
 router.use('/ai', aiRoutes)
+router.use('/auth', userRoutes)
 
 export default router

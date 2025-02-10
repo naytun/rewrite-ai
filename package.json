@@ -30,6 +30,7 @@
 	},
 	"dependencies": {
 		"@oramacloud/client": "^2.1.4",
+		"@supabase/supabase-js": "^2.48.1",
 		"@types/cheerio": "^0.22.35",
 		"@types/cors": "^2.8.17",
 		"axios": "^1.7.9",
