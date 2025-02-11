@@ -1,16 +1,30 @@
 export const AI_INSTRUCTIONS = {
 	REWRITE_CHAPTER: `
 	Rewrite following contents:
-	- In shorter sentences but don't summarize the paragraphs. 
-	- Use short, punchy sentences
-	- Describe sensory details vividly—blood, pain, energy, fear.
-	- Rewrite paragraph by paragraph. 
-	- Do not remove any paragraphs. 
-	- Keep dialogues in dialogue format and just rephrase for better comprehension. 
-	- Replace with commonly used words if necessary. 
-	- Do not change the names of the characters
+		Paragraphs:
+		- Do not summarize the paragraphs. 
+		- Rewrite paragraph by paragraph. 
+		- Do not remove any paragraphs. 
+		Sentences:
+		- Use short, punchy sentences.
+		- Keep dialogues in dialogue format and just rephrase for better comprehension. 
+		- Replace with commonly used words if necessary. 
+		- Do not change the names of the characters
 `,
 }
+/**
+	 Rewrite following contents:
+		Paragraphs:
+		- Do not summarize the paragraphs. 
+		- Rewrite paragraph by paragraph. 
+		- Do not remove any paragraphs. 
+		Sentences:
+		- Use short, punchy sentences.
+		- Keep dialogues in dialogue format and just rephrase for better comprehension. 
+		- Replace with commonly used words if necessary. 
+		- Do not change the names of the characters
+
+ */
 
 /**
  	Rewrite following contents:
