@@ -202,7 +202,10 @@ export const preloadAIContent = async (
 		)
 
 		if (hasFailedContent) {
-			console.error('AI generation produced invalid content')
+			console.error(
+				'AI generation produced invalid content:\n' +
+					aiParagraphs.join('\n')
+			)
 			return
 		}
 
