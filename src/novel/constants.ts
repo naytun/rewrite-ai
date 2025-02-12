@@ -1,17 +1,23 @@
 export const AI_INSTRUCTIONS = {
 	REWRITE_CHAPTER: `
-	Rewrite following contents:
+	Rewrite following contents with these instructions:
 		Paragraphs:
-		- Do not summarize the paragraphs. 
-		- Rewrite paragraph by paragraph. 
-		- Do not remove any paragraphs. 
+			- Do not summarize the paragraphs. 
+			- Rewrite paragraph by paragraph. 
+			- Do not remove any paragraphs. 
 		Sentences:
-		- Use short, punchy sentences.
-		- Keep dialogues in dialogue format and just rephrase for better comprehension. 
-		- Replace with commonly used words if necessary. 
-		- Do not change the names of the characters
+			- Use shorter sentences.
+			- Replace with commonly used words if necessary. 
+			- Do not change the names of the characters
+		Important:
+			- Keep dialogues in dialogue format.
 `,
 }
+
+/**
+	Rewrite paragraph by paragraph using simple words and shorter sentences. Do not summarize. Do not change "dialogue" style. 
+ */
+
 /**
 	 Rewrite following contents:
 		Paragraphs:
