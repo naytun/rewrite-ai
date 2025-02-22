@@ -1,0 +1,545 @@
+{
+    "manifestURL": "https://dl.dropboxusercontent.com/s/i636lfkkvfdz6pv/manifest.json",
+    "items":[
+        {
+        "filePath":"bin/Novel-Grabber.jar",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/wiyeyoc3joiot0c/Novel-Grabber.jar",
+        "timestamp": 1633958085
+        },
+        {
+        "filePath":"./CHANGELOG.txt",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/3os5yn5qly83c8j/CHANGELOG.txt",
+        "timestamp": 1623853331
+        },
+        {
+        "filePath":"./bin/fonts/NotoSansCJKtc-Regular.ttf",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/mja37n3ra0s3iah/NotoSansCJKtc-Regular.ttf",
+        "timestamp": 16215
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/booklat_com_ph.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/m6f3k2faccr40p5/booklat_com_ph.class",
+        "timestamp": 1621537100
+        },    
+        {
+        "filePath":"bin/sources/grabber/sources/boxnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/a4vx8k4qy9ld4vj/boxnovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/chrysanthemumgarden_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/0fb469zghh4qbps/chrysanthemumgarden_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/creativenovels_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/qgjlt6qe8okhu2h/creativenovels_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/dreame_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/u2othxhd4m2llpl/dreame_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/fanfiction_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/3721koriw6f9wbx/fanfiction_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/fanfiktion_de.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/ztufpl3prjcydv3/fanfiktion_de.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/ficfun_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/4ribkx1l308jeya/ficfun_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/foxaholic_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/tdxkmp79jckjb03/foxaholic_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/foxteller_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/0a1w57amec41fee/foxteller_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/honeyfeed_fm.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/xsbf3zxg3otqnrr/honeyfeed_fm.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/inkitt_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/w4r6dou981ply30/inkitt_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/isotls_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/zw78fylwcfb01yx/isotls_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/liberspark_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/7dt7bph37es052i/liberspark_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/lightnovelstranslations_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/mtv7gpniwbv9p3e/lightnovelstranslations_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/manualSource.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/6femx61i2mn5fgd/manualSource.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/moonquill_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/2xrlcm8hwp7zijo/moonquill_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/mtlnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/nm6fqyjc2yy5n6m/mtlnovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelfull_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/pal76zgza9wky6k/novelfull_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelupdates_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/4onskstfhxz2sux/novelupdates_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/quotev_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/3et9rjkg5vvv28u/quotev_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/re_library_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/cc7x8n7mo3qwnnr/re_library_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/royalroad_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/y8qlra8pfbfarej/royalroad_com.class",
+        "timestamp": 1687081377
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/scribblehub_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/w5e60qlk6gjnptq/scribblehub_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/tapas_io.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/c7kxa5fpa5c9653/tapas_io.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/tapread_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/1vt2i61m7i7ek4d/tapread_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/volarenovels_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/ytw2jeyv3sg4orr/volarenovels_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wattpad_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/4o512ee8da5dzew/wattpad_com.class",
+        "timestamp": 1629213172
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/webnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/qdhvhhkj8a4k4ie/webnovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wordrain69_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/29pdepcfvd9clei/wordrain69_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wuxiaworld_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/imlcmp6a7asxu66/wuxiaworld_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wuxiaworld_online.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/dx6b250esnb4120/wuxiaworld_online.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wuxiaworld_site.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/y9eetcmyvzvnv2c/wuxiaworld_site.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wuxiaworldsite_co.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/5movn02fk2v3qus/wuxiaworldsite_co.class?dl=0",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelhall_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/4z14zln4xblldrb/novelhall_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/zenithnovels_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/0tle5gqbk1zzabr/zenithnovels_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/boxnovel_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/skj2p6zrmau9hr4/boxnovel_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelsrock_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/9qpmo4vd88t6sa5/novelsrock_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/comrademao_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/j9onn6elozkzqm9/comrademao_com.class",
+        "timestamp": 1627293667
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/lnmtl_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/8xx27wlolfjpcxw/lnmtl_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/readlightnovel_org.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/evvjt46kutp2m9c/readlightnovel_org.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wuxiaworld_co.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/1ximhfba79en2tc/wuxiaworld_co.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/asianhobbyist_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/rfbsnhb1tvy2u8n/asianhobbyist_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/readnovelfull_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/ed8n2lszvcyf971/readnovelfull_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/veratales_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/guivec19oka3haj/veratales_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/vipnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/2rn8a3blatzg0yx/vipnovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/shubaow_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/692mmeve8ej8dvn/shubaow_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/snowycodex_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/d4hibb1mjafgn3q/snowycodex_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/untamedalley_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/kfdq2u3lc8r2v93/untamedalley_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/zhenhunxiaoshuo_com.class",
+        "downloadLink":"https://dl.dropbox.com/s/pwjaj4k90cx3qtm/zhenhunxiaoshuo_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelupdates_cc.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/68hj3wpk8ii4u0k/novelupdates_cc.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/jpmtl_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/97lef70z6377u8w/jpmtl_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/jjwxc_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/e4tb1mztix6p3rn/jjwxc_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/fastnovel_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/ik31zz3mn7ovtjo/fastnovel_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/exiledrebelsscanlations_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/mcxhb1om7yivr5f/exiledrebelsscanlations_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/dummynovels_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/wq6pcopc29sxg9n/dummynovels_com.class",
+        "timestamp": 1622308017
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/daonovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/wv8tay998o7qrgj/daonovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/chickengege_org.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/2buijdx74uvzutd/chickengege_org.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/blackbox_tl_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/fysdsb72bjc3oqc/blackbox_tl_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/fujossy_jp.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/3v7zpdf2m58n5kv/fujossy_jp.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/truyenfull_vn.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/jq78mfji8y3fcv4/truyenfull_vn.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/webtruyen_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/on056dp0op5qgox/webtruyen_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/n9kqw_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/sdgp38axy5092ss/n9kqw_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/n17k_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/2d04lx9ynspihkj/n17k_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/biquge_se.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/16sytty7pbmwhvw/biquge_se.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/n101novel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/p5fkn4xrfm7gjb0/n101novel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelfun_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/d7ehmnyr23hk7sd/novelfun_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/shu111_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/lmvw3zf0iv1abep/shu111_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wenxue_iqiyi_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/f8nevgo408c6p8r/wenxue_iqiyi_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/sofanovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/37lnst3co0dun2b/sofanovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/moboreader_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/ll9rdoeraozvas5/moboreader_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/alphapolis_co_jp.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/mvuv76iqwe4x25r/alphapolis_co_jp.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/booknet_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/8a1i3zhk8vkoxt4/booknet_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/machine_translation_org.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/2bnnw2bxiqon772/machine_translation_org.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelsonline_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/nvo18vopzjihbtv/novelsonline_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/lightnovelworld_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/o0pho30w4sp70l0/lightnovelworld_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelcake_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/8w5x0ctba6jtwmf/novelcake_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/skynovel_org.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/xtx7v8shvp7ngbk/skynovel_org.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/zinnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/a7gpkz8m64t860f/zinnovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/asianovel_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/irbnfak2zey5nvm/asianovel_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/activetranslations_xyz.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/tjkf9r86zx105ur/activetranslations_xyz.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/secondlifetranslations_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/uenmjvnfiu60g2j/secondlifetranslations_com.class",
+        "timestamp": 1623850990
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/goodnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/5p1k40f5j0ub2pt/goodnovel_com.class",
+        "timestamp": 1627293667
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/babelnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/x7599nczisq8xfx/babelnovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/hostednovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/l7dypwrfxzdbrv4/hostednovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/lightnovelpub_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/xkxl4nwr4zismsr/lightnovelpub_com.class",
+        "timestamp": 1628936419
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/fr_mtlnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/hq8a3fp0h5wp0c8/fr_mtlnovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/id_mtlnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/vuecey4f6jpl5kg/id_mtlnovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/es_mtlnovel_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/0pf1rh2bveyvul8/es_mtlnovel_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/woopread_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/250aiw8xvjkypjo/woopread_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelbuddy_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/7v31puekgyrg2uq/novelbuddy_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelgate_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/lex2529m97t146i/novelgate_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/ranobes_net.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/d7l68uk5uglft6r/ranobes_net.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/ptwxz_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/xb9whdnhgf3ywi3/ptwxz_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wuxia_blog.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/6hma6ibm59putnf/wuxia_blog.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/ncode_syosetu_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/dr63lyitplouor2/ncode_syosetu_com.class",
+        "timestamp": 1621537100
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/kakuyomu_jp.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/j0m69bn5gmwr6vi/kakuyomu_jp.class",
+        "timestamp": 1621874353
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/n78zaotl_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/zegu6n2yc9y4qwg/n78zaotl_com.class",
+        "timestamp": 1622887138
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wnmtl_org.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/s26zn8jt45iisck/wnmtl_org.class",
+        "timestamp": 1629051005
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/readwn_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/gh60871dwsk6252/readwn_com.class",
+        "timestamp": 1623061163
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/a_t_nu.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/wrxtn3mohzj8wba/a_t_nu.class",
+        "timestamp": 1623850990
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/wuxia_city.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/4vimwgig32g0w00/wuxia_city.class",
+        "timestamp": 1623850990
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/betwixtedbutterfly_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/e6yt0hfl7iu7269/betwixtedbutterfly_com.class",
+        "timestamp": 1623850990
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelhd_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/pdnpda8o3w2sk18/novelhd_com.class",
+        "timestamp": 1623850990
+        },
+        {
+        "filePath":"bin/sources/grabber/sources/novelpoki_com.class",
+        "downloadLink":"https://dl.dropboxusercontent.com/s/asc151d0uhiohwe/novelpoki_com.class?dl=0",
+        "timestamp": 1646675407
+        }
+    ]
+}

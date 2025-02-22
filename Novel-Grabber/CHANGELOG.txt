@@ -1,0 +1,219 @@
+3.10.0 - 2021-06-16
+=====
+- Added the option to customize chapter titles
+- Moved novel creation settings to sepereate tab
+- Removed "Remove styling" option
+- Added Betwixted Translations
+- Added NovelHD
+- Added WuxiaCity
+- Updated Active Translations
+- Fixed SecondLifeTranslations chapter body selector
+
+3.9.5 - 2021-06-07
+=====
+- Added ReadWN
+
+3.9.4 - 2021-06-05
+=====
+- Rewrite Telegram bot
+- Added 78ZaoTL (posiaden123)
+- Added WNMTL (posiaden123)
+
+3.9.3 - 2021-05-29
+=====
+- Fixed Dummy Novels chapter container selector
+
+3.9.3 - 2021-05-24
+=====
+- Added Kakuyomu
+
+3.9.3 - 2021-04-27
+=====
+-  Escape HTML entities in ePub ToC and Description
+
+3.9.3 - 2021-04-22
+=====
+- Add font selection to settings
+- Add custom font loading from "fonts" folder
+- Add cjk to PDFs
+
+3.9.2 - 2021-04-19
+=====
+- Fixed multiple telegram downloads using the same progress message
+- Fixed not being able to add novel to library if the name contains illegal folder characters
+
+3.9.1 - 2021-04-16
+=====
+- Adjusted Foxaholic selectors
+
+3.9.1 - 2021-04-13
+=====
+- Fixed LightnovelPub empty chapter list
+
+3.9.1 - 2021-04-12
+=====
+- Added GUI theme select
+
+3.9.0 - 2021-04-12
+=====
+- Adjusted Lightnoveltranslations chapter link selector
+
+3.9.0 - 2021-04-10
+=====
+- Added individual checking to library novels
+- Added option to exclude library novels from being checked
+- Added multiple concurrent telegram download support
+- Added option to display a desktop notification when a novel is finished downloading
+- Added Syosetu
+- Fixed missing ranobes source name
+- Fixed broken WattPad selectors
+- Fixed NovelUpdates grabbing (switched to full headless)
+
+3.8.1 - 2021-04-03
+=====
+- Added host filter to library
+- Added Wuxia.Blog
+
+3.8.0 - 2021-04-02
+=====
+- Added new search, show only updatable and no cover functions to library
+- Fixed a bug where images are not downloaded
+- Fixed blacklisted tags for readlightnovel
+- Added NovelGate
+- Added Piaotian
+- Added Ranobes
+
+3.7.0 - 2021-03-29
+=====
+- Added NovelBuddy
+
+3.7.0 - 2021-03-28
+=====
+- Added a Telegram config panel
+- Changed font to improve wider range character support
+- Added the option to separate chapters in txt output
+
+3.6.2 - 2021-03-27
+=====
+- Adjusted WebNovel selectors
+
+3.6.2 - 2021-03-22
+=====
+- Added cookie support to manual grabbing
+
+3.6.1 - 2021-03-15
+=====
+- Added WoopRead
+
+3.6.1 - 2021-03-14
+=====
+- Added new Telegram bot settings
+- Telegram bot retries downloading failed chapters now
+- Library now updates the existing file for a novel with new chapters
+
+3.6.1 - 2021-03-12
+=====
+- Added all MTLnovel language variants
+
+3.6.0 - 2021-03-09
+=====
+- Fixed BoxNovel.org
+
+3.6.0 - 2021-03-06
+=====
+- Added PDF output format
+- Added HostedNovel
+- Added Light Novel Pub
+
+3.5.0 - 2021-03-04
+=====
+- Added BabelNovel
+
+3.5.0 - 2021-03-03
+=====
+- Reworked library
+- Added Second Life Translations
+- Added Active Translations
+- Added GoodNovel
+- Lots of small changes
+
+3.4.1 - 2021-02-24
+=====
+- Fixed CreativeNovels
+
+3.4.1 - 2021-02-20
+=====
+- Fixed login for Royal Road
+- Fixed headless grabbing for manual grabbing
+- Fixed a bug which prevented login when manually deleting all cookies for a source
+- Added a dedicated "save cookies" button for logins
+
+3.4.0 - 2021-02-17
+=====
+- Fixed page counter on automatic not being displayed
+- Fixed busy icon on automatic not going away on errors
+- Added Asianovel
+
+3.4.0 - 2021-02-16
+=====
+- Added a mature check to booknet and fixed login cookie issues
+
+3.4.0 - 2021-02-13
+=====
+- Reworked login system (login via browser and store session cookies in file)
+- Added Txt file output
+- Added zinnovel
+- Added novelcake
+- Added skynovel
+
+3.3.1 - 2021-02-07
+=====
+- Fixed AsianHobbyist
+
+3.3.1 - 2021-02-04
+=====
+- Added Light Novel World
+
+3.3.1 - 2021-02-01
+=====
+- Added Novels Online
+- Added Machine-Translation
+- Added BookNet
+- Added AlphaPolis
+
+3.3.1 - 2021-01-29
+=====
+- Fixed metadata selection for Wuxiaworld.site
+- Added MoboReader source
+
+3.3.1 - 2021-01-24
+=====
+- Added failed chapters window and retry
+- Added chapter preview to automatic
+- Chapter preview can also edit name and url now
+
+3.3.0 - 2021-01-22
+=====
+- Added https://novelfun.net/
+- Added https://9kqw.com/
+- Added http://wenxue.iqiyi.com/
+- Added http://www.biquge.se/
+- Added https://www.17k.com/
+- Added https://www.101novel.com/
+- Added http://www.shu111.com/
+- Added https://webtruyen.com/ 
+- Added https://truyenfull.vn/
+- Added https://fujossy.jp/
+
+3.3.0 - 2021-01-19
+=====
+- NovelUpdates hotfix. Accidentally released an in-dev version which can throw the grabber into a loop trying to detect "pre-chapters" on wordpress sites
+
+3.3.0 - 2021-01-18
+=====
+- Improved EPUB output
+- Added a Telegram bot
+- Switched file extension of accounts.ini to accounts.json
+- Moved settings.ini, library.json, accounts.json to the bin folder
+- Added a changelog file
+
