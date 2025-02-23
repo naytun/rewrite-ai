@@ -947,3 +947,4 @@
 [2025-02-21T21:24:22] Failed to download: 第721章
 [2025-02-21T21:24:29] Page not found! (404)
 [2025-02-21T21:24:37] Page not found! (404)
+[2025-02-22T00:30:42] Host not supported: novel543.com
