@@ -1,0 +1,189 @@
+m a k e it stick
+
+The Science of Successful Learning
+
+Peter C. Brown
+Henry L. Roediger III
+Mark .A McDaniel
+
+Cambridge, Massachusetts
+London, England
+2014
+
+Preface
+
+Going about learning in the wrong ways. Empirical research into how we learn
+and remember shows that much of what we take for gospel
+about how to learn turns out to be largely wasted effort. Even
+college and medical students—whose main job is learning—
+rely on study techniques that are far from optimal. At the same
+time, this ,eld of research, which goes back 125 years but has
+been particularly fruitful in recent years, has yielded a body of
+insights that constitute a growing science of learning: highly
+effective, evidence-based strategies to replace less effective but
+widely accepted practices that are rooted in theory, lore, and
+intuition. But there's a catch: the most effective learning strategies are not intuitive.
+Two of us, Henry Roediger and Mark McDaniel, are cognitive scientists who have dedicated our careers to the study
+of learning and memory. Peter Brown is a storyteller. We have
+ix
+
+Preface  x
+
+teamed up to explain how learning and memory work, and
+we do this less by reciting the research than by telling stories
+of people who have found their way to mastery of complex
+knowledge and skills. Through these examples we illuminate
+the principles of learning that the research shows are highly
+effective. This book arose in part from a collaboration
+among eleven cognitive psychologists. In 2002, the James S.
+McDonnell Foundation of St. Louis, Missouri, in an effort
+to better bridge the gap between basic knowledge on learning in cognitive psychology and its application in education,
+awarded a research grant "Applying Cognitive Psychology
+to Enhance Educational Practice" to Roediger and McDaniel
+and nine others, with Roediger as the principal investigator.
+The team collaborated for ten years on research to translate
+cognitive science into educational science, and in many respects this book is a direct result of that work. The researchers and many of their studies are cited in the book, the notes,
+and our acknowledgments. Roediger's and McDaniel's work
+is also supported by several other funders, and McDaniel is
+the co-director of Washington University's Center for Integrative Research in Learning and Memory.
+Most books deal with topics serially—they cover one topic,
+move on to the next, and so on. We follow this strategy in the
+sense that each chapter addresses new topics, but we also apply two of the primary learning principles in the book: spaced
+repetition of key ideas, and the interleaving of different but
+related topics. If learners spread out their study of a topic,
+returning to it periodically over time, they remember it better.
+Similarly, if they interleave the study of different topics, they
+learn each better than if they had studied them one at a time in
+sequence. Thus we unabashedly cover key ideas more than
+once, repeating principles in different contexts across the book.
+
+Preface  xi
+
+The reader will remember them better and use them more effectively as a result.
+This is a book about what people can do for themselves
+right now in order to learn better and remember longer. The
+responsibility for learning rests with every individual. Teachers and coaches, too, can be more effective right now by helping students understand these principles and by designing them
+into the learning experience. This is not a book about how
+education policy or the school system ought to be reformed.
+Clearly, though, there are policy implications. For example,
+college professors at the forefront of applying these strategies
+in the classroom have experimented with their potential for
+narrowing the achievement gap in the sciences, and the results
+of those studies are eye opening.
+We write for students and teachers, of course, and for all
+readers for whom effective learning is a high priority: for trainers in business, industry, and the military; for leaders of professional associations offering in-service training to their members; and for coaches. We also write for lifelong learners nearing
+middle age or older who want to hone their skills so as to stay
+in the game.
+While much remains to be known about learning and its
+neural underpinnings, a large body of research has yielded
+principles and practical strategies that can be put to work immediately, at no cost, and to great effect.
+
+1
+Learning Is Misunderstood
+
+He was a pilot, MattBrown was flying a twin-engine Cessna northeast out of Harlingen, Texas, when he noticed a drop in oil pressure in his right engine. He was alone, dying through the night at eleven thousand feet, making a hotshot freight run to a plant in Kentucky that had shut down its manufacturing line awaiting
+product parts for assembly.
+He reduced altitude and kept an eye on the oil gauge, hoping to fly as far as a planned fuel stop in Louisiana, where he
+could service the plane, but the pressure kept falling. Matt
+has been messing around with piston engines since he was
+old enough to hold a wrench, and he knew he had a problem.
+He ran a mental checklist, figuring his options. If he let the oil
+pressure get too low he risked the engine's seizing up. How
+much further could he fly before shutting it down? What
+would happen when he did? He'd lose lift on the right side,
+1
+
+Make It Stick - 2
+
+but could he stay aloft? He reviewed the tolerances he'd
+memorized for the Cessna 401. Loaded, the best you could do
+on one engine was slow your descent. But he had a light load,
+and he'd burned through most of his fuel. So he shut down
+the ailing right engine, feathered the prop to reduce drag, increased power on the left, flew with opposite rudder, and
+limped another ten miles toward his intended stop. There, he
+made his approach in a wide left-hand turn, for the simple but
+critical reason that without power on his right side it was
+only from a left-hand turn that he still had the lift needed to
+level out for a touchdown.
+
+While we don't need to understand each of the actions Matt
+took, he certainly needed to, and his ability to work himself
+out of a jam illustrates what we mean in this book when we
+talk about learning: we mean acquiring knowledge and skills
+and having them readily available from memory so you can
+make sense of future problems and opportunities.
+There are some immutable aspects of learning that we can
+probably all agree on:
+First, to be useful, learning requires memory, so what we've
+learned is still there later when we need it.
+Second, we need to keep learning and remembering all our
+lives. We can't advance through middle school without some
+mastery of language arts, math, science, and social studies.
+Getting ahead at work takes mastery of job skills and dif,cult
+colleagues. In retirement, we pick up new interests. In our
+dotage, we move into simpler housing while we're still able
+to adapt. If you're good at learning, you have an advantage in
+life.
+Third, learning is an acquired skill, and the most effective
+strategies are often counterintuitive.
+
+Learning Is Misunderstood - 3
+
+Claims We Make in This Book
+You may not agree with the last point, but we hope to persuade you of it. Here, more or less unadorned in list form, are
+some of the principal claims we make in support of our argument. We set them forth more fully in the chapters that follow.
+Learning is deeper and more durable when it's effortful.
+Learning that's easy is like writing in sand, here today and
+gone tomorrow.
+We are poor judges of when we are learning well and when
+we're not. When the going is harder and slower and it doesn't
+feel productive, we are drawn to strategies that feel more
+fruitful, unaware that the gains from these strategies are often
+temporary.
+Rereading text and massed practice of a skill or new knowledge are by far the preferred study strategies of learners of all
+stripes, but they're also among the least productive. By massed
+practice we mean the single-minded, rapid-,re repetition of
+something you're trying to burn into memory, the "practicepractice-practice" of conventional wisdom. Cramming for exams is an example. Rereading and massed practice give rise to
+feelings of 5uency that are taken to be signs of mastery, but for
+true mastery or durability these strategies are largely a waste
+of time.
+Retrieval practice—recalling facts or concepts or events
+from memory—is a more effective learning strategy than review by rereading. Flashcards are a simple example. Retrieval
+strengthens the memory and interrupts forgetting. A single,
+simple quiz after reading a text or hearing a lecture produces
+better learning and remembering than rereading the text or
+reviewing lecture notes. While the brain is not a muscle that
+gets stronger with exercise, the neural pathways that make
+up a body of learning do get stronger, when the memory is
+
+Make It Stick - 4
+
+retrieved and the learning is practiced. Periodic practice arrests forgetting, strengthens retrieval routes, and is essential
+for hanging onto the knowledge you want to gain.
+When you space out practice at a task and get a little rusty
+between sessions, or you interleave the practice of two or
+more subjects, retrieval is harder and feels less productive, but
+the effort produces longer lasting learning and enables more
+versatile application of it in later settings.
+Trying to solve a problem before being taught the solution
+leads to better learning, even when errors are made in the
+attempt.
+The popular notion that you learn better when you receive
+instruction in a form consistent with your preferred learning
+style, for example as an auditory or visual learner, is not supported by the empirical research. People do have multiple
+forms of intelligence to bring to bear on learning, and you
+learn better when you "go wide," drawing on all of your aptitudes and resourcefulness, than when you limit instruction or
+experience to the style you ,nd most amenable.
+When you're adept at extracting the underlying principles
+or "rules" that differentiate types of problems, you're more
+successful at picking the right solutions in unfamiliar situations.
+This skill is better acquired through interleaved and varied
+practice than massed practice. For instance, interleaving practice at computing the volumes of different kinds of geometric
+solids makes you more skilled at picking the right solution
+when a later test presents a random solid. Interleaving the
+identi,cation of bird types or the works of oil painters improves your ability both to learn the unifying attributes within
+a type and to differentiate between types, improving your
+skill at categorizing new specimens you encounter later.
+We're all susceptible to illusions that can hijack our judgment of what we know and can do. Testing helps calibrate
+
+Learning Is Misunderstood - 5
