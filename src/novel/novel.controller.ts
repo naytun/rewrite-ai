@@ -977,4 +977,4 @@ export const parsePDF = async (req: Request, res: Response): Promise<void> => {
 }
 
 // Export multer middleware for use in routes
-export const uploadPDF = upload.single('pdf')
+export const uploadPDF = upload.single('file')
