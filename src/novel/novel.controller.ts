@@ -970,7 +970,6 @@ async function extractTextByPage(fileBuffer: Buffer) {
 
 		// Extract text from this single page
 		const parsed = await pdfParse(Buffer.from(singlePageBytes))
-		console.log('㏒  ~ extractTextByPage:', parsed.text?.substring(0, 100))
 		extractedPages.push(parsed.text.trim())
 	}
 
