@@ -10,10 +10,11 @@ import {
 	generateGlossary,
 	getChapterList,
 	readChapterAI,
+	parsePDF,
+	uploadPDF,
 } from './novel.controller'
 
 const router = Router()
-
 
 // Novel routes
 router.get('/novels', listNovels)
@@ -35,6 +36,9 @@ router.post(
 // Glossary routes
 router.get('/novels/:novelId/glossary', getGlossary)
 router.post('/novels/:novelId/glossary/generate', generateGlossary)
+
+// PDF parsing route
+router.post('/parsePDF', uploadPDF, parsePDF)
 
 export default router
 
