@@ -1,3 +1,4 @@
+import pdfParse from 'pdf-parse'
 import { Request, Response } from 'express'
 import {
 	listChapters as getChapters,
@@ -13,6 +14,7 @@ import { getAISettings } from '../settings/settings.service'
 import type { Chapter, ChapterNavigation } from '../types/novel'
 import * as path from 'path'
 import * as fs from 'node:fs/promises'
+import multer, { FileFilterCallback } from 'multer'
 
 const generateNavigationButtons = (
 	navigation: ChapterNavigation,
@@ -25,15 +27,15 @@ const generateNavigationButtons = (
 			navigation.prev
 				? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
 						novelId
-					)}/chapters/${encodeURIComponent(
+				  )}/chapters/${encodeURIComponent(
 						navigation.prev.volume
-					)}/${encodeURIComponent(
+				  )}/${encodeURIComponent(
 						navigation.prev.chapter
-					)}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+				  )}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						navigation.prev.volume
-					)}', '${encodeURIComponent(
+				  )}', '${encodeURIComponent(
 						navigation.prev.chapter
-					)}')" >← Previous</a>`
+				  )}')" >← Previous</a>`
 				: '<span class="nav-button disabled">← Previous</span>'
 		}
 		<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
@@ -43,13 +45,13 @@ const generateNavigationButtons = (
 			navigation.next
 				? `<a class="nav-button" href="/api/novel/novels/${encodeURIComponent(
 						novelId
-					)}/chapters/${encodeURIComponent(
+				  )}/chapters/${encodeURIComponent(
 						navigation.next.volume
-					)}/${encodeURIComponent(
+				  )}/${encodeURIComponent(
 						navigation.next.chapter
-					)}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
+				  )}${aiParam}" onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						navigation.next.volume
-					)}', '${encodeURIComponent(navigation.next.chapter)}')" >Next →</a>`
+				  )}', '${encodeURIComponent(navigation.next.chapter)}')" >Next →</a>`
 				: '<span class="nav-button disabled">Next →</span>'
 		}`
 }
@@ -72,8 +74,8 @@ const generateChapterListHtml = (
 					href="/api/novel/novels/${encodeURIComponent(
 						novelId
 					)}/chapters/${encodeURIComponent(
-						chapter.volume
-					)}/${encodeURIComponent(chapter.chapter)}${aiParam}"
+				chapter.volume
+			)}/${encodeURIComponent(chapter.chapter)}${aiParam}"
 					class="chapter-link ${chapterClass}"
 					onclick="showLoading(); saveLastChapter('${encodeURIComponent(
 						chapter.volume
@@ -163,9 +165,9 @@ const navigationButtons = (
 					? 'class="current"'
 					: `href="/api/novel/novels/${encodeURIComponent(
 							novelId
-						)}/chapters/${encodeURIComponent(ch.volume)}/${encodeURIComponent(
+					  )}/chapters/${encodeURIComponent(ch.volume)}/${encodeURIComponent(
 							ch.chapter
-						)}"`
+					  )}"`
 			}>
 				${Number(ch.chapter)}
 			</a>
@@ -173,6 +175,22 @@ const navigationButtons = (
 	}
 	return buttons.join('')
 }
+
+// Configure multer for memory storage
+const upload = multer({
+	storage: multer.memoryStorage(),
+	limits: {
+		fileSize: 10 * 1024 * 1024, // 10MB limit
+	},
+	fileFilter: (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+		if (file.mimetype === 'application/pdf') {
+			cb(null, true);
+		} else {
+			cb(null, false);
+			cb(new Error('Only PDF files are allowed'));
+		}
+	}
+});
 
 export const getChapterList = async (
 	req: Request,
@@ -317,12 +335,12 @@ export const listChapters = async (
 									.map(
 										(chapter) => `
 									<div class="chapter-item" data-volume="${chapter.volume}" data-chapter="${
-										chapter.chapter
-									}" onclick="openChapter('${encodeURIComponent(
-										novelId
-									)}', '${encodeURIComponent(
-										chapter.volume
-									)}', '${encodeURIComponent(chapter.chapter)}')">
+											chapter.chapter
+										}" onclick="openChapter('${encodeURIComponent(
+											novelId
+										)}', '${encodeURIComponent(
+											chapter.volume
+										)}', '${encodeURIComponent(chapter.chapter)}')">
 										<h3 class="font-semibold">Chapter ${Number(chapter.chapter)}</h3>
 									</div>
 								`
@@ -924,3 +942,36 @@ export const generateGlossary = async (
 		})
 	}
 }
+
+// Function to extract text from PDF using pdf-parse
+export const parsePDF = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	try {
+		const file = req.file as Express.Multer.File | undefined;
+		if (!file) {
+			res.status(400).json({ error: 'No file uploaded' });
+			return;
+		}
+
+		const fileBuffer = file.buffer;
+		// console.log("㏒  ~ fileBuffer (size):", fileBuffer?.length)
+		const data = await pdfParse(fileBuffer);
+		console.log("㏒  ~ data:===", data)
+		
+		res.json({ 
+			success: true,
+			text: data.text
+		});
+	} catch (error) {
+		console.error('Error parsing PDF:', error);
+		res.status(500).json({ 
+			success: false,
+			error: 'Failed to parse PDF file' 
+		});
+	}
+}
+
+// Export multer middleware for use in routes
+export const uploadPDF = upload.single('pdf');
