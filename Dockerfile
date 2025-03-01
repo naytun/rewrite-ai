@@ -37,7 +37,9 @@ COPY . .
 RUN npm run build
 
 # Copy public files to dist directory
-RUN mkdir -p /app/dist/public && cp -r /app/src/public/* /app/dist/public/
+RUN rm -rf /app/dist/public && \
+    mkdir -p /app/dist/public && \
+    cp -r /app/src/public/* /app/dist/public/
 
 # Remove development dependencies
 RUN npm prune --omit=dev
