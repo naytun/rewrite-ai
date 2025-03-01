@@ -1,4 +1,5 @@
 import pdfParse from 'pdf-parse'
+import { PDFDocument } from 'pdf-lib'
 import { Request, Response } from 'express'
 import {
 	listChapters as getChapters,
@@ -947,6 +948,35 @@ export const generateGlossary = async (
 	}
 }
 
+async function extractTextByPage(fileBuffer: Buffer) {
+	// Load the full PDF file
+	const pdfDoc = await PDFDocument.load(fileBuffer)
+
+	const extractedPages: string[] = []
+	console.log(
+		'㏒  ~ [extractTextByPage] ~ getPageCount():',
+		pdfDoc.getPageCount()
+	)
+
+	// Process each page separately
+	for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+		// Create a new document with only one page
+		const newPdf = await PDFDocument.create()
+		const [copiedPage] = await newPdf.copyPages(pdfDoc, [i])
+		newPdf.addPage(copiedPage)
+
+		// Convert the single-page PDF into a Buffer
+		const singlePageBytes = await newPdf.save()
+
+		// Extract text from this single page
+		const parsed = await pdfParse(Buffer.from(singlePageBytes))
+		console.log('㏒  ~ extractTextByPage:', parsed.text?.substring(0, 100))
+		extractedPages.push(parsed.text.trim())
+	}
+
+	return extractedPages // Array of extracted text, one entry per page
+}
+
 // Function to extract text from PDF using pdf-parse
 export const parsePDF = async (req: Request, res: Response): Promise<void> => {
 	try {
@@ -959,11 +989,11 @@ export const parsePDF = async (req: Request, res: Response): Promise<void> => {
 		}
 
 		const fileBuffer = file.buffer
-		const data = await pdfParse(fileBuffer)
+		const data = await extractTextByPage(fileBuffer)
 
 		res.json({
 			success: true,
-			text: data.text,
+			data,
 		})
 	} catch (error) {
 		console.error('Error parsing PDF:', error)
