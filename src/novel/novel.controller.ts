@@ -959,9 +959,7 @@ export const parsePDF = async (req: Request, res: Response): Promise<void> => {
 		}
 
 		const fileBuffer = file.buffer
-		console.log('㏒  ~ fileBuffer (size):', fileBuffer?.length)
 		const data = await pdfParse(fileBuffer)
-		console.log('㏒  ~ data:===', data)
 
 		res.json({
 			success: true,
