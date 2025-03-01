@@ -949,31 +949,39 @@ export const generateGlossary = async (
 }
 
 async function extractTextByPage(fileBuffer: Buffer) {
-	// Load the full PDF file
-	const pdfDoc = await PDFDocument.load(fileBuffer)
+	try {
+		// Load the full PDF file
+		const pdfDoc = await PDFDocument.load(fileBuffer)
 
-	const extractedPages: string[] = []
-	console.log(
-		'㏒  ~ [extractTextByPage] ~ getPageCount():',
-		pdfDoc.getPageCount()
-	)
+		const extractedPages: string[] = []
+		console.log('㏒  ~ [extractTextByPage] ~ pages::', pdfDoc.getPageCount())
 
-	// Process each page separately
-	for (let i = 0; i < pdfDoc.getPageCount(); i++) {
-		// Create a new document with only one page
-		const newPdf = await PDFDocument.create()
-		const [copiedPage] = await newPdf.copyPages(pdfDoc, [i])
-		newPdf.addPage(copiedPage)
+		// Process each page separately
+		for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+			try {
+				// Create a new document with only one page
+				const newPdf = await PDFDocument.create()
+				const [copiedPage] = await newPdf.copyPages(pdfDoc, [i])
+				newPdf.addPage(copiedPage)
 
-		// Convert the single-page PDF into a Buffer
-		const singlePageBytes = await newPdf.save()
+				// Convert the single-page PDF into a Buffer
+				const singlePageBytes = await newPdf.save()
 
-		// Extract text from this single page
-		const parsed = await pdfParse(Buffer.from(singlePageBytes))
-		extractedPages.push(parsed.text.trim())
+				// Extract text from this single page
+				const parsed = await pdfParse(Buffer.from(singlePageBytes))
+				extractedPages.push(parsed.text.trim())
+			} catch (error: any) {
+				console.warn('Error extracting text by page:', error?.message)
+				// continue to next page
+				continue
+			}
+		}
+
+		return extractedPages // Array of extracted text, one entry per page
+	} catch (error: any) {
+		console.warn('Error extracting text by page:', error?.message)
+		throw error
 	}
-
-	return extractedPages // Array of extracted text, one entry per page
 }
 
 // Function to extract text from PDF using pdf-parse
