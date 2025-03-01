@@ -971,7 +971,10 @@ async function extractTextByPage(fileBuffer: Buffer) {
 				const parsed = await pdfParse(Buffer.from(singlePageBytes))
 				extractedPages.push(parsed.text.trim())
 			} catch (error: any) {
-				console.warn('Error extracting text by page:', error?.message)
+				console.warn(
+					`Error extracting text by page (${i + 1}):`,
+					error?.message
+				)
 				// continue to next page
 				continue
 			}
