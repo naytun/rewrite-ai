@@ -182,15 +182,19 @@ const upload = multer({
 	limits: {
 		fileSize: 10 * 1024 * 1024, // 10MB limit
 	},
-	fileFilter: (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+	fileFilter: (
+		_req: Request,
+		file: Express.Multer.File,
+		cb: FileFilterCallback
+	) => {
 		if (file.mimetype === 'application/pdf') {
-			cb(null, true);
+			cb(null, true)
 		} else {
-			cb(null, false);
-			cb(new Error('Only PDF files are allowed'));
+			cb(null, false)
+			cb(new Error('Only PDF files are allowed'))
 		}
-	}
-});
+	},
+})
 
 export const getChapterList = async (
 	req: Request,
@@ -944,34 +948,33 @@ export const generateGlossary = async (
 }
 
 // Function to extract text from PDF using pdf-parse
-export const parsePDF = async (
-	req: Request,
-	res: Response
-): Promise<void> => {
+export const parsePDF = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const file = req.file as Express.Multer.File | undefined;
+		console.log('㏒  ~ [parsePDF] START:')
+		const file = req.file as Express.Multer.File | undefined
 		if (!file) {
-			res.status(400).json({ error: 'No file uploaded' });
-			return;
+			console.error('㏒  ~ [parsePDF] No file uploaded!')
+			res.status(400).json({ error: 'No file uploaded' })
+			return
 		}
 
-		const fileBuffer = file.buffer;
-		// console.log("㏒  ~ fileBuffer (size):", fileBuffer?.length)
-		const data = await pdfParse(fileBuffer);
-		console.log("㏒  ~ data:===", data)
-		
-		res.json({ 
+		const fileBuffer = file.buffer
+		console.log('㏒  ~ fileBuffer (size):', fileBuffer?.length)
+		const data = await pdfParse(fileBuffer)
+		console.log('㏒  ~ data:===', data)
+
+		res.json({
 			success: true,
-			text: data.text
-		});
+			text: data.text,
+		})
 	} catch (error) {
-		console.error('Error parsing PDF:', error);
-		res.status(500).json({ 
+		console.error('Error parsing PDF:', error)
+		res.status(500).json({
 			success: false,
-			error: 'Failed to parse PDF file' 
-		});
+			error: 'Failed to parse PDF file',
+		})
 	}
 }
 
 // Export multer middleware for use in routes
-export const uploadPDF = upload.single('pdf');
+export const uploadPDF = upload.single('pdf')
