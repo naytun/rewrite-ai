@@ -967,11 +967,20 @@ async function extractTextByPage(fileBuffer: Buffer) {
 				// Convert the single-page PDF into a Buffer
 				const singlePageBytes = await newPdf.save()
 
-				// Extract text from this single page
+				// Extract from this single page
 				const parsed = await pdfParse(Buffer.from(singlePageBytes))
+
+				//=== Convert to plain text format
 				extractedPages.push(parsed.text.trim())
+
+				//=== Convert to markdown format
+				// const markdownText = convertToMarkdown(parsed.text)
+				// extractedPages.push(markdownText)
 			} catch (error: any) {
-				console.warn('Error extracting text by page:', error?.message)
+				console.warn(
+					`Error extracting text by page (${i + 1}):`,
+					error?.message
+				)
 				// continue to next page
 				continue
 			}
@@ -982,6 +991,61 @@ async function extractTextByPage(fileBuffer: Buffer) {
 		console.warn('Error extracting text by page:', error?.message)
 		throw error
 	}
+}
+
+// Helper function to convert text to markdown format
+function convertToMarkdown(text: string): string {
+	// Split text into lines
+	const lines = text
+		.split('\n')
+		.map((line) => line.trim())
+		.filter((line) => line)
+
+	let markdown = ''
+	let inParagraph = false
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i]
+		const nextLine = lines[i + 1]
+
+		// Check for potential headers (lines followed by blank lines)
+		if (line && (!nextLine || !nextLine.trim()) && line.length < 100) {
+			// Assume it's a header if it's relatively short and followed by a blank line
+			markdown += `## ${line}\n\n`
+			continue
+		}
+
+		// Check for potential list items
+		if (line.match(/^\d+[\.\)]/)) {
+			markdown += `${line}\n`
+			continue
+		}
+
+		if (line.match(/^[\-\*\•]/)) {
+			markdown += `- ${line.substring(1).trim()}\n`
+			continue
+		}
+
+		// Handle paragraphs
+		if (line) {
+			if (!inParagraph) {
+				markdown += line
+				inParagraph = true
+			} else {
+				markdown += ' ' + line
+			}
+		} else if (inParagraph) {
+			markdown += '\n\n'
+			inParagraph = false
+		}
+	}
+
+	// Ensure the text ends with a newline
+	if (!markdown.endsWith('\n\n')) {
+		markdown += '\n\n'
+	}
+
+	return markdown.trim()
 }
 
 // Function to extract text from PDF using pdf-parse
